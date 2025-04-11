@@ -83,6 +83,8 @@ impl SimpleComponent for MainStruct {
             .orientation(gtk::Orientation::Horizontal)
             .build();
         status_bar_box.set_spacing(10);
+        let editor_scroll_window = gtk::ScrolledWindow::builder().build();
+        editor_scroll_window.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
 
         // Define and setup file dialogs
         let load_file_dialog = OpenDialog::builder()
@@ -114,10 +116,11 @@ impl SimpleComponent for MainStruct {
         let cursor_position_label = gtk::Label::builder().build();
 
         // Add widgets to containers
+        editor_scroll_window.set_child(Some(&editor));
         status_bar_box.append(&file_label);
         status_bar_box.append(&cursor_position_label);
         main_box.append(&menu);
-        editor_box.append(&editor);
+        editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
         main_box.append(&editor_box);
         main_box.append(&status_bar_box);
