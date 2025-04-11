@@ -225,8 +225,14 @@ impl SimpleComponent for MainStruct {
                 Ok(f) => {
                     self.buffer.set_text(&f);
                     self.current_file_path = Some(path.to_str().unwrap().to_string()).unwrap();
-                    let language = update_syntax(&self.language_manager, &self.current_file_path);
-                    self.buffer.set_language(Some(&language));
+                    match update_syntax(&self.language_manager, &self.current_file_path) {
+                        Some(language) => {
+                            self.buffer.set_language(Some(&language));
+                        }
+                        None => {
+                            //
+                        }
+                    }
                 }
                 Err(_) => panic!("Failed to read file to string!"),
             },

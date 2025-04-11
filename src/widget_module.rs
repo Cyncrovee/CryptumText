@@ -22,10 +22,11 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
 pub fn update_syntax(
     language_manager: &LanguageManager,
     current_file_path: &String,
-) -> sourceview5::Language {
-    let language = language_manager
-        .guess_language(Some(&current_file_path), None)
-        .unwrap();
-
-    return language;
+) -> Option<sourceview5::Language> {
+    match language_manager.guess_language(Some(&current_file_path), None) {
+        Some(language) => {
+            return Some(language);
+        }
+        None => None,
+    }
 }
