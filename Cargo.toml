@@ -1,0 +1,11 @@
+[package]
+name = "cryptum-text"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0"
+
+[dependencies]
+gtk4 = "0.9.6"
+relm4 = "0.9.1"
+relm4-components = "0.9.1"
+sourceview5 = "0.9.1"
