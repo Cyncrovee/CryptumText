@@ -62,7 +62,7 @@ impl SimpleComponent for MainStruct {
     type Widgets = WidgetStruct;
 
     fn init_root() -> Self::Root {
-        gtk::Window::builder().title("Editor").build()
+        gtk::Window::builder().title("Cryptum Text").build()
     }
 
     fn init(
