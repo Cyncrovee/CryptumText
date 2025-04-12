@@ -18,7 +18,7 @@ use std::{
 };
 
 mod widget_module;
-use widget_module::{setup_editor, update_syntax};
+use widget_module::{setup_editor, update_file_type, update_syntax};
 mod menu_module;
 use menu_module::menu_bar;
 
@@ -30,7 +30,9 @@ struct MainStruct {
     language_manager: LanguageManager,
     open_dialog: Controller<OpenDialog>,
     save_as_dialog: Controller<SaveDialog>,
+    separator_label: gtk::Label,
     file_label: gtk::Label,
+    file_type_label: gtk::Label,
     cursor_position_label: gtk::Label,
     clipboard: gtk::gdk::Clipboard,
 }
@@ -82,7 +84,6 @@ impl SimpleComponent for MainStruct {
         let status_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Horizontal)
             .build();
-        status_bar_box.set_spacing(10);
         let editor_scroll_window = gtk::ScrolledWindow::builder().build();
         editor_scroll_window.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
 
@@ -112,12 +113,17 @@ impl SimpleComponent for MainStruct {
         let mini_map = sourceview5::Map::builder().build();
         let editor = setup_editor(&buffer);
         mini_map.set_view(&editor);
+        let separator_label = gtk::Label::builder().label(" | ").build();
+        let file_type_label = gtk::Label::builder().build();
         let file_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
 
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
         status_bar_box.append(&file_label);
+        status_bar_box.append(&separator_label);
+        status_bar_box.append(&file_type_label);
+        status_bar_box.append(&separator_label);
         status_bar_box.append(&cursor_position_label);
         main_box.append(&menu);
         editor_box.append(&editor_scroll_window);
@@ -206,7 +212,9 @@ impl SimpleComponent for MainStruct {
             language_manager,
             open_dialog: load_file_dialog,
             save_as_dialog,
+            separator_label,
             file_label,
+            file_type_label,
             cursor_position_label,
             clipboard,
         };
@@ -294,6 +302,14 @@ impl SimpleComponent for MainStruct {
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
         self.file_label.set_label(&self.current_file_path);
+        match update_file_type(&self.current_file_path) {
+            Some(file_type) => {
+                self.file_type_label.set_label(&file_type);
+            }
+            None => {
+                self.file_type_label.set_label("");
+            }
+        }
         self.cursor_position_label
             .set_label(&self.buffer.cursor_position().to_string().as_str());
     }

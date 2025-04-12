@@ -1,3 +1,6 @@
+use std::path::PathBuf;
+
+use gtk4::glib::GString;
 use relm4::RelmWidgetExt;
 use sourceview5::{
     Buffer, LanguageManager,
@@ -27,6 +30,45 @@ pub fn update_syntax(
         Some(language) => {
             return Some(language);
         }
+        None => None,
+    }
+}
+
+pub fn update_file_type(file: &str) -> Option<GString> {
+    let path = PathBuf::from(file);
+    match path.extension() {
+        Some(e) => match e.to_str() {
+            Some(ex) => match ex {
+                "txt" => {
+                    return Some("Text File".into());
+                }
+                "toml" => {
+                    return Some("TOML File".into());
+                }
+                "json" => {
+                    return Some("JSON File".into());
+                }
+                "rs" => {
+                    return Some("Rust Source File".into());
+                }
+                "py" => {
+                    return Some("Python Source File".into());
+                }
+                "cs" => {
+                    return Some("C# Source File".into());
+                }
+                "ts" => {
+                    return Some("TypeScript Source File".into());
+                }
+                "js" => {
+                    return Some("JavaScript  Source File".into());
+                }
+                &_ => {
+                    return None;
+                }
+            },
+            None => None,
+        },
         None => None,
     }
 }
