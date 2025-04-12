@@ -30,7 +30,6 @@ struct MainStruct {
     language_manager: LanguageManager,
     open_dialog: Controller<OpenDialog>,
     save_as_dialog: Controller<SaveDialog>,
-    separator_label: gtk::Label,
     file_label: gtk::Label,
     file_type_label: gtk::Label,
     cursor_position_label: gtk::Label,
@@ -71,6 +70,10 @@ impl SimpleComponent for MainStruct {
         root: Self::Root,
         sender: relm4::ComponentSender<Self>,
     ) -> relm4::ComponentParts<Self> {
+        // Enable libadwaita (commented out for now)
+        //let program = gtk::Application::default();
+        //program.connect_startup(|_| libadwaita::init().unwrap());
+
         // Create menu
         let menu = PopoverMenuBar::from_model(Some(&menu_bar()));
 
@@ -113,7 +116,6 @@ impl SimpleComponent for MainStruct {
         let mini_map = sourceview5::Map::builder().build();
         let editor = setup_editor(&buffer);
         mini_map.set_view(&editor);
-        let separator_label = gtk::Label::builder().label(" | ").build();
         let file_type_label = gtk::Label::builder().build();
         let file_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
@@ -121,9 +123,9 @@ impl SimpleComponent for MainStruct {
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
         status_bar_box.append(&file_label);
-        status_bar_box.append(&separator_label);
+        status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&file_type_label);
-        status_bar_box.append(&separator_label);
+        status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
         main_box.append(&menu);
         editor_box.append(&editor_scroll_window);
@@ -212,7 +214,6 @@ impl SimpleComponent for MainStruct {
             language_manager,
             open_dialog: load_file_dialog,
             save_as_dialog,
-            separator_label,
             file_label,
             file_type_label,
             cursor_position_label,
