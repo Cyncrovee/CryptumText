@@ -14,45 +14,14 @@ use sourceview5::{
 use std::{
     fs::{File, exists},
     io::Write,
-    path::PathBuf,
 };
 
 mod widget_module;
 use widget_module::{setup_editor, update_file_type, update_syntax};
 mod menu_module;
 use menu_module::menu_bar;
-
-struct MainStruct {
-    // Non-widgets
-    current_file_path: String,
-    // Widgets
-    buffer: sourceview5::Buffer,
-    language_manager: LanguageManager,
-    open_dialog: Controller<OpenDialog>,
-    save_as_dialog: Controller<SaveDialog>,
-    file_label: gtk::Label,
-    file_type_label: gtk::Label,
-    cursor_position_label: gtk::Label,
-    clipboard: gtk::gdk::Clipboard,
-}
-
-struct WidgetStruct {}
-
-#[derive(Debug)]
-enum Message {
-    NewFile,
-    OpenRequest,
-    OpenResponse(PathBuf),
-    SaveAsRequest,
-    SaveAsResponse(PathBuf),
-    SaveFile,
-    ClearEditor,
-    CutEditor,
-    CopyEditor,
-    PasteEditor,
-    CursorPostitionChanged,
-    Ignore,
-}
+mod program_model;
+use program_model::{MainStruct, Message, WidgetStruct};
 
 impl SimpleComponent for MainStruct {
     type Init = String;
@@ -91,6 +60,15 @@ impl SimpleComponent for MainStruct {
         editor_scroll_window.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
 
         // Define and setup file dialogs
+        let mut load_folder_dialog_settings = OpenDialogSettings::default();
+        load_folder_dialog_settings.folder_mode = true;
+        let folder_dialog = OpenDialog::builder()
+            .transient_for_native(&root)
+            .launch(load_folder_dialog_settings)
+            .forward(sender.input_sender(), |response| match response {
+                OpenDialogResponse::Accept(path) => Message::FolderResponse(path),
+                OpenDialogResponse::Cancel => Message::Ignore,
+            });
         let load_file_dialog = OpenDialog::builder()
             .transient_for_native(&root)
             .launch(OpenDialogSettings::default())
@@ -107,14 +85,16 @@ impl SimpleComponent for MainStruct {
             });
 
         // Define and edit widgets
+        let folder_label = gtk::Label::builder().build();
+        let file_list = gtk::ListBox::builder().build();
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
         buffer.set_style_scheme(buffer_style.as_ref());
         buffer.set_highlight_syntax(true);
         buffer.set_highlight_matching_brackets(true);
-        let mini_map = sourceview5::Map::builder().build();
         let editor = setup_editor(&buffer);
+        let mini_map = sourceview5::Map::builder().build();
         mini_map.set_view(&editor);
         let file_type_label = gtk::Label::builder().build();
         let file_label = gtk::Label::builder().build();
@@ -128,6 +108,8 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
         main_box.append(&menu);
+        main_box.append(&folder_label);
+        editor_box.append(&file_list);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
         main_box.append(&editor_box);
@@ -135,7 +117,7 @@ impl SimpleComponent for MainStruct {
 
         // Setup the window
         root.set_child(Some(&main_box));
-        root.set_default_size(500, 500);
+        root.set_default_size(1000, 1000);
 
         // Setup events
         buffer.connect_cursor_position_notify(clone!(
@@ -171,6 +153,11 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::OpenRequest)
         ));
+        let open_folder_action: RelmAction<OpenFolderAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::FolderRequest)
+        ));
         // Edit actions
         let cut_action: RelmAction<CutAction> = RelmAction::new_stateless(clone!(
             #[strong]
@@ -198,6 +185,7 @@ impl SimpleComponent for MainStruct {
         action_group.add_action(save_as_action);
         action_group.add_action(save_action);
         action_group.add_action(open_action);
+        action_group.add_action(open_folder_action);
         action_group.add_action(cut_action);
         action_group.add_action(copy_action);
         action_group.add_action(paste_action);
@@ -207,14 +195,18 @@ impl SimpleComponent for MainStruct {
         // Set misc variables
         let display = gtk::gdk::Display::default().unwrap();
         let clipboard = DisplayExt::clipboard(&display);
+        let current_folder_path = "".into();
 
         let model = MainStruct {
             current_file_path,
+            current_folder_path,
             buffer,
             language_manager,
             open_dialog: load_file_dialog,
+            folder_dialog,
             save_as_dialog,
             file_label,
+            folder_label,
             file_type_label,
             cursor_position_label,
             clipboard,
@@ -228,6 +220,10 @@ impl SimpleComponent for MainStruct {
             Message::NewFile => {
                 self.buffer.set_text("");
                 self.current_file_path = "".to_string();
+            }
+            Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
+            Message::FolderResponse(path) => {
+                self.current_folder_path = path.into_os_string().into_string().unwrap();
             }
             Message::OpenRequest => self.open_dialog.emit(OpenDialogMsg::Open),
             Message::OpenResponse(path) => match std::fs::read_to_string(&path) {
@@ -303,6 +299,7 @@ impl SimpleComponent for MainStruct {
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
         self.file_label.set_label(&self.current_file_path);
+        self.folder_label.set_label(&self.current_folder_path);
         match update_file_type(&self.current_file_path) {
             Some(file_type) => {
                 self.file_type_label.set_label(&file_type);
@@ -321,6 +318,7 @@ relm4::new_stateless_action!(NewFileAction, WindowActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, WindowActionGroup, "save_as");
 relm4::new_stateless_action!(SaveAction, WindowActionGroup, "save");
 relm4::new_stateless_action!(OpenAction, WindowActionGroup, "open");
+relm4::new_stateless_action!(OpenFolderAction, WindowActionGroup, "open_folder");
 relm4::new_stateless_action!(CutAction, WindowActionGroup, "cut");
 relm4::new_stateless_action!(CopyAction, WindowActionGroup, "copy");
 relm4::new_stateless_action!(PasteAction, WindowActionGroup, "paste");

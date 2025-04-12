@@ -9,7 +9,11 @@ pub fn menu_bar() -> MenuModel {
     new_section.insert_item(0, &MenuItem::new(Some("New File"), Some("win.new_file")));
     file_menu.insert_section(0, None, &new_section);
     let load_section = Menu::new();
-    load_section.insert_item(0, &MenuItem::new(Some("Load"), Some("win.open")));
+    load_section.insert_item(0, &MenuItem::new(Some("Load File"), Some("win.open")));
+    load_section.insert_item(
+        1,
+        &MenuItem::new(Some("Load Folder"), Some("win.open_folder")),
+    );
     file_menu.insert_section(1, None, &load_section);
     let save_section = Menu::new();
     save_section.insert_item(0, &MenuItem::new(Some("Save"), Some("win.save")));

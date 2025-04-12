@@ -7,13 +7,16 @@ use sourceview5::LanguageManager;
 pub struct MainStruct {
     // Non-widgets
     pub current_file_path: String,
+    pub current_folder_path: String,
     pub clipboard: gtk::gdk::Clipboard,
     // Widgets
     pub buffer: sourceview5::Buffer,
     pub language_manager: LanguageManager,
     pub open_dialog: Controller<OpenDialog>,
+    pub folder_dialog: Controller<OpenDialog>,
     pub save_as_dialog: Controller<SaveDialog>,
     pub file_label: gtk::Label,
+    pub folder_label: gtk::Label,
     pub file_type_label: gtk::Label,
     pub cursor_position_label: gtk::Label,
 }
@@ -23,6 +26,8 @@ pub struct WidgetStruct {}
 #[derive(Debug)]
 pub enum Message {
     NewFile,
+    FolderRequest,
+    FolderResponse(PathBuf),
     OpenRequest,
     OpenResponse(PathBuf),
     SaveAsRequest,
