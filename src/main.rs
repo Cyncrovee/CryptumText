@@ -1,4 +1,5 @@
 use relm4::{
+    RelmRemoveAllExt,
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::{PopoverMenuBar, glib::clone, prelude::*},
     prelude::*,
@@ -262,6 +263,7 @@ impl SimpleComponent for MainStruct {
                 self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
                 match read_dir(&path.clone()) {
                     Ok(dir) => {
+                        self.file_list.remove_all();
                         for files in dir {
                             let label = gtk::Label::builder().build();
                             label.set_widget_name(
