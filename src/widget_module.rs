@@ -22,9 +22,11 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     return editor;
 }
 
+/*
 pub fn update_file_list() {
     //
 }
+*/
 
 pub fn update_syntax(
     language_manager: &LanguageManager,

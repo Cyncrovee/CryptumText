@@ -1,4 +1,3 @@
-use gtk4::{Label, Widget};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::{PopoverMenuBar, glib::clone, prelude::*},
@@ -19,9 +18,14 @@ use std::{
 };
 
 mod widget_module;
-use widget_module::{setup_editor, update_file_type, update_syntax};
+use widget_module::{setup_editor, update_file_type};
+
 mod menu_module;
 use menu_module::menu_bar;
+
+mod fs_module;
+use fs_module::load_file;
+
 mod program_model;
 use program_model::{MainStruct, Message, WidgetStruct};
 
@@ -243,21 +247,7 @@ impl SimpleComponent for MainStruct {
                 let file_list_path = Path::new(file_list_name);
                 file_list_pathbuf.push(file_list_path);
                 self.current_file_path = file_list_pathbuf.into_os_string().into_string().unwrap();
-                match std::fs::read_to_string(&self.current_file_path) {
-                    Ok(f) => {
-                        self.buffer.set_text(&f);
-                        self.current_file_path = Some(self.current_file_path.clone()).unwrap();
-                        match update_syntax(&self.language_manager, &self.current_file_path) {
-                            Some(language) => {
-                                self.buffer.set_language(Some(&language));
-                            }
-                            None => {
-                                //
-                            }
-                        }
-                    }
-                    Err(_) => panic!("Failed to read file to string!"),
-                }
+                load_file(self);
             }
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
@@ -286,21 +276,10 @@ impl SimpleComponent for MainStruct {
                 }
             }
             Message::OpenRequest => self.open_dialog.emit(OpenDialogMsg::Open),
-            Message::OpenResponse(path) => match std::fs::read_to_string(&path) {
-                Ok(f) => {
-                    self.buffer.set_text(&f);
-                    self.current_file_path = Some(path.to_str().unwrap().to_string()).unwrap();
-                    match update_syntax(&self.language_manager, &self.current_file_path) {
-                        Some(language) => {
-                            self.buffer.set_language(Some(&language));
-                        }
-                        None => {
-                            //
-                        }
-                    }
-                }
-                Err(_) => panic!("Failed to read file to string!"),
-            },
+            Message::OpenResponse(path) => {
+                self.current_file_path = path.into_os_string().into_string().unwrap();
+                load_file(self);
+            }
             Message::SaveAsRequest => self
                 .save_as_dialog
                 .emit(SaveDialogMsg::SaveAs("".to_string())),
