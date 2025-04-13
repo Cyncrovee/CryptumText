@@ -10,6 +10,7 @@ pub struct MainStruct {
     pub current_folder_path: String,
     pub clipboard: gtk::gdk::Clipboard,
     // Widgets
+    pub file_list: gtk::ListBox,
     pub buffer: sourceview5::Buffer,
     pub language_manager: LanguageManager,
     pub open_dialog: Controller<OpenDialog>,
@@ -26,6 +27,7 @@ pub struct WidgetStruct {}
 #[derive(Debug)]
 pub enum Message {
     NewFile,
+    LoadFileFromList,
     FolderRequest,
     FolderResponse(PathBuf),
     OpenRequest,

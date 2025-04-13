@@ -12,7 +12,7 @@ use sourceview5::{
     prelude::{BufferExt, MapExt},
 };
 use std::{
-    fs::{File, exists},
+    fs::{File, exists, read_dir},
     io::Write,
 };
 
@@ -69,7 +69,7 @@ impl SimpleComponent for MainStruct {
                 OpenDialogResponse::Accept(path) => Message::FolderResponse(path),
                 OpenDialogResponse::Cancel => Message::Ignore,
             });
-        let load_file_dialog = OpenDialog::builder()
+        let open_dialog = OpenDialog::builder()
             .transient_for_native(&root)
             .launch(OpenDialogSettings::default())
             .forward(sender.input_sender(), |response| match response {
@@ -120,6 +120,11 @@ impl SimpleComponent for MainStruct {
         root.set_default_size(1000, 1000);
 
         // Setup events
+        file_list.connect_selected_rows_changed(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::LoadFileFromList)
+        ));
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -198,18 +203,21 @@ impl SimpleComponent for MainStruct {
         let current_folder_path = "".into();
 
         let model = MainStruct {
+            // Non-Widgets
             current_file_path,
             current_folder_path,
+            clipboard,
+            // Widgets
+            file_list,
             buffer,
             language_manager,
-            open_dialog: load_file_dialog,
+            open_dialog,
             folder_dialog,
             save_as_dialog,
             file_label,
             folder_label,
             file_type_label,
             cursor_position_label,
-            clipboard,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }
@@ -221,9 +229,34 @@ impl SimpleComponent for MainStruct {
                 self.buffer.set_text("");
                 self.current_file_path = "".to_string();
             }
+            Message::LoadFileFromList => {
+                // let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
+                /*
+                let file_list_name: &String = &self.file_list.selected_row().unwrap();
+                let file_list_path = Path::new(file_list_name);
+                file_list_pathbuf.push(file_list_path);
+                println!(
+                    "{}",
+                    file_list_pathbuf.into_os_string().into_string().unwrap()
+                );
+                */
+            }
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
-                self.current_folder_path = path.into_os_string().into_string().unwrap();
+                self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
+                match read_dir(&path.clone()) {
+                    Ok(dir) => {
+                        for files in dir {
+                            let label = gtk::Label::builder().build();
+                            label
+                                .set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
+                            self.file_list.append(&label);
+                        }
+                    }
+                    Err(_) => {
+                        //
+                    }
+                }
             }
             Message::OpenRequest => self.open_dialog.emit(OpenDialogMsg::Open),
             Message::OpenResponse(path) => match std::fs::read_to_string(&path) {
