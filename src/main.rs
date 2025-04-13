@@ -142,6 +142,7 @@ impl SimpleComponent for MainStruct {
         let program = relm4::main_application();
         program.set_accelerators_for_action::<NewFileAction>(&["<control><shift>n"]);
         program.set_accelerators_for_action::<OpenAction>(&["<control>o"]);
+        program.set_accelerators_for_action::<OpenFolderAction>(&["<control><shift>o"]);
         program.set_accelerators_for_action::<SaveAction>(&["<control>s"]);
         program.set_accelerators_for_action::<SaveAsAction>(&["<control><shift>s"]);
         // File actions
