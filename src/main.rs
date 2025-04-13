@@ -246,8 +246,16 @@ impl SimpleComponent for MainStruct {
                     .widget_name();
                 let file_list_path = Path::new(file_list_name);
                 file_list_pathbuf.push(file_list_path);
-                self.current_file_path = file_list_pathbuf.into_os_string().into_string().unwrap();
-                load_file(self);
+                match PathBuf::from(file_list_name).is_file() {
+                    true => {
+                        self.current_file_path =
+                            file_list_pathbuf.into_os_string().into_string().unwrap();
+                        load_file(self);
+                    }
+                    false => {
+                        //
+                    }
+                }
             }
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
