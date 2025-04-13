@@ -1,3 +1,4 @@
+use gtk4::{Label, Widget};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::{PopoverMenuBar, glib::clone, prelude::*},
@@ -14,6 +15,7 @@ use sourceview5::{
 use std::{
     fs::{File, exists, read_dir},
     io::Write,
+    path::{Path, PathBuf},
 };
 
 mod widget_module;
@@ -230,16 +232,32 @@ impl SimpleComponent for MainStruct {
                 self.current_file_path = "".to_string();
             }
             Message::LoadFileFromList => {
-                // let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
-                /*
-                let file_list_name: &String = &self.file_list.selected_row().unwrap();
+                let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
+                let file_list_name = &self
+                    .file_list
+                    .selected_row()
+                    .unwrap()
+                    .child()
+                    .unwrap()
+                    .widget_name();
                 let file_list_path = Path::new(file_list_name);
                 file_list_pathbuf.push(file_list_path);
-                println!(
-                    "{}",
-                    file_list_pathbuf.into_os_string().into_string().unwrap()
-                );
-                */
+                self.current_file_path = file_list_pathbuf.into_os_string().into_string().unwrap();
+                match std::fs::read_to_string(&self.current_file_path) {
+                    Ok(f) => {
+                        self.buffer.set_text(&f);
+                        self.current_file_path = Some(self.current_file_path.clone()).unwrap();
+                        match update_syntax(&self.language_manager, &self.current_file_path) {
+                            Some(language) => {
+                                self.buffer.set_language(Some(&language));
+                            }
+                            None => {
+                                //
+                            }
+                        }
+                    }
+                    Err(_) => panic!("Failed to read file to string!"),
+                }
             }
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
@@ -248,6 +266,15 @@ impl SimpleComponent for MainStruct {
                     Ok(dir) => {
                         for files in dir {
                             let label = gtk::Label::builder().build();
+                            label.set_widget_name(
+                                files
+                                    .as_ref()
+                                    .unwrap()
+                                    .file_name()
+                                    .as_os_str()
+                                    .to_str()
+                                    .unwrap(),
+                            );
                             label
                                 .set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
                             self.file_list.append(&label);
