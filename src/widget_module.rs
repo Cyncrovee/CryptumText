@@ -45,8 +45,21 @@ pub fn update_file_type(file: &str) -> Option<GString> {
     match path.extension() {
         Some(e) => match e.to_str() {
             Some(ex) => match ex {
+                // Text/Config Files
                 "txt" => {
                     return Some("Text File".into());
+                }
+                "md" => {
+                    return Some("Markdown File".into());
+                }
+                "org" => {
+                    return Some("Org Mode File".into());
+                }
+                "norg" => {
+                    return Some("Neorg File".into());
+                }
+                "ini" => {
+                    return Some("INI File".into());
                 }
                 "toml" => {
                     return Some("TOML File".into());
@@ -54,14 +67,28 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "json" => {
                     return Some("JSON File".into());
                 }
+                // Shell Files
+                "sh" => {
+                    return Some("Shell Script".into());
+                }
+                "ps1" => {
+                    return Some("PowerShell Script".into());
+                }
+                // Source Files
                 "rs" => {
                     return Some("Rust Source File".into());
+                }
+                "rb" => {
+                    return Some("Ruby Source File".into());
                 }
                 "py" => {
                     return Some("Python Source File".into());
                 }
                 "cs" => {
                     return Some("C# Source File".into());
+                }
+                "php" => {
+                    return Some("PHP Source File".into());
                 }
                 "ts" => {
                     return Some("TypeScript Source File".into());
