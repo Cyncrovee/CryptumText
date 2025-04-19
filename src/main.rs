@@ -249,27 +249,63 @@ impl SimpleComponent for MainStruct {
                         .widget_name();
                     let file_list_path = Path::new(file_list_name);
                     file_list_pathbuf.push(file_list_path);
-                    match PathBuf::from(file_list_name).is_file() {
+                    match PathBuf::from(file_list_name).is_dir() {
                         true => {
-                            self.current_file_path =
-                                file_list_pathbuf.into_os_string().into_string().unwrap();
-                            load_file(self);
-                        }
-                        false => {
-                            let mut owned_folder = PathBuf::from(&self.current_folder_path);
-                            owned_folder.push(file_list_name);
-                            match owned_folder.is_file() {
-                                true => {
-                                    self.current_file_path =
-                                        file_list_pathbuf.into_os_string().into_string().unwrap();
-                                    load_file(self);
+                            self.current_folder_path = file_list_name.clone().to_string();
+                            match read_dir(&file_list_name.clone()) {
+                                Ok(dir) => {
+                                    self.file_list.remove_all();
+                                    for files in dir {
+                                        let label = gtk::Label::builder().build();
+                                        label.set_widget_name(
+                                            files
+                                                .as_ref()
+                                                .unwrap()
+                                                .file_name()
+                                                .as_os_str()
+                                                .to_str()
+                                                .unwrap(),
+                                        );
+                                        label.set_text(
+                                            files
+                                                .unwrap()
+                                                .file_name()
+                                                .as_os_str()
+                                                .to_str()
+                                                .unwrap(),
+                                        );
+                                        self.file_list.append(&label);
+                                    }
                                 }
-                                false => {
-                                    println!("{}", &file_list_name);
-                                    println!("Selected row not a file!");
+                                Err(_) => {
+                                    println!("Failed to read directory");
                                 }
                             }
                         }
+                        false => match PathBuf::from(file_list_name).is_file() {
+                            true => {
+                                self.current_file_path =
+                                    file_list_pathbuf.into_os_string().into_string().unwrap();
+                                load_file(self);
+                            }
+                            false => {
+                                let mut owned_folder = PathBuf::from(&self.current_folder_path);
+                                owned_folder.push(file_list_name);
+                                match owned_folder.is_file() {
+                                    true => {
+                                        self.current_file_path = file_list_pathbuf
+                                            .into_os_string()
+                                            .into_string()
+                                            .unwrap();
+                                        load_file(self);
+                                    }
+                                    false => {
+                                        println!("{}", &file_list_name);
+                                        println!("Selected row not a file!");
+                                    }
+                                }
+                            }
+                        },
                     }
                 }
                 None => {
