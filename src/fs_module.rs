@@ -13,7 +13,7 @@ pub fn load_file(self_from: &mut MainStruct) {
                     self_from.buffer.set_language(Some(&language));
                 }
                 None => {
-                    //
+                    println!("Failed to find language syntax!");
                 }
             }
         }
