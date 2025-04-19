@@ -237,28 +237,45 @@ impl SimpleComponent for MainStruct {
                 self.buffer.set_text("");
                 self.current_file_path = "".to_string();
             }
-            Message::LoadFileFromList => {
-                let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
-                let file_list_name = &self
-                    .file_list
-                    .selected_row()
-                    .unwrap()
-                    .child()
-                    .unwrap()
-                    .widget_name();
-                let file_list_path = Path::new(file_list_name);
-                file_list_pathbuf.push(file_list_path);
-                match PathBuf::from(file_list_name).is_file() {
-                    true => {
-                        self.current_file_path =
-                            file_list_pathbuf.into_os_string().into_string().unwrap();
-                        load_file(self);
-                    }
-                    false => {
-                        //
+            Message::LoadFileFromList => match self.file_list.selected_row() {
+                Some(_) => {
+                    let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
+                    let file_list_name = &self
+                        .file_list
+                        .selected_row()
+                        .unwrap()
+                        .child()
+                        .unwrap()
+                        .widget_name();
+                    let file_list_path = Path::new(file_list_name);
+                    file_list_pathbuf.push(file_list_path);
+                    match PathBuf::from(file_list_name).is_file() {
+                        true => {
+                            self.current_file_path =
+                                file_list_pathbuf.into_os_string().into_string().unwrap();
+                            load_file(self);
+                        }
+                        false => {
+                            let mut owned_folder = PathBuf::from(&self.current_folder_path);
+                            owned_folder.push(file_list_name);
+                            match owned_folder.is_file() {
+                                true => {
+                                    self.current_file_path =
+                                        file_list_pathbuf.into_os_string().into_string().unwrap();
+                                    load_file(self);
+                                }
+                                false => {
+                                    println!("{}", &file_list_name);
+                                    println!("Selected row not a file!");
+                                }
+                            }
+                        }
                     }
                 }
-            }
+                None => {
+                    println!("No row selected!");
+                }
+            },
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
                 self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
@@ -282,7 +299,7 @@ impl SimpleComponent for MainStruct {
                         }
                     }
                     Err(_) => {
-                        //
+                        println!("Failed to read directory");
                     }
                 }
             }
