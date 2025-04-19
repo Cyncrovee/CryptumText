@@ -272,7 +272,6 @@ impl SimpleComponent for MainStruct {
                                         load_file(self);
                                     }
                                     false => {
-                                        println!("{}", &file_list_name);
                                         println!("Selected row not a file!");
                                     }
                                 }
@@ -361,8 +360,13 @@ impl SimpleComponent for MainStruct {
                 self.file_type_label.set_label("");
             }
         }
-        self.cursor_position_label
-            .set_label(&self.buffer.cursor_position().to_string().as_str());
+        let cursor_iter = &self.buffer.iter_at_offset(self.buffer.cursor_position());
+        let cursor_line = cursor_iter.line();
+        let cursor_row = cursor_iter.line_offset();
+        let mut cursor_position = cursor_line.to_string().to_owned();
+        cursor_position.push(':');
+        cursor_position.push_str(cursor_row.to_string().as_str());
+        self.cursor_position_label.set_label(&cursor_position);
     }
 }
 
