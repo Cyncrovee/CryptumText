@@ -101,6 +101,7 @@ impl SimpleComponent for MainStruct {
         buffer.set_highlight_matching_brackets(true);
         let editor = setup_editor(&buffer);
         let mini_map = sourceview5::Map::builder().build();
+        mini_map.set_width_request(120);
         mini_map.set_view(&editor);
         let file_type_label = gtk::Label::builder().build();
         let file_label = gtk::Label::builder().build();
