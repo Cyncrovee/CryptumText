@@ -1,5 +1,4 @@
 use relm4::{
-    RelmRemoveAllExt,
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::{PopoverMenuBar, glib::clone, prelude::*},
     prelude::*,
@@ -13,7 +12,7 @@ use sourceview5::{
     prelude::{BufferExt, MapExt},
 };
 use std::{
-    fs::{File, exists, read_dir},
+    fs::{File, exists},
     io::Write,
     path::{Path, PathBuf},
 };
@@ -25,7 +24,7 @@ mod menu_module;
 use menu_module::menu_bar;
 
 mod fs_module;
-use fs_module::load_file;
+use fs_module::{load_file, load_folder};
 
 mod program_model;
 use program_model::{MainStruct, Message, WidgetStruct};
@@ -252,35 +251,8 @@ impl SimpleComponent for MainStruct {
                     match PathBuf::from(file_list_name).is_dir() {
                         true => {
                             self.current_folder_path = file_list_name.clone().to_string();
-                            match read_dir(&file_list_name.clone()) {
-                                Ok(dir) => {
-                                    self.file_list.remove_all();
-                                    for files in dir {
-                                        let label = gtk::Label::builder().build();
-                                        label.set_widget_name(
-                                            files
-                                                .as_ref()
-                                                .unwrap()
-                                                .file_name()
-                                                .as_os_str()
-                                                .to_str()
-                                                .unwrap(),
-                                        );
-                                        label.set_text(
-                                            files
-                                                .unwrap()
-                                                .file_name()
-                                                .as_os_str()
-                                                .to_str()
-                                                .unwrap(),
-                                        );
-                                        self.file_list.append(&label);
-                                    }
-                                }
-                                Err(_) => {
-                                    println!("Failed to read directory");
-                                }
-                            }
+                            let path = file_list_name.clone().to_string();
+                            load_folder(self, &path);
                         }
                         false => match PathBuf::from(file_list_name).is_file() {
                             true => {
@@ -315,29 +287,7 @@ impl SimpleComponent for MainStruct {
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
                 self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
-                match read_dir(&path.clone()) {
-                    Ok(dir) => {
-                        self.file_list.remove_all();
-                        for files in dir {
-                            let label = gtk::Label::builder().build();
-                            label.set_widget_name(
-                                files
-                                    .as_ref()
-                                    .unwrap()
-                                    .file_name()
-                                    .as_os_str()
-                                    .to_str()
-                                    .unwrap(),
-                            );
-                            label
-                                .set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
-                            self.file_list.append(&label);
-                        }
-                    }
-                    Err(_) => {
-                        println!("Failed to read directory");
-                    }
-                }
+                load_folder(self, &path.into_os_string().into_string().unwrap());
             }
             Message::OpenRequest => self.open_dialog.emit(OpenDialogMsg::Open),
             Message::OpenResponse(path) => {
