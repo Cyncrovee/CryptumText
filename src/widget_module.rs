@@ -52,6 +52,12 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "md" => {
                     return Some("Markdown File".into());
                 }
+                "html" => {
+                    return Some("HTML File".into());
+                }
+                "css" => {
+                    return Some("CSS File".into());
+                }
                 "org" => {
                     return Some("Org Mode File".into());
                 }
