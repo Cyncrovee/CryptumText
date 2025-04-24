@@ -140,11 +140,15 @@ impl SimpleComponent for MainStruct {
 
         // Setup actions
         let program = relm4::main_application();
+        // File accelerators
         program.set_accelerators_for_action::<NewFileAction>(&["<control><shift>n"]);
         program.set_accelerators_for_action::<OpenAction>(&["<control>o"]);
         program.set_accelerators_for_action::<OpenFolderAction>(&["<control><shift>o"]);
         program.set_accelerators_for_action::<SaveAction>(&["<control>s"]);
         program.set_accelerators_for_action::<SaveAsAction>(&["<control><shift>s"]);
+        // Edit accelerators
+        program.set_accelerators_for_action::<UndoAction>(&["<control>z"]);
+        program.set_accelerators_for_action::<RedoAction>(&["<control>y"]);
         // File actions
         let new_file_action: RelmAction<NewFileAction> = RelmAction::new_stateless(clone!(
             #[strong]
@@ -172,6 +176,16 @@ impl SimpleComponent for MainStruct {
             move |_| sender.input(Message::FolderRequest)
         ));
         // Edit actions
+        let undo_action: RelmAction<UndoAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::Undo)
+        ));
+        let redo_action: RelmAction<RedoAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::Redo)
+        ));
         let cut_action: RelmAction<CutAction> = RelmAction::new_stateless(clone!(
             #[strong]
             sender,
@@ -199,6 +213,8 @@ impl SimpleComponent for MainStruct {
         action_group.add_action(save_action);
         action_group.add_action(open_action);
         action_group.add_action(open_folder_action);
+        action_group.add_action(undo_action);
+        action_group.add_action(redo_action);
         action_group.add_action(cut_action);
         action_group.add_action(copy_action);
         action_group.add_action(paste_action);
@@ -330,6 +346,12 @@ impl SimpleComponent for MainStruct {
                     }
                 }
             }
+            Message::Undo => {
+                self.buffer.undo();
+            }
+            Message::Redo => {
+                self.buffer.redo();
+            }
             Message::CutEditor => {
                 self.buffer.cut_clipboard(&self.clipboard, true);
             }
@@ -341,6 +363,7 @@ impl SimpleComponent for MainStruct {
             }
             Message::ClearEditor => {
                 self.buffer.set_text("");
+                self.buffer.undo();
             }
             Message::CursorPostitionChanged => {
                 // Pass
@@ -372,11 +395,15 @@ impl SimpleComponent for MainStruct {
 }
 
 relm4::new_action_group!(WindowActionGroup, "win");
+// File
 relm4::new_stateless_action!(NewFileAction, WindowActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, WindowActionGroup, "save_as");
 relm4::new_stateless_action!(SaveAction, WindowActionGroup, "save");
 relm4::new_stateless_action!(OpenAction, WindowActionGroup, "open");
 relm4::new_stateless_action!(OpenFolderAction, WindowActionGroup, "open_folder");
+// Edit
+relm4::new_stateless_action!(UndoAction, WindowActionGroup, "undo");
+relm4::new_stateless_action!(RedoAction, WindowActionGroup, "redo");
 relm4::new_stateless_action!(CutAction, WindowActionGroup, "cut");
 relm4::new_stateless_action!(CopyAction, WindowActionGroup, "copy");
 relm4::new_stateless_action!(PasteAction, WindowActionGroup, "paste");

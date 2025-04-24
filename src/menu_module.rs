@@ -22,11 +22,15 @@ pub fn menu_bar() -> MenuModel {
 
     // Edit
     let edit_menu = Menu::new();
+    let undo_redo_section = Menu::new();
+    undo_redo_section.insert_item(0, &MenuItem::new(Some("Undo"), Some("win.undo")));
+    undo_redo_section.insert_item(1, &MenuItem::new(Some("Redo"), Some("win.redo")));
     let clipboard_section = Menu::new();
     clipboard_section.insert_item(0, &MenuItem::new(Some("Cut"), Some("win.cut")));
     clipboard_section.insert_item(1, &MenuItem::new(Some("Copy"), Some("win.copy")));
     clipboard_section.insert_item(2, &MenuItem::new(Some("Paste"), Some("win.paste")));
-    edit_menu.insert_section(0, None, &clipboard_section);
+    edit_menu.insert_section(0, None, &undo_redo_section);
+    edit_menu.insert_section(1, None, &clipboard_section);
     let other_section = Menu::new();
     other_section.insert_item(1, &MenuItem::new(Some("Clear"), Some("win.clear")));
     edit_menu.insert_section(1, None, &other_section);

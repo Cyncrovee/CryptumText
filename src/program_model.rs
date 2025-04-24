@@ -39,6 +39,8 @@ pub enum Message {
     CutEditor,
     CopyEditor,
     PasteEditor,
+    Undo,
+    Redo,
     CursorPostitionChanged,
     Ignore,
 }
