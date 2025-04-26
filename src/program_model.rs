@@ -20,12 +20,14 @@ pub struct MainStruct {
     pub folder_label: gtk::Label,
     pub file_type_label: gtk::Label,
     pub cursor_position_label: gtk::Label,
+    pub mini_map: sourceview5::Map
 }
 
 pub struct WidgetStruct {}
 
 #[derive(Debug)]
 pub enum Message {
+    // File
     NewFile,
     LoadFileFromList,
     FolderRequest,
@@ -35,12 +37,17 @@ pub enum Message {
     SaveAsRequest,
     SaveAsResponse(PathBuf),
     SaveFile,
-    ClearEditor,
+    // Edit
+    Undo,
+    Redo,
     CutEditor,
     CopyEditor,
     PasteEditor,
-    Undo,
-    Redo,
+    ClearEditor,
+    // View
+    ToggleFileList,
+    ToggleMiniMap,
+    // Other
     CursorPostitionChanged,
     Ignore,
 }

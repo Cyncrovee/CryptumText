@@ -33,10 +33,19 @@ pub fn menu_bar() -> MenuModel {
     edit_menu.insert_section(1, None, &clipboard_section);
     let other_section = Menu::new();
     other_section.insert_item(1, &MenuItem::new(Some("Clear"), Some("win.clear")));
-    edit_menu.insert_section(1, None, &other_section);
+    edit_menu.insert_section(2, None, &other_section);
+
+    // View
+    let view_menu = Menu::new();
+    let toggle_section = Menu::new();
+    toggle_section.insert_item(0, &MenuItem::new(Some("Toggle File List Visibilty"), Some("win.toggle_file_list")));
+    toggle_section.insert_item(1, &MenuItem::new(Some("Toggle Mini Map Visibilty"), Some("win.toggle_mini_map")));
+    view_menu.insert_section(0, None, &toggle_section);
+
 
     menu.insert_submenu(0, Some("File"), &file_menu);
     menu.insert_submenu(1, Some("Edit"), &edit_menu);
+    menu.insert_submenu(2, Some("View"), &view_menu);
 
     return menu.into();
 }

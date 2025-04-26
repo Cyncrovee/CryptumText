@@ -152,6 +152,9 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<CutAction>(&["<control>x"]);
         program.set_accelerators_for_action::<CopyAction>(&["<control>c"]);
         program.set_accelerators_for_action::<PasteAction>(&["<control>v"]);
+        // View accelerators
+        program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
+        program.set_accelerators_for_action::<ToggleMiniMapAction>(&["<control><alt>m"]);
         // File actions
         let new_file_action: RelmAction<NewFileAction> = RelmAction::new_stateless(clone!(
             #[strong]
@@ -209,6 +212,17 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::ClearEditor)
         ));
+        // View actions
+        let togle_file_list_action: RelmAction<ToggleFileListAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleFileList)
+        ));
+        let togle_mini_map_action: RelmAction<ToggleMiniMapAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleMiniMap)
+        ));
         // Add actions to group
         let mut action_group = RelmActionGroup::<WindowActionGroup>::new();
         action_group.add_action(new_file_action);
@@ -222,6 +236,8 @@ impl SimpleComponent for MainStruct {
         action_group.add_action(copy_action);
         action_group.add_action(paste_action);
         action_group.add_action(clear_action);
+        action_group.add_action(togle_file_list_action);
+        action_group.add_action(togle_mini_map_action);
         action_group.register_for_widget(&root);
 
         // Set misc variables
@@ -245,6 +261,7 @@ impl SimpleComponent for MainStruct {
             folder_label,
             file_type_label,
             cursor_position_label,
+            mini_map,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }
@@ -252,6 +269,7 @@ impl SimpleComponent for MainStruct {
 
     fn update(&mut self, message: Self::Input, _sender: relm4::ComponentSender<Self>) {
         match message {
+            // File
             Message::NewFile => {
                 self.buffer.set_text("");
                 self.current_file_path = "".to_string();
@@ -349,6 +367,7 @@ impl SimpleComponent for MainStruct {
                     }
                 }
             }
+            // Edit
             Message::Undo => {
                 self.buffer.undo();
             }
@@ -368,6 +387,14 @@ impl SimpleComponent for MainStruct {
                 self.buffer.set_text("");
                 self.buffer.undo();
             }
+            // View
+            Message::ToggleFileList => {
+                self.file_list.set_visible(!self.file_list.is_visible());
+            }
+            Message::ToggleMiniMap => {
+                self.mini_map.set_visible(!self.mini_map.is_visible());
+            }
+            // Other
             Message::CursorPostitionChanged => {
                 // Pass
             }
@@ -411,6 +438,9 @@ relm4::new_stateless_action!(CutAction, WindowActionGroup, "cut");
 relm4::new_stateless_action!(CopyAction, WindowActionGroup, "copy");
 relm4::new_stateless_action!(PasteAction, WindowActionGroup, "paste");
 relm4::new_stateless_action!(ClearAction, WindowActionGroup, "clear");
+// View
+relm4::new_stateless_action!(ToggleFileListAction, WindowActionGroup, "toggle_file_list");
+relm4::new_stateless_action!(ToggleMiniMapAction, WindowActionGroup, "toggle_mini_map");
 
 fn main() {
     let program = RelmApp::new("editor.cyncrovee");
