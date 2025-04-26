@@ -40,6 +40,7 @@ pub fn menu_bar() -> MenuModel {
     let toggle_section = Menu::new();
     toggle_section.insert_item(0, &MenuItem::new(Some("Toggle File List Visibilty"), Some("win.toggle_file_list")));
     toggle_section.insert_item(1, &MenuItem::new(Some("Toggle Mini Map Visibilty"), Some("win.toggle_mini_map")));
+    toggle_section.insert_item(2, &MenuItem::new(Some("Toggle Editor Theme (Light/Dark)"), Some("win.toggle_buffer_style_scheme")));
     view_menu.insert_section(0, None, &toggle_section);
 
 

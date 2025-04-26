@@ -96,6 +96,7 @@ impl SimpleComponent for MainStruct {
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+        let current_style = "Dark".to_string();
         buffer.set_style_scheme(buffer_style.as_ref());
         buffer.set_highlight_syntax(true);
         buffer.set_highlight_matching_brackets(true);
@@ -213,16 +214,24 @@ impl SimpleComponent for MainStruct {
             move |_| sender.input(Message::ClearEditor)
         ));
         // View actions
-        let togle_file_list_action: RelmAction<ToggleFileListAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::ToggleFileList)
-        ));
-        let togle_mini_map_action: RelmAction<ToggleMiniMapAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::ToggleMiniMap)
-        ));
+        let toggle_file_list_action: RelmAction<ToggleFileListAction> =
+            RelmAction::new_stateless(clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleFileList)
+            ));
+        let toggle_mini_map_action: RelmAction<ToggleMiniMapAction> =
+            RelmAction::new_stateless(clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleMiniMap)
+            ));
+        let toggle_buffer_style_scheme_action: RelmAction<ToggleBufferStyleAction> =
+            RelmAction::new_stateless(clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleBufferStyleScheme)
+            ));
         // Add actions to group
         let mut action_group = RelmActionGroup::<WindowActionGroup>::new();
         action_group.add_action(new_file_action);
@@ -236,8 +245,9 @@ impl SimpleComponent for MainStruct {
         action_group.add_action(copy_action);
         action_group.add_action(paste_action);
         action_group.add_action(clear_action);
-        action_group.add_action(togle_file_list_action);
-        action_group.add_action(togle_mini_map_action);
+        action_group.add_action(toggle_file_list_action);
+        action_group.add_action(toggle_mini_map_action);
+        action_group.add_action(toggle_buffer_style_scheme_action);
         action_group.register_for_widget(&root);
 
         // Set misc variables
@@ -250,6 +260,8 @@ impl SimpleComponent for MainStruct {
             current_file_path,
             current_folder_path,
             clipboard,
+            buffer_style,
+            current_style,
             // Widgets
             file_list,
             buffer,
@@ -394,6 +406,25 @@ impl SimpleComponent for MainStruct {
             Message::ToggleMiniMap => {
                 self.mini_map.set_visible(!self.mini_map.is_visible());
             }
+            Message::ToggleBufferStyleScheme => {
+                match self.current_style.as_str() {
+                    "Dark" => {
+                        self.buffer_style =
+                            sourceview5::StyleSchemeManager::new().scheme("Adwaita-light");
+                        self.buffer.set_style_scheme(self.buffer_style.as_ref());
+                        self.current_style = "Light".to_string();
+                    }
+                    "Light" => {
+                        self.buffer_style =
+                            sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+                        self.buffer.set_style_scheme(self.buffer_style.as_ref());
+                        self.current_style = "Dark".to_string();
+                    }
+                    _ => {
+                        // Pass
+                    }
+                }
+            }
             // Other
             Message::CursorPostitionChanged => {
                 // Pass
@@ -441,6 +472,11 @@ relm4::new_stateless_action!(ClearAction, WindowActionGroup, "clear");
 // View
 relm4::new_stateless_action!(ToggleFileListAction, WindowActionGroup, "toggle_file_list");
 relm4::new_stateless_action!(ToggleMiniMapAction, WindowActionGroup, "toggle_mini_map");
+relm4::new_stateless_action!(
+    ToggleBufferStyleAction,
+    WindowActionGroup,
+    "toggle_buffer_style_scheme"
+);
 
 fn main() {
     let program = RelmApp::new("editor.cyncrovee");

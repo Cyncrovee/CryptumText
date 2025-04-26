@@ -9,6 +9,8 @@ pub struct MainStruct {
     pub current_file_path: String,
     pub current_folder_path: String,
     pub clipboard: gtk::gdk::Clipboard,
+    pub buffer_style: Option<sourceview5::StyleScheme>,
+    pub current_style: String,
     // Widgets
     pub file_list: gtk::ListBox,
     pub buffer: sourceview5::Buffer,
@@ -47,6 +49,7 @@ pub enum Message {
     // View
     ToggleFileList,
     ToggleMiniMap,
+    ToggleBufferStyleScheme,
     // Other
     CursorPostitionChanged,
     Ignore,
