@@ -149,6 +149,9 @@ impl SimpleComponent for MainStruct {
         // Edit accelerators
         program.set_accelerators_for_action::<UndoAction>(&["<control>z"]);
         program.set_accelerators_for_action::<RedoAction>(&["<control>y"]);
+        program.set_accelerators_for_action::<CutAction>(&["<control>x"]);
+        program.set_accelerators_for_action::<CopyAction>(&["<control>c"]);
+        program.set_accelerators_for_action::<PasteAction>(&["<control>v"]);
         // File actions
         let new_file_action: RelmAction<NewFileAction> = RelmAction::new_stateless(clone!(
             #[strong]
