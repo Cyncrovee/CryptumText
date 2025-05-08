@@ -233,22 +233,27 @@ impl SimpleComponent for MainStruct {
                 move |_| sender.input(Message::ToggleBufferStyleScheme)
             ));
         // Add actions to group
-        let mut action_group = RelmActionGroup::<WindowActionGroup>::new();
-        action_group.add_action(new_file_action);
-        action_group.add_action(save_as_action);
-        action_group.add_action(save_action);
-        action_group.add_action(open_action);
-        action_group.add_action(open_folder_action);
-        action_group.add_action(undo_action);
-        action_group.add_action(redo_action);
-        action_group.add_action(cut_action);
-        action_group.add_action(copy_action);
-        action_group.add_action(paste_action);
-        action_group.add_action(clear_action);
-        action_group.add_action(toggle_file_list_action);
-        action_group.add_action(toggle_mini_map_action);
-        action_group.add_action(toggle_buffer_style_scheme_action);
-        action_group.register_for_widget(&root);
+        let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
+        let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
+        let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
+        file_action_group.add_action(new_file_action);
+        file_action_group.add_action(save_as_action);
+        file_action_group.add_action(save_action);
+        file_action_group.add_action(open_action);
+        file_action_group.add_action(open_folder_action);
+        edit_action_group.add_action(undo_action);
+        edit_action_group.add_action(redo_action);
+        edit_action_group.add_action(cut_action);
+        edit_action_group.add_action(copy_action);
+        edit_action_group.add_action(paste_action);
+        edit_action_group.add_action(clear_action);
+        view_action_group.add_action(toggle_file_list_action);
+        view_action_group.add_action(toggle_mini_map_action);
+        view_action_group.add_action(toggle_buffer_style_scheme_action);
+        // Register action groups
+        file_action_group.register_for_widget(&root);
+        edit_action_group.register_for_widget(&root);
+        view_action_group.register_for_widget(&root);
 
         // Set misc variables
         let display = gtk::gdk::Display::default().unwrap();
@@ -455,26 +460,28 @@ impl SimpleComponent for MainStruct {
     }
 }
 
-relm4::new_action_group!(WindowActionGroup, "win");
+relm4::new_action_group!(FileActionGroup, "file");
+relm4::new_action_group!(EditActionGroup, "edit");
+relm4::new_action_group!(ViewActionGroup, "view");
 // File
-relm4::new_stateless_action!(NewFileAction, WindowActionGroup, "new_file");
-relm4::new_stateless_action!(SaveAsAction, WindowActionGroup, "save_as");
-relm4::new_stateless_action!(SaveAction, WindowActionGroup, "save");
-relm4::new_stateless_action!(OpenAction, WindowActionGroup, "open");
-relm4::new_stateless_action!(OpenFolderAction, WindowActionGroup, "open_folder");
+relm4::new_stateless_action!(NewFileAction, FileActionGroup, "new_file");
+relm4::new_stateless_action!(SaveAsAction, FileActionGroup, "save_as");
+relm4::new_stateless_action!(SaveAction, FileActionGroup, "save");
+relm4::new_stateless_action!(OpenAction, FileActionGroup, "open");
+relm4::new_stateless_action!(OpenFolderAction, FileActionGroup, "open_folder");
 // Edit
-relm4::new_stateless_action!(UndoAction, WindowActionGroup, "undo");
-relm4::new_stateless_action!(RedoAction, WindowActionGroup, "redo");
-relm4::new_stateless_action!(CutAction, WindowActionGroup, "cut");
-relm4::new_stateless_action!(CopyAction, WindowActionGroup, "copy");
-relm4::new_stateless_action!(PasteAction, WindowActionGroup, "paste");
-relm4::new_stateless_action!(ClearAction, WindowActionGroup, "clear");
+relm4::new_stateless_action!(UndoAction, EditActionGroup, "undo");
+relm4::new_stateless_action!(RedoAction, EditActionGroup, "redo");
+relm4::new_stateless_action!(CutAction, EditActionGroup, "cut");
+relm4::new_stateless_action!(CopyAction, EditActionGroup, "copy");
+relm4::new_stateless_action!(PasteAction, EditActionGroup, "paste");
+relm4::new_stateless_action!(ClearAction, EditActionGroup, "clear");
 // View
-relm4::new_stateless_action!(ToggleFileListAction, WindowActionGroup, "toggle_file_list");
-relm4::new_stateless_action!(ToggleMiniMapAction, WindowActionGroup, "toggle_mini_map");
+relm4::new_stateless_action!(ToggleFileListAction, ViewActionGroup, "toggle_file_list");
+relm4::new_stateless_action!(ToggleMiniMapAction, ViewActionGroup, "toggle_mini_map");
 relm4::new_stateless_action!(
     ToggleBufferStyleAction,
-    WindowActionGroup,
+    ViewActionGroup,
     "toggle_buffer_style_scheme"
 );
 
