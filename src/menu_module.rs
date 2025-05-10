@@ -38,15 +38,43 @@ pub fn menu_bar() -> MenuModel {
     // View
     let view_menu = Menu::new();
     let toggle_section = Menu::new();
-    toggle_section.insert_item(0, &MenuItem::new(Some("Toggle File List Visibilty"), Some("view.toggle_file_list")));
-    toggle_section.insert_item(1, &MenuItem::new(Some("Toggle Mini Map Visibilty"), Some("view.toggle_mini_map")));
-    toggle_section.insert_item(2, &MenuItem::new(Some("Toggle Editor Theme (Light/Dark)"), Some("view.toggle_buffer_style_scheme")));
+    toggle_section.insert_item(
+        0,
+        &MenuItem::new(
+            Some("Toggle File List Visibilty"),
+            Some("view.toggle_file_list"),
+        ),
+    );
+    toggle_section.insert_item(
+        1,
+        &MenuItem::new(
+            Some("Toggle Mini Map Visibilty"),
+            Some("view.toggle_mini_map"),
+        ),
+    );
+    toggle_section.insert_item(
+        2,
+        &MenuItem::new(
+            Some("Toggle Editor Theme (Light/Dark)"),
+            Some("view.toggle_buffer_style_scheme"),
+        ),
+    );
     view_menu.insert_section(0, None, &toggle_section);
-
 
     menu.insert_submenu(0, Some("File"), &file_menu);
     menu.insert_submenu(1, Some("Edit"), &edit_menu);
     menu.insert_submenu(2, Some("View"), &view_menu);
+
+    return menu.into();
+}
+
+pub fn extras_menu_bar() -> MenuModel {
+    let menu = Menu::new();
+
+    menu.insert_item(
+        0,
+        &MenuItem::new(Some("About Cryptum Text"), Some("about.show_about")),
+    );
 
     return menu.into();
 }

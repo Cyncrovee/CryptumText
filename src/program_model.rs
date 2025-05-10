@@ -50,6 +50,8 @@ pub enum Message {
     ToggleFileList,
     ToggleMiniMap,
     ToggleBufferStyleScheme,
+    // About
+    ShowAbout,
     // Other
     CursorPostitionChanged,
     Ignore,

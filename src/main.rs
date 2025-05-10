@@ -1,4 +1,4 @@
-use gtk4::MenuButton;
+use gtk4::{AboutDialog, MenuButton};
 use libadwaita::{
     HeaderBar, WindowTitle,
     prelude::{AdwApplicationExt, AdwApplicationWindowExt, AdwWindowExt},
@@ -26,7 +26,7 @@ mod widget_module;
 use widget_module::{setup_editor, update_file_type};
 
 mod menu_module;
-use menu_module::menu_bar;
+use menu_module::{extras_menu_bar, menu_bar};
 
 mod fs_module;
 use fs_module::{load_file, load_folder};
@@ -60,6 +60,10 @@ impl SimpleComponent for MainStruct {
         let hamburger = MenuButton::builder()
             .icon_name("open-menu-symbolic")
             .menu_model(&menu_bar())
+            .build();
+        let extras = MenuButton::builder()
+            .icon_name("help-about-symbolic")
+            .menu_model(&extras_menu_bar())
             .build();
 
         // Define containers
@@ -106,6 +110,7 @@ impl SimpleComponent for MainStruct {
         let header = HeaderBar::builder().title_widget(&title).build();
         //header.set_css_classes(&vec!["flat"]);
         header.pack_start(&hamburger);
+        header.pack_end(&extras);
         let file_list = gtk::ListBox::builder().build();
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
@@ -243,10 +248,17 @@ impl SimpleComponent for MainStruct {
                 sender,
                 move |_| sender.input(Message::ToggleBufferStyleScheme)
             ));
+        // About actions
+        let show_about_action: RelmAction<ShowAboutAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ShowAbout)
+        ));
         // Add actions to group
         let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
         let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
         let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
+        let mut about_action_group = RelmActionGroup::<AboutActionGroup>::new();
         file_action_group.add_action(new_file_action);
         file_action_group.add_action(save_as_action);
         file_action_group.add_action(save_action);
@@ -261,10 +273,12 @@ impl SimpleComponent for MainStruct {
         view_action_group.add_action(toggle_file_list_action);
         view_action_group.add_action(toggle_mini_map_action);
         view_action_group.add_action(toggle_buffer_style_scheme_action);
+        about_action_group.add_action(show_about_action);
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
         view_action_group.register_for_widget(&root);
+        about_action_group.register_for_widget(&root);
 
         // Set misc variables
         let display = gtk::gdk::Display::default().unwrap();
@@ -440,6 +454,16 @@ impl SimpleComponent for MainStruct {
                     }
                 }
             }
+            // About
+            Message::ShowAbout => {
+                AboutDialog::builder()
+                    .program_name("Cryptum Text")
+                    .version("Dev Version")
+                    .copyright("Ella Hart (Cyncrovee)")
+                    .license_type(gtk4::License::Gpl30Only)
+                    .build()
+                    .show();
+            }
             // Other
             Message::CursorPostitionChanged => {
                 // Pass
@@ -472,6 +496,7 @@ impl SimpleComponent for MainStruct {
 relm4::new_action_group!(FileActionGroup, "file");
 relm4::new_action_group!(EditActionGroup, "edit");
 relm4::new_action_group!(ViewActionGroup, "view");
+relm4::new_action_group!(AboutActionGroup, "about");
 // File
 relm4::new_stateless_action!(NewFileAction, FileActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, FileActionGroup, "save_as");
@@ -493,6 +518,8 @@ relm4::new_stateless_action!(
     ViewActionGroup,
     "toggle_buffer_style_scheme"
 );
+// About
+relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 
 fn main() {
     let program = RelmApp::new("editor.cyncrovee");
