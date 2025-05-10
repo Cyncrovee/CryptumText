@@ -415,7 +415,7 @@ impl SimpleComponent for MainStruct {
                 match self.current_style.as_str() {
                     "Dark" => {
                         self.buffer_style =
-                            sourceview5::StyleSchemeManager::new().scheme("Adwaita-light");
+                            sourceview5::StyleSchemeManager::new().scheme("Adwaita");
                         self.buffer.set_style_scheme(self.buffer_style.as_ref());
                         self.current_style = "Light".to_string();
                     }
