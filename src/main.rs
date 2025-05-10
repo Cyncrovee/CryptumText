@@ -105,10 +105,8 @@ impl SimpleComponent for MainStruct {
             });
 
         // Define and edit widgets
-        //let menu = PopoverMenuBar::from_model(Some(&menu_bar()));
         let title = WindowTitle::new("Cryptum Text", "");
         let header = HeaderBar::builder().title_widget(&title).build();
-        //header.set_css_classes(&vec!["flat"]);
         header.pack_start(&hamburger);
         header.pack_end(&extras);
         let file_list = gtk::ListBox::builder().build();
