@@ -117,7 +117,6 @@ impl SimpleComponent for MainStruct {
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
         let current_style = "Dark".to_string();
         buffer.set_style_scheme(buffer_style.as_ref());
-        buffer.set_highlight_syntax(true);
         buffer.set_highlight_matching_brackets(true);
         let editor = setup_editor(&buffer);
         let mini_map = sourceview5::Map::builder().build();

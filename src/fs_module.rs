@@ -12,10 +12,11 @@ pub fn load_file(self_from: &mut MainStruct) {
             self_from.current_file_path = Some(self_from.current_file_path.clone()).unwrap();
             match update_syntax(&self_from.language_manager, &self_from.current_file_path) {
                 Some(language) => {
+                    self_from.buffer.set_highlight_syntax(true);
                     self_from.buffer.set_language(Some(&language));
                 }
                 None => {
-                    println!("Failed to find language syntax!");
+                    self_from.buffer.set_highlight_syntax(false);
                 }
             }
         }
