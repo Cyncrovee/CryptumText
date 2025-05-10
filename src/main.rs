@@ -1,6 +1,11 @@
+use gtk4::MenuButton;
+use libadwaita::{
+    HeaderBar, WindowTitle,
+    prelude::{AdwApplicationExt, AdwApplicationWindowExt, AdwWindowExt},
+};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
-    gtk::{PopoverMenuBar, glib::clone, prelude::*},
+    gtk::{glib::clone, prelude::*},
     prelude::*,
 };
 use relm4_components::{
@@ -33,11 +38,11 @@ impl SimpleComponent for MainStruct {
     type Init = String;
     type Input = Message;
     type Output = ();
-    type Root = gtk::Window;
+    type Root = libadwaita::ApplicationWindow;
     type Widgets = WidgetStruct;
 
     fn init_root() -> Self::Root {
-        gtk::Window::builder().title("Cryptum Text").build()
+        libadwaita::ApplicationWindow::builder().build()
     }
 
     fn init(
@@ -46,11 +51,16 @@ impl SimpleComponent for MainStruct {
         sender: relm4::ComponentSender<Self>,
     ) -> relm4::ComponentParts<Self> {
         // Enable libadwaita (commented out for now)
-        //let program = gtk::Application::default();
-        //program.connect_startup(|_| libadwaita::init().unwrap());
+        let program = libadwaita::Application::builder().build();
+        program
+            .style_manager()
+            .set_color_scheme(libadwaita::ColorScheme::Default);
+        program.connect_startup(|_| libadwaita::init().unwrap());
 
-        // Create menu
-        let menu = PopoverMenuBar::from_model(Some(&menu_bar()));
+        let hamburger = MenuButton::builder()
+            .icon_name("open-menu-symbolic")
+            .menu_model(&menu_bar())
+            .build();
 
         // Define containers
         let main_box = gtk::Box::builder()
@@ -91,7 +101,11 @@ impl SimpleComponent for MainStruct {
             });
 
         // Define and edit widgets
-        let folder_label = gtk::Label::builder().build();
+        //let menu = PopoverMenuBar::from_model(Some(&menu_bar()));
+        let title = WindowTitle::new("Cryptum Text", "");
+        let header = HeaderBar::builder().title_widget(&title).build();
+        //header.set_css_classes(&vec!["flat"]);
+        header.pack_start(&hamburger);
         let file_list = gtk::ListBox::builder().build();
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
@@ -105,18 +119,15 @@ impl SimpleComponent for MainStruct {
         mini_map.set_width_request(120);
         mini_map.set_view(&editor);
         let file_type_label = gtk::Label::builder().build();
-        let file_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
 
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
-        status_bar_box.append(&file_label);
-        status_bar_box.append(&gtk::Label::builder().label(" | ").build());
+        status_bar_box.append(&gtk::Label::builder().label("   ").build());
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
-        main_box.append(&menu);
-        main_box.append(&folder_label);
+        main_box.append(&header);
         editor_box.append(&file_list);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
@@ -124,7 +135,7 @@ impl SimpleComponent for MainStruct {
         main_box.append(&status_bar_box);
 
         // Setup the window
-        root.set_child(Some(&main_box));
+        root.set_content(Some(&main_box));
         root.set_default_size(1000, 1000);
 
         // Setup events
@@ -274,8 +285,7 @@ impl SimpleComponent for MainStruct {
             open_dialog,
             folder_dialog,
             save_as_dialog,
-            file_label,
-            folder_label,
+            title,
             file_type_label,
             cursor_position_label,
             mini_map,
@@ -440,8 +450,7 @@ impl SimpleComponent for MainStruct {
         }
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
-        self.file_label.set_label(&self.current_file_path);
-        self.folder_label.set_label(&self.current_folder_path);
+        self.title.set_subtitle(&self.current_file_path);
         match update_file_type(&self.current_file_path) {
             Some(file_type) => {
                 self.file_type_label.set_label(&file_type);

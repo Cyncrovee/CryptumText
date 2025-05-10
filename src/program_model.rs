@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use libadwaita::WindowTitle;
 use relm4::{Controller, prelude::*};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
 use sourceview5::LanguageManager;
@@ -18,11 +19,10 @@ pub struct MainStruct {
     pub open_dialog: Controller<OpenDialog>,
     pub folder_dialog: Controller<OpenDialog>,
     pub save_as_dialog: Controller<SaveDialog>,
-    pub file_label: gtk::Label,
-    pub folder_label: gtk::Label,
+    pub title: WindowTitle,
     pub file_type_label: gtk::Label,
     pub cursor_position_label: gtk::Label,
-    pub mini_map: sourceview5::Map
+    pub mini_map: sourceview5::Map,
 }
 
 pub struct WidgetStruct {}
