@@ -5,6 +5,7 @@ feature-depth = 1
 allow = [
     "MIT",
     "Unicode-3.0",
+    "MPL-2.0",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
     "GPL-3.0",

@@ -5,8 +5,11 @@ edition = "2024"
 license = "GPL-3.0"
 
 [dependencies]
+dirs = "6.0.0"
 gtk4 = "0.9.6"
 libadwaita = "0.7.2"
 relm4 = "0.9.1"
 relm4-components = "0.9.1"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
 sourceview5 = "0.9.1"

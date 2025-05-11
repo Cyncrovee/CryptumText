@@ -29,7 +29,7 @@ mod menu_module;
 use menu_module::{extras_menu_bar, menu_bar};
 
 mod fs_module;
-use fs_module::{load_file, load_folder};
+use fs_module::{load_file, load_folder, load_settings, save_settings};
 
 mod program_model;
 use program_model::{MainStruct, Message, WidgetStruct};
@@ -141,6 +141,9 @@ impl SimpleComponent for MainStruct {
         // Setup the window
         root.set_content(Some(&main_box));
         root.set_default_size(1000, 1000);
+
+        // Apply user settings
+        load_settings(&file_list, &mini_map);
 
         // Setup events
         file_list.connect_selected_rows_changed(clone!(
@@ -430,9 +433,11 @@ impl SimpleComponent for MainStruct {
             // View
             Message::ToggleFileList => {
                 self.file_list.set_visible(!self.file_list.is_visible());
+                save_settings(self);
             }
             Message::ToggleMiniMap => {
                 self.mini_map.set_visible(!self.mini_map.is_visible());
+                save_settings(self);
             }
             Message::ToggleBufferStyleScheme => {
                 match self.current_style.as_str() {

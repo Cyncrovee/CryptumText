@@ -12,9 +12,9 @@ Cryptum Text is a GTK based text/code editor written in Rust and powered by GTK-
 
 # In Progress
 - File List
+- Saving Settings Between Restarts
 
 ## Potential Future Features (Not Confirmed to be Implemented)
-- Saving Settings Between Restarts
 - Autocompletion
 - File Tree
 - Git Intergration

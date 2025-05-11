@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use libadwaita::WindowTitle;
 use relm4::{Controller, prelude::*};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
+use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
 
 pub struct MainStruct {
@@ -55,4 +56,10 @@ pub enum Message {
     // Other
     CursorPostitionChanged,
     Ignore,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AppSettings {
+    pub view_mini_map: bool,
+    pub view_file_list: bool,
 }
