@@ -109,7 +109,9 @@ impl SimpleComponent for MainStruct {
         let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
-        let file_list = gtk::ListBox::builder().build();
+        let file_list = gtk::ListBox::builder()
+            .css_classes(vec!["navigation-sidebar"])
+            .build();
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
