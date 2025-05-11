@@ -90,6 +90,12 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "py" => {
                     return Some("Python Source File".into());
                 }
+                "lua" => {
+                    return Some("Lua Source File".into());
+                }
+                "c" => {
+                    return Some("C Source File".into());
+                }
                 "cs" => {
                     return Some("C# Source File".into());
                 }
