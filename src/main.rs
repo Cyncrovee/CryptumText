@@ -50,7 +50,7 @@ impl SimpleComponent for MainStruct {
         root: Self::Root,
         sender: relm4::ComponentSender<Self>,
     ) -> relm4::ComponentParts<Self> {
-        // Enable libadwaita (commented out for now)
+        // Enable libadwaita
         let program = libadwaita::Application::builder().build();
         program
             .style_manager()
