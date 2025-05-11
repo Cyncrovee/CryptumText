@@ -1,11 +1,8 @@
 use gtk4::{AboutDialog, MenuButton};
-use libadwaita::{
-    HeaderBar, WindowTitle,
-    prelude::{AdwApplicationExt, AdwApplicationWindowExt, AdwWindowExt},
-};
+use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
-    gtk::{glib::clone, prelude::*},
+    gtk::glib::clone,
     prelude::*,
 };
 use relm4_components::{

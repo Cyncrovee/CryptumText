@@ -5,7 +5,7 @@ use std::{
 
 use gtk4::ListBox;
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
-use sourceview5::{prelude::BufferExt, subclass::buffer};
+use sourceview5::prelude::BufferExt;
 
 use crate::{
     program_model::{AppSettings, MainStruct},
