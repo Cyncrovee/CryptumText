@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, MenuButton};
+use gtk4::{AboutDialog, Button, MenuButton};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -54,17 +54,11 @@ impl SimpleComponent for MainStruct {
             .set_color_scheme(libadwaita::ColorScheme::Default);
         program.connect_startup(|_| libadwaita::init().unwrap());
 
-        let hamburger = MenuButton::builder()
-            .icon_name("open-menu-symbolic")
-            .menu_model(&menu_bar())
-            .build();
-        let extras = MenuButton::builder()
-            .icon_name("help-about-symbolic")
-            .menu_model(&extras_menu_bar())
-            .build();
-
         // Define containers
         let main_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let side_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
         let editor_box = gtk::Box::builder()
@@ -104,8 +98,17 @@ impl SimpleComponent for MainStruct {
         // Define and edit widgets
         let title = WindowTitle::new("Cryptum Text", "");
         let header = HeaderBar::builder().title_widget(&title).build();
+        let hamburger = MenuButton::builder()
+            .icon_name("open-menu-symbolic")
+            .menu_model(&menu_bar())
+            .build();
+        let extras = MenuButton::builder()
+            .icon_name("help-about-symbolic")
+            .menu_model(&extras_menu_bar())
+            .build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
+        let up_button = Button::builder().label("Up Dir (..)").build();
         let file_list = gtk::ListBox::builder()
             .css_classes(vec!["navigation-sidebar"])
             .build();
@@ -129,7 +132,9 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
         main_box.append(&header);
-        editor_box.append(&file_list);
+        side_bar_box.append(&up_button);
+        side_bar_box.append(&file_list);
+        editor_box.append(&side_bar_box);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
         main_box.append(&editor_box);
@@ -143,6 +148,11 @@ impl SimpleComponent for MainStruct {
         load_settings(&file_list, &mini_map);
 
         // Setup events
+        up_button.connect_clicked(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::UpDir)
+        ));
         file_list.connect_selected_rows_changed(clone!(
             #[strong]
             sender,
@@ -334,10 +344,10 @@ impl SimpleComponent for MainStruct {
                             load_folder(self, &path);
                         }
                         false => {
-                                self.current_file_path =
-                                    file_list_pathbuf.into_os_string().into_string().unwrap();
-                                load_file(self);
-                            }
+                            self.current_file_path =
+                                file_list_pathbuf.into_os_string().into_string().unwrap();
+                            load_file(self);
+                        }
                     }
                 }
                 None => {
@@ -449,6 +459,23 @@ impl SimpleComponent for MainStruct {
                     .show();
             }
             // Other
+            Message::UpDir => {
+                match PathBuf::from(&self.current_folder_path).parent() {
+                    Some(_) => {
+                        let up_dir = PathBuf::from(&self.current_folder_path)
+                            .parent()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_string();
+                        self.current_folder_path = up_dir.clone();
+                        load_folder(self, &up_dir);
+                    }
+                    None => {
+                        // Pass
+                    }
+                }
+            }
             Message::CursorPostitionChanged => {
                 // Pass
             }
@@ -477,6 +504,7 @@ impl SimpleComponent for MainStruct {
     }
 }
 
+// Groups
 relm4::new_action_group!(FileActionGroup, "file");
 relm4::new_action_group!(EditActionGroup, "edit");
 relm4::new_action_group!(ViewActionGroup, "view");

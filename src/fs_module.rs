@@ -27,7 +27,7 @@ pub fn load_file(self_from: &mut MainStruct) {
                 }
             }
         }
-        Err(_) => panic!("Failed to read file to string!"),
+        Err(_) => println!("Failed to read file to string!"),
     }
 }
 

@@ -54,6 +54,7 @@ pub enum Message {
     // About
     ShowAbout,
     // Other
+    UpDir,
     CursorPostitionChanged,
     Ignore,
 }
