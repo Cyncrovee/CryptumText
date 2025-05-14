@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, Button, MenuButton};
+use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -109,9 +109,14 @@ impl SimpleComponent for MainStruct {
         header.pack_start(&hamburger);
         header.pack_end(&extras);
         let up_button = Button::builder().label("Up Dir (..)").build();
+        let file_list_scroll = ScrolledWindow::builder()
+            .hscrollbar_policy(gtk4::PolicyType::Never)
+            .build();
         let file_list = gtk::ListBox::builder()
             .css_classes(vec!["navigation-sidebar"])
+            .vexpand(true)
             .build();
+        file_list_scroll.set_child(Some(&file_list));
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
@@ -133,7 +138,7 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&cursor_position_label);
         main_box.append(&header);
         side_bar_box.append(&up_button);
-        side_bar_box.append(&file_list);
+        side_bar_box.append(&file_list_scroll);
         editor_box.append(&side_bar_box);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
