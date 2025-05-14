@@ -486,7 +486,7 @@ impl SimpleComponent for MainStruct {
         }
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
-        self.title.set_subtitle(&self.current_file_path);
+        self.title.set_subtitle(&self.current_folder_path);
         match update_file_type(&self.current_file_path) {
             Some(file_type) => {
                 self.file_type_label.set_label(&file_type);
