@@ -153,10 +153,10 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::UpDir)
         ));
-        file_list.connect_selected_rows_changed(clone!(
+        file_list.connect_row_activated(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::LoadFileFromList)
+            move |_, _| sender.input(Message::LoadFileFromList)
         ));
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
@@ -349,6 +349,7 @@ impl SimpleComponent for MainStruct {
                             load_file(self);
                         }
                     }
+                    self.file_list.unselect_all();
                 }
                 None => {
                     println!("No row selected!");
