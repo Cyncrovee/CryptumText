@@ -326,35 +326,18 @@ impl SimpleComponent for MainStruct {
                         .widget_name();
                     let file_list_path = Path::new(file_list_name);
                     file_list_pathbuf.push(file_list_path);
-                    match PathBuf::from(file_list_name).is_dir() {
+                    match PathBuf::from(&file_list_pathbuf).is_dir() {
                         true => {
-                            self.current_folder_path = file_list_name.clone().to_string();
-                            let path = file_list_name.clone().to_string();
+                            self.current_folder_path =
+                                file_list_pathbuf.into_os_string().into_string().unwrap();
+                            let path = self.current_folder_path.clone();
                             load_folder(self, &path);
                         }
-                        false => match PathBuf::from(file_list_name).is_file() {
-                            true => {
+                        false => {
                                 self.current_file_path =
                                     file_list_pathbuf.into_os_string().into_string().unwrap();
                                 load_file(self);
                             }
-                            false => {
-                                let mut owned_folder = PathBuf::from(&self.current_folder_path);
-                                owned_folder.push(file_list_name);
-                                match owned_folder.is_file() {
-                                    true => {
-                                        self.current_file_path = file_list_pathbuf
-                                            .into_os_string()
-                                            .into_string()
-                                            .unwrap();
-                                        load_file(self);
-                                    }
-                                    false => {
-                                        println!("Selected row not a file!");
-                                    }
-                                }
-                            }
-                        },
                     }
                 }
                 None => {
