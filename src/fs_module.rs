@@ -3,7 +3,6 @@ use std::{
     path::Path,
 };
 
-use gtk4::ListBox;
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
 use sourceview5::prelude::BufferExt;
 
@@ -36,18 +35,71 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
         Ok(dir) => {
             self_from.file_list.remove_all();
             for files in dir {
-                let label = gtk::Label::builder().build();
-                label.set_widget_name(
-                    files
-                        .as_ref()
-                        .unwrap()
-                        .file_name()
-                        .as_os_str()
-                        .to_str()
-                        .unwrap(),
-                );
-                label.set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
-                self_from.file_list.append(&label);
+                #[cfg(unix)]
+                {
+                    match self_from.view_hidden {
+                        true => {
+                            let label = gtk::Label::builder().build();
+                            label.set_widget_name(
+                                files
+                                    .as_ref()
+                                    .unwrap()
+                                    .file_name()
+                                    .as_os_str()
+                                    .to_str()
+                                    .unwrap(),
+                            );
+                            label
+                                .set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
+                            self_from.file_list.append(&label);
+                        }
+                        false => {
+                            match files
+                                .as_ref()
+                                .unwrap()
+                                .file_name()
+                                .to_str()
+                                .unwrap()
+                                .starts_with(&['.'])
+                            {
+                                true => {
+                                    // Pass
+                                }
+                                false => {
+                                    let label = gtk::Label::builder().build();
+                                    label.set_widget_name(
+                                        files
+                                            .as_ref()
+                                            .unwrap()
+                                            .file_name()
+                                            .as_os_str()
+                                            .to_str()
+                                            .unwrap(),
+                                    );
+                                    label.set_text(
+                                        files.unwrap().file_name().as_os_str().to_str().unwrap(),
+                                    );
+                                    self_from.file_list.append(&label);
+                                }
+                            }
+                        }
+                    }
+                }
+                #[cfg(any(not(unix)))]
+                {
+                    let label = gtk::Label::builder().build();
+                    label.set_widget_name(
+                        files
+                            .as_ref()
+                            .unwrap()
+                            .file_name()
+                            .as_os_str()
+                            .to_str()
+                            .unwrap(),
+                    );
+                    label.set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
+                    self_from.file_list.append(&label);
+                }
             }
         }
         Err(_) => {
@@ -63,13 +115,14 @@ pub fn save_settings(self_from: &mut MainStruct) {
     let test = AppSettings {
         view_mini_map: self_from.mini_map.is_visible(),
         view_file_list: self_from.file_list.is_visible(),
+        view_hidden_files: self_from.view_hidden,
     };
 
     serde_json::to_string(&test).unwrap();
     std::fs::write(config_path, serde_json::to_string_pretty(&test).unwrap()).unwrap();
 }
 
-pub fn load_settings(file_list: &ListBox, mini_map: &sourceview5::Map) {
+pub fn load_settings(self_from: &mut MainStruct) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
@@ -84,13 +137,14 @@ pub fn load_settings(file_list: &ListBox, mini_map: &sourceview5::Map) {
     let settings: AppSettings = serde_json::from_str(&settings_file).unwrap_or(AppSettings {
         view_mini_map: true,
         view_file_list: true,
+        view_hidden_files: false,
     });
     match settings.view_file_list {
         true => {
-            file_list.set_visible(true);
+            self_from.file_list.set_visible(true);
         }
         false => {
-            file_list.set_visible(false);
+            self_from.file_list.set_visible(false);
         }
     }
     match settings.view_mini_map {
@@ -98,7 +152,15 @@ pub fn load_settings(file_list: &ListBox, mini_map: &sourceview5::Map) {
             // Pass
         }
         false => {
-            mini_map.set_visible(false);
+            self_from.mini_map.set_visible(false);
+        }
+    }
+    match settings.view_hidden_files {
+        true => {
+            self_from.view_hidden = true;
+        }
+        false => {
+            self_from.view_hidden = false;
         }
     }
 }

@@ -108,7 +108,7 @@ impl SimpleComponent for MainStruct {
             .build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
-        let up_button = Button::builder().label("Up Dir (..)").build();
+        let up_button = Button::builder().icon_name("go-up-symbolic").build();
         let file_list_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
             .build();
@@ -149,8 +149,18 @@ impl SimpleComponent for MainStruct {
         root.set_content(Some(&main_box));
         root.set_default_size(1000, 1000);
 
+        // Set misc variables
+        let display = gtk::gdk::Display::default().unwrap();
+        let clipboard = DisplayExt::clipboard(&display);
+        let current_folder_path = "".into();
+        let view_hidden = true;
+
         // Apply user settings
-        load_settings(&file_list, &mini_map);
+        root.connect_show(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::LoadSettings)
+        ));
 
         // Setup events
         up_button.connect_clicked(clone!(
@@ -185,6 +195,7 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<PasteAction>(&["<control>v"]);
         // View accelerators
         program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
+        program.set_accelerators_for_action::<ToggleHiddenFilesAction>(&["<control>h"]);
         program.set_accelerators_for_action::<ToggleMiniMapAction>(&["<control><alt>m"]);
         // File actions
         let new_file_action: RelmAction<NewFileAction> = RelmAction::new_stateless(clone!(
@@ -250,6 +261,12 @@ impl SimpleComponent for MainStruct {
                 sender,
                 move |_| sender.input(Message::ToggleFileList)
             ));
+        let toggle_hidden_files_action: RelmAction<ToggleHiddenFilesAction> =
+            RelmAction::new_stateless(clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleHiddenFiles)
+            ));
         let toggle_mini_map_action: RelmAction<ToggleMiniMapAction> =
             RelmAction::new_stateless(clone!(
                 #[strong]
@@ -285,6 +302,7 @@ impl SimpleComponent for MainStruct {
         edit_action_group.add_action(paste_action);
         edit_action_group.add_action(clear_action);
         view_action_group.add_action(toggle_file_list_action);
+        view_action_group.add_action(toggle_hidden_files_action);
         view_action_group.add_action(toggle_mini_map_action);
         view_action_group.add_action(toggle_buffer_style_scheme_action);
         about_action_group.add_action(show_about_action);
@@ -294,11 +312,6 @@ impl SimpleComponent for MainStruct {
         view_action_group.register_for_widget(&root);
         about_action_group.register_for_widget(&root);
 
-        // Set misc variables
-        let display = gtk::gdk::Display::default().unwrap();
-        let clipboard = DisplayExt::clipboard(&display);
-        let current_folder_path = "".into();
-
         let model = MainStruct {
             // Non-Widgets
             current_file_path,
@@ -306,6 +319,7 @@ impl SimpleComponent for MainStruct {
             clipboard,
             buffer_style,
             current_style,
+            view_hidden,
             // Widgets
             file_list,
             buffer,
@@ -431,6 +445,12 @@ impl SimpleComponent for MainStruct {
                 self.file_list.set_visible(!self.file_list.is_visible());
                 save_settings(self);
             }
+            Message::ToggleHiddenFiles => {
+                let current_folder = self.current_folder_path.clone();
+                self.view_hidden = !self.view_hidden;
+                load_folder(self, &current_folder);
+                save_settings(self);
+            }
             Message::ToggleMiniMap => {
                 self.mini_map.set_visible(!self.mini_map.is_visible());
                 save_settings(self);
@@ -465,6 +485,10 @@ impl SimpleComponent for MainStruct {
                     .show();
             }
             // Other
+            Message::LoadSettings => {
+                println!("Loading Settings...");
+                load_settings(self);
+            }
             Message::UpDir => {
                 match PathBuf::from(&self.current_folder_path).parent() {
                     Some(_) => {
@@ -530,6 +554,11 @@ relm4::new_stateless_action!(PasteAction, EditActionGroup, "paste");
 relm4::new_stateless_action!(ClearAction, EditActionGroup, "clear");
 // View
 relm4::new_stateless_action!(ToggleFileListAction, ViewActionGroup, "toggle_file_list");
+relm4::new_stateless_action!(
+    ToggleHiddenFilesAction,
+    ViewActionGroup,
+    "toggle_hidden_files"
+);
 relm4::new_stateless_action!(ToggleMiniMapAction, ViewActionGroup, "toggle_mini_map");
 relm4::new_stateless_action!(
     ToggleBufferStyleAction,

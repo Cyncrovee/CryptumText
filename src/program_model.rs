@@ -13,6 +13,7 @@ pub struct MainStruct {
     pub clipboard: gtk::gdk::Clipboard,
     pub buffer_style: Option<sourceview5::StyleScheme>,
     pub current_style: String,
+    pub view_hidden: bool,
     // Widgets
     pub file_list: gtk::ListBox,
     pub buffer: sourceview5::Buffer,
@@ -49,11 +50,13 @@ pub enum Message {
     ClearEditor,
     // View
     ToggleFileList,
+    ToggleHiddenFiles,
     ToggleMiniMap,
     ToggleBufferStyleScheme,
     // About
     ShowAbout,
     // Other
+    LoadSettings,
     UpDir,
     CursorPostitionChanged,
     Ignore,
@@ -63,4 +66,5 @@ pub enum Message {
 pub struct AppSettings {
     pub view_mini_map: bool,
     pub view_file_list: bool,
+    pub view_hidden_files: bool,
 }
