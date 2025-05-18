@@ -12,7 +12,6 @@ pub struct MainStruct {
     pub current_folder_path: String,
     pub clipboard: gtk::gdk::Clipboard,
     pub buffer_style: Option<sourceview5::StyleScheme>,
-    pub current_style: String,
     pub view_hidden: bool,
     // Widgets
     pub file_list: gtk::ListBox,
@@ -67,4 +66,5 @@ pub struct AppSettings {
     pub view_mini_map: bool,
     pub view_file_list: bool,
     pub view_hidden_files: bool,
+    pub editor_theme: String,
 }

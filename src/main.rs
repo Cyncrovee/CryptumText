@@ -120,7 +120,6 @@ impl SimpleComponent for MainStruct {
         let language_manager = LanguageManager::builder().build();
         let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-        let current_style = "Dark".to_string();
         buffer.set_style_scheme(buffer_style.as_ref());
         buffer.set_highlight_matching_brackets(true);
         let editor = setup_editor(&buffer);
@@ -318,7 +317,6 @@ impl SimpleComponent for MainStruct {
             current_folder_path,
             clipboard,
             buffer_style,
-            current_style,
             view_hidden,
             // Widgets
             file_list,
@@ -456,23 +454,22 @@ impl SimpleComponent for MainStruct {
                 save_settings(self);
             }
             Message::ToggleBufferStyleScheme => {
-                match self.current_style.as_str() {
-                    "Dark" => {
+                match self.buffer_style.as_ref().unwrap().to_string().as_str() {
+                    "Adwaita Dark" => {
                         self.buffer_style =
                             sourceview5::StyleSchemeManager::new().scheme("Adwaita");
                         self.buffer.set_style_scheme(self.buffer_style.as_ref());
-                        self.current_style = "Light".to_string();
                     }
-                    "Light" => {
+                    "Adwaita" => {
                         self.buffer_style =
                             sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
                         self.buffer.set_style_scheme(self.buffer_style.as_ref());
-                        self.current_style = "Dark".to_string();
                     }
                     _ => {
                         // Pass
                     }
                 }
+                save_settings(self);
             }
             // About
             Message::ShowAbout => {

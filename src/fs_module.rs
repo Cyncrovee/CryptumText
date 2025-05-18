@@ -116,6 +116,7 @@ pub fn save_settings(self_from: &mut MainStruct) {
         view_mini_map: self_from.mini_map.is_visible(),
         view_file_list: self_from.file_list.is_visible(),
         view_hidden_files: self_from.view_hidden,
+        editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
     };
 
     serde_json::to_string(&test).unwrap();
@@ -138,6 +139,7 @@ pub fn load_settings(self_from: &mut MainStruct) {
         view_mini_map: true,
         view_file_list: true,
         view_hidden_files: false,
+        editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
     });
     match settings.view_file_list {
         true => {
@@ -162,5 +164,20 @@ pub fn load_settings(self_from: &mut MainStruct) {
         false => {
             self_from.view_hidden = false;
         }
+    }
+    match settings.editor_theme.as_str() {
+        "Adwaita" => {
+            self_from.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita");
+            self_from
+                .buffer
+                .set_style_scheme(self_from.buffer_style.as_ref());
+        }
+        "Adwaita Dark" => {
+            self_from.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+            self_from
+                .buffer
+                .set_style_scheme(self_from.buffer_style.as_ref());
+        }
+        &_ => {}
     }
 }
