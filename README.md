@@ -1,4 +1,4 @@
-![The Cryptum Text logo, it shows a stylised text input caret, and to it's right are some smaller characters consisting of a forward slash, two asterisks, and another forward slash](./data/cryptum-text-logo.svg)
+![The Cryptum Text logo, it shows a stylised text input caret, and to it's right are some smaller characters consisting of a forward slash, two asterisks, and another forward slash](./data/icons/cryptum-text-icon.svg)
 
 # Cryptum Text
 
