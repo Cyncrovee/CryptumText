@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow};
+use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow, ffi::gtk_icon_theme_add_search_path};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -566,6 +566,6 @@ relm4::new_stateless_action!(
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 
 fn main() {
-    let program = RelmApp::new("editor.cyncrovee");
+    let program = RelmApp::new("editor.cryptumtext");
     program.run::<MainStruct>("".to_string());
 }
