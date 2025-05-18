@@ -24,4 +24,6 @@ Cryptum Text is a GTK based text/code editor written in Rust and powered by GTK-
 - Confirmation Dialog(s)
 
 # Extra Notes
+- The editor widget specifically cannot auto adjust to the system theme, however you can toggle the theme manually and it will persist across restarts (provided "editor_theme" option in the settings file hasn't been changed)
+- While the program might run on Windows or MacOS, I haven't tested this myself.
 - The ability to toggle showing hidden files is only available on UNIX systems, due to complications with detecting hidden files on Windows
