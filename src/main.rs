@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow, ffi::gtk_icon_theme_add_search_path};
+use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -108,7 +108,13 @@ impl SimpleComponent for MainStruct {
             .build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
-        let up_button = Button::builder().icon_name("go-up-symbolic").build();
+        let up_button = Button::builder()
+            .icon_name("go-up-symbolic")
+            .margin_start(5)
+            .margin_end(5)
+            .margin_top(5)
+            .margin_bottom(5)
+            .build();
         let file_list_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
             .build();
