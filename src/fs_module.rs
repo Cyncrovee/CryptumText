@@ -112,15 +112,15 @@ pub fn save_settings(self_from: &mut MainStruct) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
-    let test = AppSettings {
+    let settings = AppSettings {
         view_mini_map: self_from.mini_map.is_visible(),
         view_file_list: self_from.file_list.is_visible(),
         view_hidden_files: self_from.view_hidden,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
     };
 
-    serde_json::to_string(&test).unwrap();
-    std::fs::write(config_path, serde_json::to_string_pretty(&test).unwrap()).unwrap();
+    serde_json::to_string(&settings).unwrap();
+    std::fs::write(config_path, serde_json::to_string_pretty(&settings).unwrap()).unwrap();
 }
 
 pub fn load_settings(self_from: &mut MainStruct) {
