@@ -1,6 +1,7 @@
 use std::{
-    fs::{read_dir, read_to_string},
-    path::Path,
+    fs::{DirEntry, read_dir, read_to_string},
+    io::Error,
+    path::{Path, PathBuf},
 };
 
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
@@ -39,19 +40,7 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
                 {
                     match self_from.view_hidden {
                         true => {
-                            let label = gtk::Label::builder().build();
-                            label.set_widget_name(
-                                files
-                                    .as_ref()
-                                    .unwrap()
-                                    .file_name()
-                                    .as_os_str()
-                                    .to_str()
-                                    .unwrap(),
-                            );
-                            label
-                                .set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
-                            self_from.file_list.append(&label);
+                            show_item(self_from, files);
                         }
                         false => {
                             match files
@@ -66,20 +55,7 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
                                     // Pass
                                 }
                                 false => {
-                                    let label = gtk::Label::builder().build();
-                                    label.set_widget_name(
-                                        files
-                                            .as_ref()
-                                            .unwrap()
-                                            .file_name()
-                                            .as_os_str()
-                                            .to_str()
-                                            .unwrap(),
-                                    );
-                                    label.set_text(
-                                        files.unwrap().file_name().as_os_str().to_str().unwrap(),
-                                    );
-                                    self_from.file_list.append(&label);
+                                    show_item(self_from, files);
                                 }
                             }
                         }
@@ -87,18 +63,7 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
                 }
                 #[cfg(any(not(unix)))]
                 {
-                    let label = gtk::Label::builder().build();
-                    label.set_widget_name(
-                        files
-                            .as_ref()
-                            .unwrap()
-                            .file_name()
-                            .as_os_str()
-                            .to_str()
-                            .unwrap(),
-                    );
-                    label.set_text(files.unwrap().file_name().as_os_str().to_str().unwrap());
-                    self_from.file_list.append(&label);
+                    show_item(self_from, files);
                 }
             }
         }
@@ -106,6 +71,40 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
             println!("Failed to read directory");
         }
     }
+}
+
+fn show_item(self_from: &mut MainStruct, files: Result<DirEntry, Error>) {
+    let label = gtk::Label::builder().build();
+    label.set_widget_name(
+        files
+            .as_ref()
+            .unwrap()
+            .file_name()
+            .as_os_str()
+            .to_str()
+            .unwrap(),
+    );
+    let mut item_name = files.as_ref().unwrap().file_name().into_string().unwrap();
+    match PathBuf::from(
+        files
+            .as_ref()
+            .unwrap()
+            .path()
+            .into_os_string()
+            .into_string()
+            .unwrap(),
+    )
+    .is_dir()
+    {
+        true => {
+            item_name.push_str("/");
+        }
+        false => {
+            // Pass
+        }
+    }
+    label.set_text(&item_name);
+    self_from.file_list.append(&label);
 }
 
 pub fn save_settings(self_from: &mut MainStruct) {
@@ -120,7 +119,11 @@ pub fn save_settings(self_from: &mut MainStruct) {
     };
 
     serde_json::to_string(&settings).unwrap();
-    std::fs::write(config_path, serde_json::to_string_pretty(&settings).unwrap()).unwrap();
+    std::fs::write(
+        config_path,
+        serde_json::to_string_pretty(&settings).unwrap(),
+    )
+    .unwrap();
 }
 
 pub fn load_settings(self_from: &mut MainStruct) {
