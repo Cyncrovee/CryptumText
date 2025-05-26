@@ -9,10 +9,7 @@ use relm4_components::{
     open_dialog::{OpenDialog, OpenDialogMsg, OpenDialogResponse, OpenDialogSettings},
     save_dialog::{SaveDialog, SaveDialogMsg, SaveDialogResponse, SaveDialogSettings},
 };
-use sourceview5::{
-    LanguageManager,
-    prelude::{BufferExt, MapExt},
-};
+use sourceview5::{LanguageManager, prelude::BufferExt};
 use std::{
     fs::{File, exists},
     io::Write,
@@ -67,8 +64,10 @@ impl SimpleComponent for MainStruct {
         let status_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Horizontal)
             .build();
-        let editor_scroll_window = gtk::ScrolledWindow::builder().build();
-        editor_scroll_window.set_policy(gtk4::PolicyType::Automatic, gtk4::PolicyType::Automatic);
+        let editor_scroll_window = gtk::ScrolledWindow::builder()
+            .hscrollbar_policy(gtk4::PolicyType::Automatic)
+            .vscrollbar_policy(gtk4::PolicyType::Automatic)
+            .build();
 
         // Define and setup file dialogs
         let mut load_folder_dialog_settings = OpenDialogSettings::default();
@@ -97,7 +96,6 @@ impl SimpleComponent for MainStruct {
 
         // Define and edit widgets
         let title = WindowTitle::new("Cryptum Text", "");
-        let header = HeaderBar::builder().title_widget(&title).build();
         let hamburger = MenuButton::builder()
             .icon_name("open-menu-symbolic")
             .menu_model(&menu_bar())
@@ -106,6 +104,7 @@ impl SimpleComponent for MainStruct {
             .icon_name("help-about-symbolic")
             .menu_model(&extras_menu_bar())
             .build();
+        let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
         let up_button = Button::builder()
@@ -115,23 +114,25 @@ impl SimpleComponent for MainStruct {
             .margin_top(5)
             .margin_bottom(5)
             .build();
-        let file_list_scroll = ScrolledWindow::builder()
-            .hscrollbar_policy(gtk4::PolicyType::Never)
-            .build();
         let file_list = gtk::ListBox::builder()
             .css_classes(vec!["navigation-sidebar"])
             .vexpand(true)
             .build();
-        file_list_scroll.set_child(Some(&file_list));
+        let file_list_scroll = ScrolledWindow::builder()
+            .hscrollbar_policy(gtk4::PolicyType::Never)
+            .child(&file_list)
+            .build();
         let language_manager = LanguageManager::builder().build();
-        let buffer = sourceview5::Buffer::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-        buffer.set_style_scheme(buffer_style.as_ref());
-        buffer.set_highlight_matching_brackets(true);
+        let buffer = sourceview5::Buffer::builder()
+            .style_scheme(buffer_style.as_ref().unwrap())
+            .highlight_matching_brackets(true)
+            .build();
         let editor = setup_editor(&buffer);
-        let mini_map = sourceview5::Map::builder().build();
-        mini_map.set_width_request(120);
-        mini_map.set_view(&editor);
+        let mini_map = sourceview5::Map::builder()
+            .width_request(120)
+            .view(&editor)
+            .build();
         let file_type_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
 
@@ -141,12 +142,12 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
-        main_box.append(&header);
         side_bar_box.append(&up_button);
         side_bar_box.append(&file_list_scroll);
         editor_box.append(&side_bar_box);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
+        main_box.append(&header);
         main_box.append(&editor_box);
         main_box.append(&status_bar_box);
 

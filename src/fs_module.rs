@@ -75,27 +75,10 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
 
 fn show_item(self_from: &mut MainStruct, files: Result<DirEntry, Error>) {
     let label = gtk::Label::builder().build();
-    label.set_widget_name(
-        files
-            .as_ref()
-            .unwrap()
-            .file_name()
-            .as_os_str()
-            .to_str()
-            .unwrap(),
-    );
-    let mut item_name = files.as_ref().unwrap().file_name().into_string().unwrap();
-    match PathBuf::from(
-        files
-            .as_ref()
-            .unwrap()
-            .path()
-            .into_os_string()
-            .into_string()
-            .unwrap(),
-    )
-    .is_dir()
-    {
+    let dir_entry = files.as_ref().unwrap();
+    label.set_widget_name(dir_entry.file_name().as_os_str().to_str().unwrap());
+    let mut item_name = dir_entry.file_name().into_string().unwrap();
+    match PathBuf::from(dir_entry.path().into_os_string().into_string().unwrap()).is_dir() {
         true => {
             item_name.push_str("/");
         }
