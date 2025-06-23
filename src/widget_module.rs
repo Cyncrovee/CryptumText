@@ -46,7 +46,7 @@ pub fn update_file_type(file: &str) -> Option<GString> {
     match path.extension() {
         Some(e) => match e.to_str() {
             Some(ex) => match ex {
-                // Text/Config Files
+                // Text/Config/Markup Files
                 "txt" => {
                     return Some("Text File".into());
                 }
@@ -58,6 +58,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "css" => {
                     return Some("CSS File".into());
+                }
+                "hbs" => {
+                    return Some("Handlebars File".into());
                 }
                 "org" => {
                     return Some("Org Mode File".into());
@@ -73,6 +76,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "json" => {
                     return Some("JSON File".into());
+                }
+                "jsonc" => {
+                    return Some("JSONC File".into());
                 }
                 // Shell Files
                 "sh" => {
@@ -108,6 +114,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "js" => {
                     return Some("JavaScript  Source File".into());
+                }
+                "lisp" => {
+                    return Some("Common Lisp Source File".into());
                 }
                 &_ => {
                     return None;
