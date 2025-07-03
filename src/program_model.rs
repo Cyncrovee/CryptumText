@@ -10,7 +10,6 @@ pub struct MainStruct {
     // Non-widgets
     pub current_file_path: String,
     pub current_folder_path: String,
-    pub clipboard: gtk::gdk::Clipboard,
     pub buffer_style: Option<sourceview5::StyleScheme>,
     pub view_hidden: bool,
     // Widgets
@@ -41,11 +40,6 @@ pub enum Message {
     SaveAsResponse(PathBuf),
     SaveFile,
     // Edit
-    Undo,
-    Redo,
-    CutEditor,
-    CopyEditor,
-    PasteEditor,
     ClearEditor,
     // View
     ToggleFileList,
@@ -55,6 +49,7 @@ pub enum Message {
     // About
     ShowAbout,
     // Other
+    FileListContext,
     LoadSettings,
     UpDir,
     CursorPostitionChanged,

@@ -157,8 +157,6 @@ impl SimpleComponent for MainStruct {
         root.set_default_size(1000, 1000);
 
         // Set misc variables
-        let display = gtk::gdk::Display::default().unwrap();
-        let clipboard = DisplayExt::clipboard(&display);
         let current_folder_path = "".into();
         let view_hidden = true;
 
@@ -180,6 +178,11 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_, _| sender.input(Message::LoadFileFromList)
         ));
+        file_list.connect_row_selected(clone!(
+            #[strong]
+            sender,
+            move |_, _| sender.input(Message::FileListContext)
+        ));
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -194,12 +197,6 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<OpenFolderAction>(&["<control><shift>o"]);
         program.set_accelerators_for_action::<SaveAction>(&["<control>s"]);
         program.set_accelerators_for_action::<SaveAsAction>(&["<control><shift>s"]);
-        // Edit accelerators
-        program.set_accelerators_for_action::<UndoAction>(&["<control>z"]);
-        program.set_accelerators_for_action::<RedoAction>(&["<control>y"]);
-        program.set_accelerators_for_action::<CutAction>(&["<control>x"]);
-        program.set_accelerators_for_action::<CopyAction>(&["<control>c"]);
-        program.set_accelerators_for_action::<PasteAction>(&["<control>v"]);
         // View accelerators
         program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
         program.set_accelerators_for_action::<ToggleHiddenFilesAction>(&["<control>h"]);
@@ -231,31 +228,6 @@ impl SimpleComponent for MainStruct {
             move |_| sender.input(Message::FolderRequest)
         ));
         // Edit actions
-        let undo_action: RelmAction<UndoAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::Undo)
-        ));
-        let redo_action: RelmAction<RedoAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::Redo)
-        ));
-        let cut_action: RelmAction<CutAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::CutEditor)
-        ));
-        let copy_action: RelmAction<CopyAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::CopyEditor)
-        ));
-        let paste_action: RelmAction<PasteAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::PasteEditor)
-        ));
         let clear_action: RelmAction<ClearAction> = RelmAction::new_stateless(clone!(
             #[strong]
             sender,
@@ -302,11 +274,6 @@ impl SimpleComponent for MainStruct {
         file_action_group.add_action(save_action);
         file_action_group.add_action(open_action);
         file_action_group.add_action(open_folder_action);
-        edit_action_group.add_action(undo_action);
-        edit_action_group.add_action(redo_action);
-        edit_action_group.add_action(cut_action);
-        edit_action_group.add_action(copy_action);
-        edit_action_group.add_action(paste_action);
         edit_action_group.add_action(clear_action);
         view_action_group.add_action(toggle_file_list_action);
         view_action_group.add_action(toggle_hidden_files_action);
@@ -323,7 +290,6 @@ impl SimpleComponent for MainStruct {
             // Non-Widgets
             current_file_path,
             current_folder_path,
-            clipboard,
             buffer_style,
             view_hidden,
             // Widgets
@@ -415,21 +381,6 @@ impl SimpleComponent for MainStruct {
                 }
             }
             // Edit
-            Message::Undo => {
-                self.buffer.undo();
-            }
-            Message::Redo => {
-                self.buffer.redo();
-            }
-            Message::CutEditor => {
-                self.buffer.cut_clipboard(&self.clipboard, true);
-            }
-            Message::CopyEditor => {
-                self.buffer.copy_clipboard(&self.clipboard);
-            }
-            Message::PasteEditor => {
-                self.buffer.paste_clipboard(&self.clipboard, None, true);
-            }
             Message::ClearEditor => {
                 self.buffer.set_text("");
                 self.buffer.undo();
@@ -478,6 +429,9 @@ impl SimpleComponent for MainStruct {
                     .show();
             }
             // Other
+            Message::FileListContext => {
+                //
+            }
             Message::LoadSettings => {
                 println!("Loading Settings...");
                 load_settings(self);
@@ -534,11 +488,6 @@ relm4::new_stateless_action!(SaveAction, FileActionGroup, "save");
 relm4::new_stateless_action!(OpenAction, FileActionGroup, "open");
 relm4::new_stateless_action!(OpenFolderAction, FileActionGroup, "open_folder");
 // Edit
-relm4::new_stateless_action!(UndoAction, EditActionGroup, "undo");
-relm4::new_stateless_action!(RedoAction, EditActionGroup, "redo");
-relm4::new_stateless_action!(CutAction, EditActionGroup, "cut");
-relm4::new_stateless_action!(CopyAction, EditActionGroup, "copy");
-relm4::new_stateless_action!(PasteAction, EditActionGroup, "paste");
 relm4::new_stateless_action!(ClearAction, EditActionGroup, "clear");
 // View
 relm4::new_stateless_action!(ToggleFileListAction, ViewActionGroup, "toggle_file_list");
