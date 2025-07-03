@@ -506,6 +506,6 @@ relm4::new_stateless_action!(
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 
 fn main() {
-    let program = RelmApp::new("editor.cryptumtext");
+    let program = RelmApp::new("io.github.Cyncrovee.CryptumText");
     program.run::<MainStruct>("".to_string());
 }
