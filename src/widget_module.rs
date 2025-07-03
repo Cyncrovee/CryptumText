@@ -60,6 +60,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "hbs" => {
                     return Some("Handlebars File".into());
                 }
+                "xml" => {
+                    return Some("XML File".into());
+                }
                 "org" => {
                     return Some("Org Mode File".into());
                 }
@@ -85,6 +88,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "ps1" => {
                     return Some("PowerShell Script".into());
                 }
+                "fish" => {
+                    return Some("Fish Script".into());
+                }
                 // Source Files
                 "rs" => {
                     return Some("Rust Source File".into());
@@ -101,6 +107,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "c" => {
                     return Some("C Source File".into());
                 }
+                "h" => {
+                    return Some("Header File".into());
+                }
                 "cs" => {
                     return Some("C# Source File".into());
                 }
@@ -115,6 +124,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "lisp" => {
                     return Some("Common Lisp Source File".into());
+                }
+                "el" => {
+                    return Some("ELisp Source File".into());
                 }
                 &_ => {
                     return None;
