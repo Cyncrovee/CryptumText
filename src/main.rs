@@ -28,6 +28,8 @@ use fs_module::{load_file, load_folder, load_settings, save_settings};
 mod program_model;
 use program_model::{MainStruct, Message, WidgetStruct};
 
+mod update;
+
 impl SimpleComponent for MainStruct {
     type Init = String;
     type Input = Message;
@@ -308,153 +310,8 @@ impl SimpleComponent for MainStruct {
         ComponentParts { model, widgets }
     }
 
-    fn update(&mut self, message: Self::Input, _sender: relm4::ComponentSender<Self>) {
-        match message {
-            // File
-            Message::NewFile => {
-                self.buffer.set_text("");
-                self.current_file_path = "".to_string();
-            }
-            Message::LoadFileFromList => {
-                if let Some(_) = self.file_list.selected_row() {
-                    let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
-                    let file_list_name = &self
-                        .file_list
-                        .selected_row()
-                        .unwrap()
-                        .child()
-                        .unwrap()
-                        .widget_name();
-                    let file_list_path = Path::new(file_list_name);
-                    file_list_pathbuf.push(file_list_path);
-                    match PathBuf::from(&file_list_pathbuf).is_dir() {
-                        true => {
-                            self.current_folder_path =
-                                file_list_pathbuf.into_os_string().into_string().unwrap();
-                            let path = self.current_folder_path.clone();
-                            load_folder(self, &path);
-                        }
-                        false => {
-                            self.current_file_path =
-                                file_list_pathbuf.into_os_string().into_string().unwrap();
-                            load_file(self);
-                        }
-                    }
-                    self.file_list.unselect_all();
-                }
-            }
-            Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
-            Message::FolderResponse(path) => {
-                self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
-                load_folder(self, &path.into_os_string().into_string().unwrap());
-            }
-            Message::OpenRequest => self.open_dialog.emit(OpenDialogMsg::Open),
-            Message::OpenResponse(path) => {
-                self.current_file_path = path.into_os_string().into_string().unwrap();
-                load_file(self);
-            }
-            Message::SaveAsRequest => self
-                .save_as_dialog
-                .emit(SaveDialogMsg::SaveAs("".to_string())),
-            Message::SaveAsResponse(path) => match std::fs::write(
-                &path,
-                self.buffer
-                    .text(&self.buffer.start_iter(), &self.buffer.end_iter(), false),
-            ) {
-                Ok(_) => {
-                    // Pass
-                }
-                Err(_) => {
-                    // Pass
-                }
-            },
-            Message::SaveFile => {
-                if let Ok(_) = exists(&self.current_file_path) {
-                    if let Ok(mut file) = File::create(&self.current_file_path) {
-                        file.write_all(
-                            self.buffer
-                                .text(&self.buffer.start_iter(), &self.buffer.end_iter(), false)
-                                .as_bytes(),
-                        )
-                        .unwrap();
-                    }
-                }
-            }
-            // Edit
-            Message::ClearEditor => {
-                self.buffer.set_text("");
-                self.buffer.undo();
-            }
-            // View
-            Message::ToggleFileList => {
-                self.file_list.set_visible(!self.file_list.is_visible());
-                save_settings(self);
-            }
-            Message::ToggleHiddenFiles => {
-                let current_folder = self.current_folder_path.clone();
-                self.view_hidden = !self.view_hidden;
-                load_folder(self, &current_folder);
-                save_settings(self);
-            }
-            Message::ToggleMiniMap => {
-                self.mini_map.set_visible(!self.mini_map.is_visible());
-                save_settings(self);
-            }
-            Message::ToggleBufferStyleScheme => {
-                match self.buffer_style.as_ref().unwrap().to_string().as_str() {
-                    "Adwaita Dark" => {
-                        self.buffer_style =
-                            sourceview5::StyleSchemeManager::new().scheme("Adwaita");
-                        self.buffer.set_style_scheme(self.buffer_style.as_ref());
-                    }
-                    "Adwaita" => {
-                        self.buffer_style =
-                            sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-                        self.buffer.set_style_scheme(self.buffer_style.as_ref());
-                    }
-                    _ => {
-                        // Pass
-                    }
-                }
-                save_settings(self);
-            }
-            // About
-            Message::ShowAbout => {
-                AboutDialog::builder()
-                    .program_name("Cryptum Text")
-                    .version("Dev Version")
-                    .copyright("Ella Hart (Cyncrovee)")
-                    .license_type(gtk4::License::Gpl30Only)
-                    .build()
-                    .show();
-            }
-            // Other
-            Message::FileListContext => {
-                //
-            }
-            Message::LoadSettings => {
-                println!("Loading Settings...");
-                load_settings(self);
-            }
-            Message::UpDir => {
-                if let Some(_) = PathBuf::from(&self.current_folder_path).parent() {
-                    let up_dir = PathBuf::from(&self.current_folder_path)
-                        .parent()
-                        .unwrap()
-                        .to_str()
-                        .unwrap()
-                        .to_string();
-                    self.current_folder_path = up_dir.clone();
-                    load_folder(self, &up_dir);
-                }
-            }
-            Message::CursorPostitionChanged => {
-                // Pass
-            }
-            Message::Ignore => {
-                // Pass
-            }
-        }
+    fn update(&mut self, message: Self::Input, sender: relm4::ComponentSender<Self>) {
+        update::handle_messages(self, message, sender);
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
         self.title.set_subtitle(&self.current_folder_path);
