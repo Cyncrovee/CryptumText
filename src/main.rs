@@ -117,6 +117,7 @@ impl SimpleComponent for MainStruct {
         let file_list = gtk::ListBox::builder()
             .css_classes(vec!["navigation-sidebar"])
             .vexpand(true)
+            .activate_on_single_click(false)
             .build();
         let file_list_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
