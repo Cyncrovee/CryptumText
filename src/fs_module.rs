@@ -13,21 +13,18 @@ use crate::{
 };
 
 pub fn load_file(self_from: &mut MainStruct) {
-    match std::fs::read_to_string(&self_from.current_file_path) {
-        Ok(f) => {
-            self_from.buffer.set_text(&f);
-            self_from.current_file_path = Some(self_from.current_file_path.clone()).unwrap();
-            match update_syntax(&self_from.language_manager, &self_from.current_file_path) {
-                Some(language) => {
-                    self_from.buffer.set_highlight_syntax(true);
-                    self_from.buffer.set_language(Some(&language));
-                }
-                None => {
-                    self_from.buffer.set_highlight_syntax(false);
-                }
+    if let Ok(f) = std::fs::read_to_string(&self_from.current_file_path) {
+        self_from.buffer.set_text(&f);
+        self_from.current_file_path = Some(self_from.current_file_path.clone()).unwrap();
+        match update_syntax(&self_from.language_manager, &self_from.current_file_path) {
+            Some(language) => {
+                self_from.buffer.set_highlight_syntax(true);
+                self_from.buffer.set_language(Some(&language));
+            }
+            None => {
+                self_from.buffer.set_highlight_syntax(false);
             }
         }
-        Err(_) => println!("Failed to read file to string!"),
     }
 }
 
@@ -78,13 +75,8 @@ fn show_item(self_from: &mut MainStruct, files: Result<DirEntry, Error>) {
     let dir_entry = files.as_ref().unwrap();
     label.set_widget_name(dir_entry.file_name().as_os_str().to_str().unwrap());
     let mut item_name = dir_entry.file_name().into_string().unwrap();
-    match PathBuf::from(dir_entry.path().into_os_string().into_string().unwrap()).is_dir() {
-        true => {
-            item_name.push_str("/");
-        }
-        false => {
-            // Pass
-        }
+    if let true = PathBuf::from(dir_entry.path().into_os_string().into_string().unwrap()).is_dir() {
+        item_name.push_str("/");
     }
     label.set_text(&item_name);
     self_from.file_list.append(&label);

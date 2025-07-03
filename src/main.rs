@@ -348,8 +348,8 @@ impl SimpleComponent for MainStruct {
                 self.buffer.set_text("");
                 self.current_file_path = "".to_string();
             }
-            Message::LoadFileFromList => match self.file_list.selected_row() {
-                Some(_) => {
+            Message::LoadFileFromList => {
+                if let Some(_) = self.file_list.selected_row() {
                     let mut file_list_pathbuf = PathBuf::from(&self.current_folder_path);
                     let file_list_name = &self
                         .file_list
@@ -375,10 +375,7 @@ impl SimpleComponent for MainStruct {
                     }
                     self.file_list.unselect_all();
                 }
-                None => {
-                    println!("No row selected!");
-                }
-            },
+            }
             Message::FolderRequest => self.folder_dialog.emit(OpenDialogMsg::Open),
             Message::FolderResponse(path) => {
                 self.current_folder_path = path.clone().into_os_string().into_string().unwrap();
@@ -405,23 +402,14 @@ impl SimpleComponent for MainStruct {
                 }
             },
             Message::SaveFile => {
-                match exists(&self.current_file_path) {
-                    Ok(_) => match File::create(&self.current_file_path) {
-                        Ok(f) => {
-                            let mut file = f;
-                            file.write_all(
-                                self.buffer
-                                    .text(&self.buffer.start_iter(), &self.buffer.end_iter(), false)
-                                    .as_bytes(),
-                            )
-                            .unwrap();
-                        }
-                        Err(_) => {
-                            //
-                        }
-                    },
-                    Err(_) => {
-                        // Pass
+                if let Ok(_) = exists(&self.current_file_path) {
+                    if let Ok(mut file) = File::create(&self.current_file_path) {
+                        file.write_all(
+                            self.buffer
+                                .text(&self.buffer.start_iter(), &self.buffer.end_iter(), false)
+                                .as_bytes(),
+                        )
+                        .unwrap();
                     }
                 }
             }
@@ -494,20 +482,15 @@ impl SimpleComponent for MainStruct {
                 load_settings(self);
             }
             Message::UpDir => {
-                match PathBuf::from(&self.current_folder_path).parent() {
-                    Some(_) => {
-                        let up_dir = PathBuf::from(&self.current_folder_path)
-                            .parent()
-                            .unwrap()
-                            .to_str()
-                            .unwrap()
-                            .to_string();
-                        self.current_folder_path = up_dir.clone();
-                        load_folder(self, &up_dir);
-                    }
-                    None => {
-                        // Pass
-                    }
+                if let Some(_) = PathBuf::from(&self.current_folder_path).parent() {
+                    let up_dir = PathBuf::from(&self.current_folder_path)
+                        .parent()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_string();
+                    self.current_folder_path = up_dir.clone();
+                    load_folder(self, &up_dir);
                 }
             }
             Message::CursorPostitionChanged => {

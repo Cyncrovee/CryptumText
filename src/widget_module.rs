@@ -1,9 +1,7 @@
 use std::path::PathBuf;
 
 use gtk4::glib::GString;
-use sourceview5::{
-    Buffer, LanguageManager,
-};
+use sourceview5::{Buffer, LanguageManager};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     let editor = sourceview5::View::builder()
