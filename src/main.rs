@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, Button, MenuButton, ScrolledWindow};
+use gtk4::{Button, MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -6,29 +6,24 @@ use relm4::{
     prelude::*,
 };
 use relm4_components::{
-    open_dialog::{OpenDialog, OpenDialogMsg, OpenDialogResponse, OpenDialogSettings},
-    save_dialog::{SaveDialog, SaveDialogMsg, SaveDialogResponse, SaveDialogSettings},
+    open_dialog::{OpenDialog, OpenDialogResponse, OpenDialogSettings},
+    save_dialog::{SaveDialog, SaveDialogResponse, SaveDialogSettings},
 };
-use sourceview5::{LanguageManager, prelude::BufferExt};
-use std::{
-    fs::{File, exists},
-    io::Write,
-    path::{Path, PathBuf},
-};
+use sourceview5::LanguageManager;
 
 mod widget_module;
-use widget_module::{setup_editor, update_file_type};
+use widget_module::setup_editor;
 
 mod menu_module;
 use menu_module::{extras_menu_bar, menu_bar};
 
 mod fs_module;
-use fs_module::{load_file, load_folder, load_settings, save_settings};
 
 mod program_model;
 use program_model::{MainStruct, Message, WidgetStruct};
 
 mod update;
+mod view;
 
 impl SimpleComponent for MainStruct {
     type Init = String;
@@ -314,22 +309,7 @@ impl SimpleComponent for MainStruct {
         update::handle_messages(self, message, sender);
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
-        self.title.set_subtitle(&self.current_folder_path);
-        match update_file_type(&self.current_file_path) {
-            Some(file_type) => {
-                self.file_type_label.set_label(&file_type);
-            }
-            None => {
-                self.file_type_label.set_label("");
-            }
-        }
-        let cursor_iter = &self.buffer.iter_at_offset(self.buffer.cursor_position());
-        let cursor_line = cursor_iter.line();
-        let cursor_row = cursor_iter.line_offset();
-        let mut cursor_position = cursor_line.to_string().to_owned();
-        cursor_position.push(':');
-        cursor_position.push_str(cursor_row.to_string().as_str());
-        self.cursor_position_label.set_label(&cursor_position);
+        view::handle_view(self, _widgets, _sender);
     }
 }
 
