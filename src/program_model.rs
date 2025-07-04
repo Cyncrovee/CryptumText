@@ -14,6 +14,7 @@ pub struct MainStruct {
     pub view_hidden: bool,
     // Widgets
     pub file_list: gtk::ListBox,
+    pub file_list_context_menu: gtk::PopoverMenu,
     pub buffer: sourceview5::Buffer,
     pub language_manager: LanguageManager,
     pub open_dialog: Controller<OpenDialog>,
@@ -48,8 +49,10 @@ pub enum Message {
     ToggleBufferStyleScheme,
     // About
     ShowAbout,
+    // File list
+    FileListContext(i32, i32),
+    DeleteItem,
     // Other
-    FileListContext,
     LoadSettings,
     UpDir,
     CursorPostitionChanged,

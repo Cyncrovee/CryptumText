@@ -13,3 +13,4 @@ relm4-components = "0.9.1"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 sourceview5 = "0.9.1"
+trash = "5.2.2"

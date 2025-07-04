@@ -1,4 +1,4 @@
-use gtk4::{Button, MenuButton, ScrolledWindow};
+use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -53,6 +53,9 @@ impl SimpleComponent for MainStruct {
             .orientation(gtk::Orientation::Vertical)
             .build();
         let side_bar_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let file_list_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
         let editor_box = gtk::Box::builder()
@@ -116,6 +119,10 @@ impl SimpleComponent for MainStruct {
             .vexpand(true)
             .activate_on_single_click(false)
             .build();
+        let file_list_context_menu = gtk::PopoverMenu::builder()
+            .has_arrow(false)
+            .halign(gtk4::Align::Start)
+            .build();
         let file_list_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
             .child(&file_list)
@@ -141,7 +148,9 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
         side_bar_box.append(&up_button);
-        side_bar_box.append(&file_list_scroll);
+        file_list_box.append(&file_list_scroll);
+        file_list_box.append(&file_list_context_menu);
+        side_bar_box.append(&file_list_box);
         editor_box.append(&side_bar_box);
         editor_box.append(&editor_scroll_window);
         editor_box.append(&mini_map);
@@ -164,7 +173,11 @@ impl SimpleComponent for MainStruct {
             move |_| sender.input(Message::LoadSettings)
         ));
 
-        // Setup events
+        // Setup events/gestures
+        let file_list_context_gesture = gtk::GestureClick::builder()
+            .button(GDK_BUTTON_SECONDARY as u32)
+            .build();
+
         up_button.connect_clicked(clone!(
             #[strong]
             sender,
@@ -175,11 +188,17 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_, _| sender.input(Message::LoadFileFromList)
         ));
-        file_list.connect_row_selected(clone!(
+        file_list_context_gesture.connect_released(clone!(
             #[strong]
             sender,
-            move |_, _| sender.input(Message::FileListContext)
+            move |g, _, x, y| {
+                let x32: i32 = x as i32;
+                let y32: i32 = y as i32;
+                g.set_state(gtk::EventSequenceState::Claimed);
+                sender.input(Message::FileListContext(x32, y32));
+            }
         ));
+        file_list.add_controller(file_list_context_gesture);
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -261,11 +280,19 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::ShowAbout)
         ));
+        // File list actions
+        let delete_item_action: RelmAction<DeleteItemAction> = RelmAction::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::DeleteItem)
+        ));
+
         // Add actions to group
         let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
         let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
         let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
         let mut about_action_group = RelmActionGroup::<AboutActionGroup>::new();
+        let mut file_list_action_group = RelmActionGroup::<FileListActionGroup>::new();
         file_action_group.add_action(new_file_action);
         file_action_group.add_action(save_as_action);
         file_action_group.add_action(save_action);
@@ -277,11 +304,13 @@ impl SimpleComponent for MainStruct {
         view_action_group.add_action(toggle_mini_map_action);
         view_action_group.add_action(toggle_buffer_style_scheme_action);
         about_action_group.add_action(show_about_action);
+        file_list_action_group.add_action(delete_item_action);
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
         view_action_group.register_for_widget(&root);
         about_action_group.register_for_widget(&root);
+        file_list_action_group.register_for_widget(&root);
 
         let model = MainStruct {
             // Non-Widgets
@@ -291,6 +320,7 @@ impl SimpleComponent for MainStruct {
             view_hidden,
             // Widgets
             file_list,
+            file_list_context_menu,
             buffer,
             language_manager,
             open_dialog,
@@ -318,6 +348,7 @@ relm4::new_action_group!(FileActionGroup, "file");
 relm4::new_action_group!(EditActionGroup, "edit");
 relm4::new_action_group!(ViewActionGroup, "view");
 relm4::new_action_group!(AboutActionGroup, "about");
+relm4::new_action_group!(FileListActionGroup, "list");
 // File
 relm4::new_stateless_action!(NewFileAction, FileActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, FileActionGroup, "save_as");
@@ -341,6 +372,8 @@ relm4::new_stateless_action!(
 );
 // About
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
+// File list context menu
+relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");

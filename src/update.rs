@@ -4,13 +4,14 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use gtk4::{AboutDialog, prelude::*};
+use gtk4::{AboutDialog, gdk::Rectangle, prelude::*};
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::BufferExt;
 
 use crate::{
     fs_module::{load_file, load_folder, load_settings, save_settings},
+    menu_module::{file_list_context_menu_model, file_list_context_menu_model_item},
     program_model::{MainStruct, Message},
 };
 
@@ -24,6 +25,7 @@ pub(crate) fn handle_messages(
         Message::NewFile => {
             main_struct.buffer.set_text("");
             main_struct.current_file_path = "".to_string();
+            main_struct.file_list.unselect_all();
         }
         Message::LoadFileFromList => {
             if let Some(_) = main_struct.file_list.selected_row() {
@@ -160,22 +162,41 @@ pub(crate) fn handle_messages(
                 .build()
                 .show();
         }
-        // Other
-        Message::FileListContext => {
-            //
+        // File list
+        Message::FileListContext(x, y) => {
+            let rect = Rectangle::new(x, y, 1, 1);
+            main_struct
+                .file_list_context_menu
+                .set_pointing_to(Some(&rect));
+            if let Some(_) = main_struct.file_list.selected_row() {
+                main_struct
+                    .file_list_context_menu
+                    .set_menu_model(Some(&file_list_context_menu_model_item()));
+                main_struct.file_list_context_menu.popup();
+            } else {
+                main_struct
+                    .file_list_context_menu
+                    .set_menu_model(Some(&file_list_context_menu_model()));
+                main_struct.file_list_context_menu.popup();
+            }
         }
+        Message::DeleteItem => {
+            if let Some(row) = main_struct.file_list.selected_row() {
+                let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
+                let file_list_name = &row.child().unwrap().widget_name();
+                let file_list_path = Path::new(file_list_name);
+                file_list_pathbuf.push(file_list_path);
+                trash::delete(file_list_pathbuf).unwrap();
+            }
+        }
+        // Other
         Message::LoadSettings => {
             println!("Loading Settings...");
             load_settings(main_struct);
         }
         Message::UpDir => {
-            if let Some(_) = PathBuf::from(&main_struct.current_folder_path).parent() {
-                let up_dir = PathBuf::from(&main_struct.current_folder_path)
-                    .parent()
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .to_string();
+            if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent() {
+                let up_dir = &path.to_str().unwrap().to_string();
                 main_struct.current_folder_path = up_dir.clone();
                 load_folder(main_struct, &up_dir);
             }
