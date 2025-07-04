@@ -30,3 +30,5 @@ Cryptum Text is a GTK based text/code editor written in Rust and powered by GTK-
 - The ability to toggle showing hidden files is only available on UNIX systems, due to complications with detecting hidden files on Windows
 - Folders will have have a / character at the end of them in the file list to differentiate them from files
 
+# License
+This project it licensed under the GNU General Public License Version 3. See the [LICENSE](./LICENSE) file for details (specifically the file in the root directory with the README, NOT any of the files in the `licenses/` directory).
