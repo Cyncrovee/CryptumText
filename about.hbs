@@ -1,70 +1,61 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-    <style>
-        @media (prefers-color-scheme: dark) {
-            body {
-                background: #333;
-                color: white;
-            }
-            a {
-                color: skyblue;
-            }
-        }
-        .container {
-            font-family: sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .intro {
-            text-align: center;
-        }
-        .licenses-list {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-        }
-        .license-used-by {
-            margin-top: -10px;
-        }
-        .license-text {
-            max-height: 200px;
-            overflow-y: scroll;
-            white-space: pre-wrap;
-        }
-    </style>
+  <meta charset="utf-8">
+  <title>Cyncrovee-Website Licenses</title>
+  
+  <style>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #333;
+        color: white;
+      }
+      a {
+        color: skyblue;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <main class="container">
-        <div class="intro">
-            <h1>Third Party Licenses</h1>
-            <p>This page lists the licenses of the projects used in cargo-about.</p>
-        </div>
-    
-        <h2>Overview of licenses:</h2>
-        <ul class="licenses-overview">
-            {{#each overview}}
-            <li><a href="#{{id}}">{{name}}</a> ({{count}})</li>
-            {{/each}}
-        </ul>
+  <main>
+    <div>
+      <h1>License Information for Cyncrovee-Website</h1>
+    </div>
 
-        <h2>All license text:</h2>
-        <ul class="licenses-list">
-            {{#each licenses}}
-            <li class="license">
-                <h3 id="{{id}}">{{name}}</h3>
-                <h4>Used by:</h4>
-                <ul class="license-used-by">
-                    {{#each used_by}}
-                    <li><a href="{{#if crate.repository}} {{crate.repository}} {{else}} https://crates.io/crates/{{crate.name}} {{/if}}">{{crate.name}} {{crate.version}}</a></li>
-                    {{/each}}
-                </ul>
-                <pre class="license-text">{{text}}</pre>
-            </li>
+    <div>
+      <h1>License Overview:</h1>
+      <ul>
+        {{#each overview}}
+        <li><a href="#{{id}}">{{name}}</a> ({{count}})</li>
+        {{/each}}
+      </ul>
+    </div>
+
+    <div>
+      <h1>License Text</h1>
+      <ul>
+        {{#each licenses}}
+        <li>
+          {{#if first_of_kind}}
+          <h3 id="{{id}}">{{name}}</h3>
+          {{/if}}
+          <h4 id="{{id}}-{{@index}}">{{name}}</h4>
+          <h5>Used by:</h5>
+          <ul>
+            {{#each used_by}}
+            <li><a
+                href="{{#if crate.repository}}{{crate.repository}}{{else}}https://crates.io/{{crate.name}}{{/if}}">{{crate.name}}
+                {{crate.version}}</a></li>
             {{/each}}
-        </ul>
-    </main>
+          </ul>
+          <pre>{{text}}</pre>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+  </main>
 </body>
 
 </html>
