@@ -86,7 +86,10 @@ pub fn file_list_context_menu_model_item() -> MenuModel {
     let menu = Menu::new();
 
     menu.insert_item(0, &MenuItem::new(Some("New File"), Some("file.new_file")));
-    menu.insert_item(1, &MenuItem::new(Some("Delete"), Some("list.delete_item")));
+    menu.insert_item(
+        1,
+        &MenuItem::new(Some("Move to Trash"), Some("list.delete_item")),
+    );
 
     return menu.into();
 }
