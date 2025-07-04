@@ -11,19 +11,22 @@ use relm4_components::{
 };
 use sourceview5::LanguageManager;
 
-mod widget_module;
-use widget_module::setup_editor;
+mod util_widget;
+use util_widget::setup_editor;
 
-mod menu_module;
-use menu_module::{extras_menu_bar, menu_bar};
+mod util_menu;
+use util_menu::{extras_menu_bar, menu_bar};
 
-mod fs_module;
+mod util_fs;
 
-mod program_model;
-use program_model::{MainStruct, Message, WidgetStruct};
+mod app_model;
+use app_model::{MainStruct, Message, WidgetStruct};
 
-mod update;
-mod view;
+mod app_update;
+use app_update::handle_messages;
+
+mod app_view;
+use app_view::handle_view;
 
 impl SimpleComponent for MainStruct {
     type Init = String;
@@ -336,10 +339,10 @@ impl SimpleComponent for MainStruct {
     }
 
     fn update(&mut self, message: Self::Input, sender: relm4::ComponentSender<Self>) {
-        update::handle_messages(self, message, sender);
+        handle_messages(self, message, sender);
     }
     fn update_view(&self, _widgets: &mut Self::Widgets, _sender: ComponentSender<Self>) {
-        view::handle_view(self, _widgets, _sender);
+        handle_view(self, _widgets, _sender);
     }
 }
 

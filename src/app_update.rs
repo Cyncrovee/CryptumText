@@ -10,9 +10,9 @@ use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::BufferExt;
 
 use crate::{
-    fs_module::{load_file, load_folder, load_settings, save_settings},
-    menu_module::{file_list_context_menu_model, file_list_context_menu_model_item},
-    program_model::{MainStruct, Message},
+    app_model::{MainStruct, Message},
+    util_fs::{load_file, load_folder, load_settings, save_settings},
+    util_menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
 pub(crate) fn handle_messages(

@@ -8,8 +8,8 @@ use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
 use sourceview5::prelude::BufferExt;
 
 use crate::{
-    program_model::{AppSettings, MainStruct},
-    widget_module::update_syntax,
+    app_model::{AppSettings, MainStruct},
+    util_widget::update_syntax,
 };
 
 pub fn load_file(self_from: &mut MainStruct) {
