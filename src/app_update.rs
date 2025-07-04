@@ -188,6 +188,8 @@ pub(crate) fn handle_messages(
                 file_list_pathbuf.push(file_list_path);
                 trash::delete(file_list_pathbuf).unwrap();
             }
+            let path = main_struct.current_folder_path.clone();
+            load_folder(main_struct, &path);
         }
         // Other
         Message::LoadSettings => {
@@ -201,8 +203,10 @@ pub(crate) fn handle_messages(
                 load_folder(main_struct, &up_dir);
             }
         }
-        Message::CursorPostitionChanged => {
-            // Pass
+        Message::CursorPositionChanged => {
+            if let Some(_) = main_struct.file_list.selected_row() {
+                main_struct.file_list.unselect_all();
+            }
         }
         Message::Ignore => {
             // Pass

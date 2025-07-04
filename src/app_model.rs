@@ -55,7 +55,7 @@ pub enum Message {
     // Other
     LoadSettings,
     UpDir,
-    CursorPostitionChanged,
+    CursorPositionChanged,
     Ignore,
 }
 

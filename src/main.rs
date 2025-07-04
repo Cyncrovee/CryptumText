@@ -205,7 +205,7 @@ impl SimpleComponent for MainStruct {
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::CursorPostitionChanged)
+            move |_| sender.input(Message::CursorPositionChanged)
         ));
 
         // Setup actions
