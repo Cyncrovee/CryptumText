@@ -60,6 +60,10 @@ impl SimpleComponent for MainStruct {
         let side_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
+        let file_list_button_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Horizontal)
+            .halign(gtk4::Align::Center)
+            .build();
         let file_list_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
@@ -114,6 +118,17 @@ impl SimpleComponent for MainStruct {
         header.pack_end(&extras);
         let up_button = Button::builder()
             .icon_name("go-up-symbolic")
+            .width_request(40)
+            .height_request(40)
+            .margin_start(5)
+            .margin_end(5)
+            .margin_top(5)
+            .margin_bottom(5)
+            .build();
+        let refesh_button = Button::builder()
+            .icon_name("update-symbolic")
+            .width_request(40)
+            .height_request(40)
             .margin_start(5)
             .margin_end(5)
             .margin_top(5)
@@ -152,7 +167,9 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
-        side_bar_box.append(&up_button);
+        file_list_button_box.append(&up_button);
+        file_list_button_box.append(&refesh_button);
+        side_bar_box.append(&file_list_button_box);
         file_list_box.append(&file_list_scroll);
         file_list_box.append(&file_list_context_menu);
         side_bar_box.append(&file_list_box);
@@ -187,6 +204,11 @@ impl SimpleComponent for MainStruct {
             #[strong]
             sender,
             move |_| sender.input(Message::UpDir)
+        ));
+        refesh_button.connect_clicked(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::RefreshFileList)
         ));
         file_list.connect_row_activated(clone!(
             #[strong]

@@ -56,6 +56,7 @@ pub enum Message {
     // Other
     LoadSettings,
     UpDir,
+    RefreshFileList,
     CursorPositionChanged,
     Ignore,
 }
