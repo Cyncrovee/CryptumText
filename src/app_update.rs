@@ -18,7 +18,7 @@ use crate::{
 pub(crate) fn handle_messages(
     main_struct: &mut MainStruct,
     message: Message,
-    _sender: relm4::ComponentSender<MainStruct>,
+    sender: relm4::ComponentSender<MainStruct>,
 ) {
     match message {
         // File
@@ -85,6 +85,8 @@ pub(crate) fn handle_messages(
         },
         Message::SaveFile => {
             if let Ok(_) = exists(&main_struct.current_file_path) {
+                // The program will attempt to save file, falling back to "Save As"
+                // if it can't create the file from the current file path
                 if let Ok(mut file) = File::create(&main_struct.current_file_path) {
                     file.write_all(
                         main_struct
@@ -97,6 +99,8 @@ pub(crate) fn handle_messages(
                             .as_bytes(),
                     )
                     .unwrap();
+                } else {
+                    sender.input(Message::SaveAsRequest);
                 }
             }
         }
