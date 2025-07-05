@@ -56,6 +56,12 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "xml" => {
                     return Some("XML File".into());
                 }
+                "xaml" => {
+                    return Some("XAML File".into());
+                }
+                "axaml" => {
+                    return Some("AXAML File".into());
+                }
                 "org" => {
                     return Some("Org Mode File".into());
                 }
