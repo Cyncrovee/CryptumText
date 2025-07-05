@@ -5,7 +5,6 @@ use std::{
 };
 
 use gtk4::{AboutDialog, gdk::Rectangle, prelude::*};
-use open::that;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::BufferExt;
