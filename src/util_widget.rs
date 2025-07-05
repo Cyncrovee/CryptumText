@@ -94,6 +94,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "rs" => {
                     return Some("Rust Source File".into());
                 }
+                "cr" => {
+                    return Some("Crystal Source File".into());
+                }
                 "rb" => {
                     return Some("Ruby Source File".into());
                 }
@@ -108,6 +111,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "h" => {
                     return Some("Header File".into());
+                }
+                "hx" => {
+                    return Some("Haxe Header File".into());
                 }
                 "cs" => {
                     return Some("C# Source File".into());
@@ -126,6 +132,18 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "el" => {
                     return Some("ELisp Source File".into());
+                }
+                "erl" => {
+                    return Some("Erlang Source File".into());
+                }
+                "hrl" => {
+                    return Some("Erlang Header File".into());
+                }
+                "vala" => {
+                    return Some("Vala Source File".into());
+                }
+                "zig" => {
+                    return Some("Zig Source File".into());
                 }
                 &_ => {
                     return None;
