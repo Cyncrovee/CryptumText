@@ -53,6 +53,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "hbs" => {
                     return Some("Handlebars File".into());
                 }
+                "hxml" => {
+                    return Some("Haxe Build File".into());
+                }
                 "xml" => {
                     return Some("XML File".into());
                 }
@@ -97,6 +100,18 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "cr" => {
                     return Some("Crystal Source File".into());
                 }
+                "elm" => {
+                    return Some("Elm Source File".into());
+                }
+                "ex" => {
+                    return Some("Elixir Source File".into());
+                }
+                "exs" => {
+                    return Some("Elixir lource File".into());
+                }
+                "gd" => {
+                    return Some("GDScript Source File".into());
+                }
                 "rb" => {
                     return Some("Ruby Source File".into());
                 }
@@ -109,11 +124,8 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "c" => {
                     return Some("C Source File".into());
                 }
-                "h" => {
-                    return Some("Header File".into());
-                }
-                "hx" => {
-                    return Some("Haxe Header File".into());
+                "ml" => {
+                    return Some("OCaml Source File".into());
                 }
                 "cs" => {
                     return Some("C# Source File".into());
@@ -125,7 +137,10 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                     return Some("TypeScript Source File".into());
                 }
                 "js" => {
-                    return Some("JavaScript  Source File".into());
+                    return Some("JavaScript Source File".into());
+                }
+                "jl" => {
+                    return Some("Julia Source File".into());
                 }
                 "lisp" => {
                     return Some("Common Lisp Source File".into());
@@ -138,6 +153,21 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 }
                 "hrl" => {
                     return Some("Erlang Header File".into());
+                }
+                "h" => {
+                    return Some("Header File".into());
+                }
+                "hx" => {
+                    return Some("Haxe Source File".into());
+                }
+                "v" => {
+                    return Some("V Source File".into());
+                }
+                "vim" => {
+                    return Some("Vimscript File".into());
+                }
+                "vimrc" => {
+                    return Some("Vimscript File".into());
                 }
                 "vala" => {
                     return Some("Vala Source File".into());
