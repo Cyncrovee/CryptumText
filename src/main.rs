@@ -1,3 +1,5 @@
+// TODO: N/A
+
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
@@ -289,6 +291,12 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::DeleteItem)
         ));
+        let open_folder_external_action: RelmAction<OpenFolderExternalAction> =
+            RelmAction::new_stateless(clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::OpenFolderExternal)
+            ));
 
         // Add actions to group
         let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
@@ -308,6 +316,7 @@ impl SimpleComponent for MainStruct {
         view_action_group.add_action(toggle_buffer_style_scheme_action);
         about_action_group.add_action(show_about_action);
         file_list_action_group.add_action(delete_item_action);
+        file_list_action_group.add_action(open_folder_external_action);
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
@@ -377,6 +386,11 @@ relm4::new_stateless_action!(
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 // File list context menu
 relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
+relm4::new_stateless_action!(
+    OpenFolderExternalAction,
+    FileListActionGroup,
+    "open_folder_external"
+);
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");

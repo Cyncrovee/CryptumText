@@ -1,10 +1,11 @@
 use std::{
-    fs::{File, exists},
+    fs::{self, File, exists},
     io::Write,
     path::{Path, PathBuf},
 };
 
 use gtk4::{AboutDialog, gdk::Rectangle, prelude::*};
+use open::that;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::BufferExt;
@@ -194,6 +195,11 @@ pub(crate) fn handle_messages(
             }
             let path = main_struct.current_folder_path.clone();
             load_folder(main_struct, &path);
+        }
+        Message::OpenFolderExternal => {
+            if let Ok(_) = fs::exists(&main_struct.current_folder_path) {
+                if let Ok(_) = open::that(&main_struct.current_folder_path) {}
+            }
         }
         // Other
         Message::LoadSettings => {

@@ -52,6 +52,7 @@ pub enum Message {
     // File list
     FileListContext(i32, i32),
     DeleteItem,
+    OpenFolderExternal,
     // Other
     LoadSettings,
     UpDir,
