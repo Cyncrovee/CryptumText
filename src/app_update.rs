@@ -28,16 +28,10 @@ pub(crate) fn handle_messages(
             main_struct.file_list.unselect_all();
         }
         Message::LoadFileFromList => {
-            if let Some(_) = main_struct.file_list.selected_row() {
+            if let Some(row) = main_struct.file_list.selected_row() {
                 let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
-                let file_list_name = &main_struct
-                    .file_list
-                    .selected_row()
-                    .unwrap()
-                    .child()
-                    .unwrap()
-                    .widget_name();
-                let file_list_path = Path::new(file_list_name);
+                let file_list_name = row.child().unwrap().widget_name();
+                let file_list_path = Path::new(file_list_name.as_str());
                 file_list_pathbuf.push(file_list_path);
                 match PathBuf::from(&file_list_pathbuf).is_dir() {
                     true => {
@@ -76,12 +70,8 @@ pub(crate) fn handle_messages(
                 false,
             ),
         ) {
-            Ok(_) => {
-                // Pass
-            }
-            Err(_) => {
-                // Pass
-            }
+            Ok(_) => {}
+            Err(_) => {}
         },
         Message::SaveFile => {
             if let Ok(_) = exists(&main_struct.current_file_path) {
@@ -150,9 +140,7 @@ pub(crate) fn handle_messages(
                         .buffer
                         .set_style_scheme(main_struct.buffer_style.as_ref());
                 }
-                _ => {
-                    // Pass
-                }
+                _ => {}
             }
             save_settings(main_struct);
         }
@@ -172,16 +160,19 @@ pub(crate) fn handle_messages(
             main_struct
                 .file_list_context_menu
                 .set_pointing_to(Some(&rect));
-            if let Some(_) = main_struct.file_list.selected_row() {
-                main_struct
-                    .file_list_context_menu
-                    .set_menu_model(Some(&file_list_context_menu_model_item()));
-                main_struct.file_list_context_menu.popup();
-            } else {
-                main_struct
-                    .file_list_context_menu
-                    .set_menu_model(Some(&file_list_context_menu_model()));
-                main_struct.file_list_context_menu.popup();
+            match main_struct.file_list.selected_row() {
+                Some(_) => {
+                    main_struct
+                        .file_list_context_menu
+                        .set_menu_model(Some(&file_list_context_menu_model_item()));
+                    main_struct.file_list_context_menu.popup();
+                }
+                None => {
+                    main_struct
+                        .file_list_context_menu
+                        .set_menu_model(Some(&file_list_context_menu_model()));
+                    main_struct.file_list_context_menu.popup();
+                }
             }
         }
         Message::DeleteItem => {
@@ -217,8 +208,6 @@ pub(crate) fn handle_messages(
                 main_struct.file_list.unselect_all();
             }
         }
-        Message::Ignore => {
-            // Pass
-        }
+        Message::Ignore => {}
     }
 }

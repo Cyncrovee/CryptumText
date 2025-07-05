@@ -40,7 +40,7 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
                             show_item(self_from, files);
                         }
                         false => {
-                            match files
+                            if let false = files
                                 .as_ref()
                                 .unwrap()
                                 .file_name()
@@ -48,12 +48,7 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
                                 .unwrap()
                                 .starts_with(&['.'])
                             {
-                                true => {
-                                    // Pass
-                                }
-                                false => {
-                                    show_item(self_from, files);
-                                }
+                                show_item(self_from, files);
                             }
                         }
                     }
@@ -105,11 +100,8 @@ pub fn load_settings(self_from: &mut MainStruct) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
-    match read_to_string(&config_path) {
-        Ok(_) => {
-            // Pass
-        }
-        Err(_) => std::fs::write(&config_path, "").unwrap(),
+    if let Err(_) = read_to_string(&config_path) {
+        std::fs::write(&config_path, "").unwrap()
     }
     let settings_file = read_to_string(&config_path).unwrap();
 
