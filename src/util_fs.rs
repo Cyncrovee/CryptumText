@@ -5,7 +5,7 @@ use std::{
 };
 
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
-use sourceview5::prelude::BufferExt;
+use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
     app_model::{AppSettings, MainStruct},
@@ -86,6 +86,7 @@ pub fn save_settings(self_from: &mut MainStruct) {
         view_file_list: self_from.file_list.is_visible(),
         view_hidden_files: self_from.view_hidden,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
+        editor_tab_width: self_from.editor.tab_width(),
     };
 
     serde_json::to_string(&settings).unwrap();
@@ -110,6 +111,7 @@ pub fn load_settings(self_from: &mut MainStruct) {
         view_file_list: true,
         view_hidden_files: false,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
+        editor_tab_width: 4,
     });
     match settings.view_file_list {
         true => {
@@ -150,4 +152,5 @@ pub fn load_settings(self_from: &mut MainStruct) {
         }
         &_ => {}
     }
+    self_from.editor.set_tab_width(settings.editor_tab_width);
 }

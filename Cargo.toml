@@ -7,7 +7,7 @@ license = "GPL-3.0"
 [dependencies]
 dirs = "6.0.0"
 gtk4 = "0.9.6"
-libadwaita = "0.7.2"
+libadwaita = { version = "0.7.2", features = ["v1_5", "v1_7"] }
 open = "5.3.2"
 relm4 = "0.9.1"
 relm4-components = "0.9.1"

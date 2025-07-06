@@ -1,4 +1,4 @@
-// TODO: N/A
+// TODO: Create a preferences dialog
 
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
@@ -20,6 +20,8 @@ mod util_menu;
 use util_menu::{extras_menu_bar, menu_bar};
 
 mod util_fs;
+
+mod util_dialogs;
 
 mod app_model;
 use app_model::{MainStruct, Message, WidgetStruct};
@@ -78,7 +80,7 @@ impl SimpleComponent for MainStruct {
             .vscrollbar_policy(gtk4::PolicyType::Automatic)
             .build();
 
-        // Define and setup file dialogs
+        // Define and setup dialogs
         let mut load_folder_dialog_settings = OpenDialogSettings::default();
         load_folder_dialog_settings.folder_mode = true;
         let folder_dialog = OpenDialog::builder()
@@ -314,6 +316,11 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::ShowAbout)
         )));
+        about_action_group.add_action(RelmAction::<ShowPreferencesAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ShowPreferences)
+        )));
         // File list actions
         file_list_action_group.add_action(RelmAction::<DeleteItemAction>::new_stateless(clone!(
             #[strong]
@@ -337,10 +344,12 @@ impl SimpleComponent for MainStruct {
 
         let model = MainStruct {
             // Containers
+            root,
             side_bar_box,
             // Widgets
             file_list,
             file_list_context_menu,
+            editor,
             buffer,
             language_manager,
             open_dialog,
@@ -397,6 +406,7 @@ relm4::new_stateless_action!(
 );
 // About
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
+relm4::new_stateless_action!(ShowPreferencesAction, AboutActionGroup, "show_preferences");
 // File list context menu
 relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
 relm4::new_stateless_action!(

@@ -4,10 +4,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use gtk4::{AboutDialog, gdk::Rectangle, prelude::*};
+use gtk4::{gdk::Rectangle, prelude::*};
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
-use sourceview5::prelude::BufferExt;
+use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
     app_model::{MainStruct, Message},
@@ -146,13 +146,10 @@ pub(crate) fn handle_messages(
         }
         // About
         Message::ShowAbout => {
-            AboutDialog::builder()
-                .program_name("Cryptum Text")
-                .version("Dev Version")
-                .copyright("Ella Hart (Cyncrovee)")
-                .license_type(gtk4::License::Gpl30Only)
-                .build()
-                .show();
+            crate::util_dialogs::create_about_dialog();
+        }
+        Message::ShowPreferences => {
+            crate::util_dialogs::create_preferences_dialog(main_struct, sender);
         }
         // File list
         Message::FileListContext(x, y) => {
@@ -195,6 +192,10 @@ pub(crate) fn handle_messages(
         Message::LoadSettings => {
             println!("Loading Settings...");
             load_settings(main_struct);
+        }
+        Message::UpdateTabWidth(tab_width) => {
+            main_struct.editor.set_tab_width(tab_width);
+            save_settings(main_struct);
         }
         Message::UpDir => {
             if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent() {

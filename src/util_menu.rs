@@ -70,6 +70,10 @@ pub fn extras_menu_bar() -> MenuModel {
         0,
         &MenuItem::new(Some("About Cryptum Text"), Some("about.show_about")),
     );
+    menu.insert_item(
+        1,
+        &MenuItem::new(Some("Preferences"), Some("about.show_preferences")),
+    );
 
     return menu.into();
 }

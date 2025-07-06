@@ -8,10 +8,12 @@ use sourceview5::LanguageManager;
 
 pub struct MainStruct {
     // Containers
+    pub root: libadwaita::ApplicationWindow,
     pub side_bar_box: gtk::Box,
     // Widgets
     pub file_list: gtk::ListBox,
     pub file_list_context_menu: gtk::PopoverMenu,
+    pub editor: sourceview5::View,
     pub buffer: sourceview5::Buffer,
     pub language_manager: LanguageManager,
     pub open_dialog: Controller<OpenDialog>,
@@ -51,12 +53,14 @@ pub enum Message {
     ToggleBufferStyleScheme,
     // About
     ShowAbout,
+    ShowPreferences,
     // File list
     FileListContext(i32, i32),
     DeleteItem,
     OpenFolderExternal,
     // Other
     LoadSettings,
+    UpdateTabWidth(u32),
     UpDir,
     RefreshFileList,
     CursorPositionChanged,
@@ -69,4 +73,5 @@ pub struct AppSettings {
     pub view_file_list: bool,
     pub view_hidden_files: bool,
     pub editor_theme: String,
+    pub editor_tab_width: u32,
 }

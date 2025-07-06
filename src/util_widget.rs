@@ -14,7 +14,6 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .highlight_current_line(true)
         .show_line_numbers(true)
         .auto_indent(true)
-        .indent_width(4)
         .build();
 
     return editor;
