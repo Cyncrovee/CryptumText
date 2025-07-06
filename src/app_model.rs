@@ -60,6 +60,7 @@ pub enum Message {
     OpenFolderExternal,
     // Other
     LoadSettings,
+    UpdateTabType(bool),
     UpdateTabWidth(u32),
     UpDir,
     RefreshFileList,
@@ -73,5 +74,6 @@ pub struct AppSettings {
     pub view_file_list: bool,
     pub view_hidden_files: bool,
     pub editor_theme: String,
+    pub editor_use_spaces_for_tabs: bool,
     pub editor_tab_width: u32,
 }

@@ -1,6 +1,7 @@
 use gtk4::{AboutDialog, glib::clone};
 use libadwaita::{
-    PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow, prelude::*,
+    PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow, SwitchRow,
+    prelude::*,
 };
 use sourceview5::prelude::ViewExt;
 
@@ -10,6 +11,17 @@ pub fn create_preferences_dialog(
     main_struct: &mut MainStruct,
     sender: relm4::ComponentSender<MainStruct>,
 ) {
+    let tab_type_switch_row = SwitchRow::builder()
+        .title("Enable Using Spaces for Tabs")
+        .activatable(false)
+        .active(main_struct.editor.is_insert_spaces_instead_of_tabs())
+        .build();
+    tab_type_switch_row.connect_active_notify(clone!(
+        #[strong]
+        sender,
+        move |row| sender.input(Message::UpdateTabType(row.is_active()))
+    ));
+
     let tab_spaces_spin_row = SpinRow::builder()
         .title("Number of Spaces to Use for Tabs")
         .activatable(false)
@@ -33,6 +45,14 @@ pub fn create_preferences_dialog(
     ));
 
     let tab_group = PreferencesGroup::builder().title("Tabs").build();
+    tab_group.add(
+        &PreferencesRow::builder()
+            .title("Set Tab Size")
+            .activatable(false)
+            .child(&tab_type_switch_row)
+            .height_request(60)
+            .build(),
+    );
     tab_group.add(
         &PreferencesRow::builder()
             .title("Set Tab Size")

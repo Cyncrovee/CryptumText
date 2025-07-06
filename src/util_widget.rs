@@ -10,7 +10,6 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .vexpand(true)
         .smart_backspace(true)
         .monospace(true)
-        .insert_spaces_instead_of_tabs(true)
         .highlight_current_line(true)
         .show_line_numbers(true)
         .auto_indent(true)

@@ -86,6 +86,7 @@ pub fn save_settings(self_from: &mut MainStruct) {
         view_file_list: self_from.file_list.is_visible(),
         view_hidden_files: self_from.view_hidden,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
+        editor_use_spaces_for_tabs: self_from.editor.is_insert_spaces_instead_of_tabs(),
         editor_tab_width: self_from.editor.tab_width(),
     };
 
@@ -111,6 +112,7 @@ pub fn load_settings(self_from: &mut MainStruct) {
         view_file_list: true,
         view_hidden_files: false,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
+        editor_use_spaces_for_tabs: true,
         editor_tab_width: 4,
     });
     match settings.view_file_list {
@@ -152,5 +154,8 @@ pub fn load_settings(self_from: &mut MainStruct) {
         }
         &_ => {}
     }
+    self_from
+        .editor
+        .set_insert_spaces_instead_of_tabs(settings.editor_use_spaces_for_tabs);
     self_from.editor.set_tab_width(settings.editor_tab_width);
 }

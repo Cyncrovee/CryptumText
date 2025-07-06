@@ -193,6 +193,12 @@ pub(crate) fn handle_messages(
             println!("Loading Settings...");
             load_settings(main_struct);
         }
+        Message::UpdateTabType(use_spaces) => {
+            main_struct
+                .editor
+                .set_insert_spaces_instead_of_tabs(use_spaces);
+            save_settings(main_struct);
+        }
         Message::UpdateTabWidth(tab_width) => {
             main_struct.editor.set_tab_width(tab_width);
             save_settings(main_struct);
@@ -212,6 +218,8 @@ pub(crate) fn handle_messages(
                 main_struct.file_list.unselect_all();
             }
         }
-        Message::Ignore => {}
+        Message::Ignore => {
+            println!("Test");
+        }
     }
 }
