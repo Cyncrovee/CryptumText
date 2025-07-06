@@ -7,11 +7,8 @@ use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
 
 pub struct MainStruct {
-    // Non-widgets
-    pub current_file_path: String,
-    pub current_folder_path: String,
-    pub buffer_style: Option<sourceview5::StyleScheme>,
-    pub view_hidden: bool,
+    // Containers
+    pub side_bar_box: gtk::Box,
     // Widgets
     pub file_list: gtk::ListBox,
     pub file_list_context_menu: gtk::PopoverMenu,
@@ -24,6 +21,11 @@ pub struct MainStruct {
     pub file_type_label: gtk::Label,
     pub cursor_position_label: gtk::Label,
     pub mini_map: sourceview5::Map,
+    // Misc
+    pub current_file_path: String,
+    pub current_folder_path: String,
+    pub buffer_style: Option<sourceview5::StyleScheme>,
+    pub view_hidden: bool,
 }
 
 pub struct WidgetStruct {}

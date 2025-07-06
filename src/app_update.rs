@@ -102,8 +102,8 @@ pub(crate) fn handle_messages(
         // View
         Message::ToggleFileList => {
             main_struct
-                .file_list
-                .set_visible(!main_struct.file_list.is_visible());
+                .side_bar_box
+                .set_visible(!main_struct.side_bar_box.is_visible());
             save_settings(main_struct);
         }
         Message::ToggleHiddenFiles => {

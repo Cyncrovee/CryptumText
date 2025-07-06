@@ -336,11 +336,8 @@ impl SimpleComponent for MainStruct {
         file_list_action_group.register_for_widget(&root);
 
         let model = MainStruct {
-            // Non-Widgets
-            current_file_path,
-            current_folder_path,
-            buffer_style,
-            view_hidden,
+            // Containers
+            side_bar_box,
             // Widgets
             file_list,
             file_list_context_menu,
@@ -353,6 +350,11 @@ impl SimpleComponent for MainStruct {
             file_type_label,
             cursor_position_label,
             mini_map,
+            // Misc
+            current_file_path,
+            current_folder_path,
+            buffer_style,
+            view_hidden,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }
