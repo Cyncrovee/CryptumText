@@ -244,101 +244,90 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
         program.set_accelerators_for_action::<ToggleHiddenFilesAction>(&["<control>h"]);
         program.set_accelerators_for_action::<ToggleMiniMapAction>(&["<control><alt>m"]);
-        // File actions
-        let new_file_action: RelmAction<NewFileAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::NewFile)
-        ));
-        let save_as_action: RelmAction<SaveAsAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::SaveAsRequest)
-        ));
-        let save_action: RelmAction<SaveAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::SaveFile)
-        ));
-        let open_action: RelmAction<OpenAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::OpenRequest)
-        ));
-        let open_folder_action: RelmAction<OpenFolderAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::FolderRequest)
-        ));
-        // Edit actions
-        let clear_action: RelmAction<ClearAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::ClearEditor)
-        ));
-        // View actions
-        let toggle_file_list_action: RelmAction<ToggleFileListAction> =
-            RelmAction::new_stateless(clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::ToggleFileList)
-            ));
-        let toggle_hidden_files_action: RelmAction<ToggleHiddenFilesAction> =
-            RelmAction::new_stateless(clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::ToggleHiddenFiles)
-            ));
-        let toggle_mini_map_action: RelmAction<ToggleMiniMapAction> =
-            RelmAction::new_stateless(clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::ToggleMiniMap)
-            ));
-        let toggle_buffer_style_scheme_action: RelmAction<ToggleBufferStyleAction> =
-            RelmAction::new_stateless(clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::ToggleBufferStyleScheme)
-            ));
-        // About actions
-        let show_about_action: RelmAction<ShowAboutAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::ShowAbout)
-        ));
-        // File list actions
-        let delete_item_action: RelmAction<DeleteItemAction> = RelmAction::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::DeleteItem)
-        ));
-        let open_folder_external_action: RelmAction<OpenFolderExternalAction> =
-            RelmAction::new_stateless(clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::OpenFolderExternal)
-            ));
 
-        // Add actions to group
+        // Create action groups and add actions to them
         let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
         let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
         let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
         let mut about_action_group = RelmActionGroup::<AboutActionGroup>::new();
         let mut file_list_action_group = RelmActionGroup::<FileListActionGroup>::new();
-        file_action_group.add_action(new_file_action);
-        file_action_group.add_action(save_as_action);
-        file_action_group.add_action(save_action);
-        file_action_group.add_action(open_action);
-        file_action_group.add_action(open_folder_action);
-        edit_action_group.add_action(clear_action);
-        view_action_group.add_action(toggle_file_list_action);
-        view_action_group.add_action(toggle_hidden_files_action);
-        view_action_group.add_action(toggle_mini_map_action);
-        view_action_group.add_action(toggle_buffer_style_scheme_action);
-        about_action_group.add_action(show_about_action);
-        file_list_action_group.add_action(delete_item_action);
-        file_list_action_group.add_action(open_folder_external_action);
+        // File actions
+        file_action_group.add_action(RelmAction::<NewFileAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::NewFile)
+        )));
+        file_action_group.add_action(RelmAction::<SaveAsAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::SaveAsRequest)
+        )));
+        file_action_group.add_action(RelmAction::<SaveAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::SaveFile)
+        )));
+        file_action_group.add_action(RelmAction::<OpenAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::OpenRequest)
+        )));
+        file_action_group.add_action(RelmAction::<OpenFolderAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::FolderRequest)
+        )));
+        // Edit actions
+        edit_action_group.add_action(RelmAction::<ClearAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ClearEditor)
+        )));
+        // View actions
+        view_action_group.add_action(RelmAction::<ToggleFileListAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleFileList)
+        )));
+        view_action_group.add_action(RelmAction::<ToggleHiddenFilesAction>::new_stateless(
+            clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleHiddenFiles)
+            ),
+        ));
+        view_action_group.add_action(RelmAction::<ToggleMiniMapAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleMiniMap)
+        )));
+        view_action_group.add_action(RelmAction::<ToggleBufferStyleAction>::new_stateless(
+            clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ToggleBufferStyleScheme)
+            ),
+        ));
+        // About actions
+        about_action_group.add_action(RelmAction::<ShowAboutAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ShowAbout)
+        )));
+        // File list actions
+        file_list_action_group.add_action(RelmAction::<DeleteItemAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::DeleteItem)
+        )));
+        file_list_action_group.add_action(RelmAction::<OpenFolderExternalAction>::new_stateless(
+            clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::OpenFolderExternal)
+            ),
+        ));
+
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
