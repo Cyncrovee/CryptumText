@@ -1,4 +1,5 @@
-// TODO: Create a preferences dialog
+// TODO: Fix issue with no close button on preferences dialog
+// TODO: Add more options to preferences dialog
 
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
