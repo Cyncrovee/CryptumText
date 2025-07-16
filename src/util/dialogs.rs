@@ -63,7 +63,7 @@ pub fn create_preferences_dialog(
 
     let page = PreferencesPage::builder().title("Page").build();
 	page.add(&tab_group);
-	let title = WindowTitle::new("Cryptum Text", "");
+	let title = WindowTitle::new("Preferences", "");
     let header = HeaderBar::builder().title_widget(&title).build();
 	let toolbar = ToolbarView::builder().build();
 	toolbar.add_top_bar(&header);
