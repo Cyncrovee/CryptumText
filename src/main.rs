@@ -86,7 +86,7 @@ impl SimpleComponent for MainStruct {
             .icon_name("help-about-symbolic")
             .menu_model(&extras_menu_bar())
             .build();
-        let header = HeaderBar::builder().build();
+        let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
         let up_button = Button::builder()
