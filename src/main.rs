@@ -51,34 +51,6 @@ impl SimpleComponent for MainStruct {
             .set_color_scheme(libadwaita::ColorScheme::Default);
         program.connect_startup(|_| libadwaita::init().unwrap());
 
-        // Define containers
-        let main_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .build();
-        let side_bar_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .build();
-        let file_list_button_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .halign(gtk4::Align::Center)
-            .build();
-        let file_list_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .build();
-        let editor_box_vertical = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .build();
-        let editor_box_horizontal = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .build();
-        let status_bar_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .build();
-        let editor_scroll_window = gtk::ScrolledWindow::builder()
-            .hscrollbar_policy(gtk4::PolicyType::Automatic)
-            .vscrollbar_policy(gtk4::PolicyType::Automatic)
-            .build();
-
         // Define and setup dialogs
         let mut load_folder_dialog_settings = OpenDialogSettings::default();
         load_folder_dialog_settings.folder_mode = true;
@@ -161,6 +133,34 @@ impl SimpleComponent for MainStruct {
             .build();
         let file_type_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
+
+        // Define containers
+        let main_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let side_bar_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let file_list_button_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Horizontal)
+            .halign(gtk4::Align::Center)
+            .build();
+        let file_list_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let editor_box_vertical = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let editor_box_horizontal = gtk::Box::builder()
+            .orientation(gtk::Orientation::Horizontal)
+            .build();
+        let status_bar_box = gtk::Box::builder()
+            .orientation(gtk::Orientation::Horizontal)
+            .build();
+        let editor_scroll_window = gtk::ScrolledWindow::builder()
+            .hscrollbar_policy(gtk4::PolicyType::Automatic)
+            .vscrollbar_policy(gtk4::PolicyType::Automatic)
+            .build();
 
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
