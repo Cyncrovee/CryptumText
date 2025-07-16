@@ -2,7 +2,7 @@
 // TODO: Add more options to preferences dialog
 
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
-use libadwaita::{HeaderBar, WindowTitle, prelude::*};
+use libadwaita::{builders::WindowTitleBuilder, ffi::AdwToolbarView, prelude::*, HeaderBar, WindowTitle};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,
@@ -111,7 +111,7 @@ impl SimpleComponent for MainStruct {
             .icon_name("help-about-symbolic")
             .menu_model(&extras_menu_bar())
             .build();
-        let header = HeaderBar::builder().title_widget(&title).build();
+        let header = HeaderBar::builder().build();
         header.pack_start(&hamburger);
         header.pack_end(&extras);
         let up_button = Button::builder()
