@@ -14,24 +14,19 @@ use relm4_components::{
 };
 use sourceview5::LanguageManager;
 
-mod util_widget;
-use util_widget::setup_editor;
+mod app;
+use app::{
+    model::{MainStruct, Message, WidgetStruct},
+    update::handle_messages,
+    view::handle_view,
+};
 
-mod util_menu;
-use util_menu::{extras_menu_bar, menu_bar};
-
-mod util_fs;
-
-mod util_dialogs;
-
-mod app_model;
-use app_model::{MainStruct, Message, WidgetStruct};
-
-mod app_update;
-use app_update::handle_messages;
-
-mod app_view;
-use app_view::handle_view;
+mod util;
+use util::{
+    fs,
+    menu::{extras_menu_bar, menu_bar},
+    widget::setup_editor,
+};
 
 impl SimpleComponent for MainStruct {
     type Init = String;

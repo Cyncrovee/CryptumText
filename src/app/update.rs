@@ -10,9 +10,9 @@ use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
-    app_model::{MainStruct, Message},
-    util_fs::{load_file, load_folder, load_settings, save_settings},
-    util_menu::{file_list_context_menu_model, file_list_context_menu_model_item},
+    app::model::{MainStruct, Message},
+    fs::{load_file, load_folder, load_settings, save_settings},
+    util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
 pub(crate) fn handle_messages(
@@ -146,10 +146,10 @@ pub(crate) fn handle_messages(
         }
         // About
         Message::ShowAbout => {
-            crate::util_dialogs::create_about_dialog();
+            crate::util::dialogs::create_about_dialog();
         }
         Message::ShowPreferences => {
-            crate::util_dialogs::create_preferences_dialog(main_struct, sender);
+            crate::util::dialogs::create_preferences_dialog(main_struct, sender);
         }
         // File list
         Message::FileListContext(x, y) => {

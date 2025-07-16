@@ -5,7 +5,7 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app_model::{MainStruct, Message};
+use crate::app::model::{MainStruct, Message};
 
 pub fn create_preferences_dialog(
     main_struct: &mut MainStruct,

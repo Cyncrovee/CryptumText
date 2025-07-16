@@ -1,8 +1,8 @@
 use gtk4::prelude::TextBufferExt;
 
 use crate::{
-    app_model::{MainStruct, WidgetStruct},
-    util_widget::update_file_type,
+    app::model::{MainStruct, WidgetStruct},
+    util::widget::update_file_type,
 };
 
 pub(crate) fn handle_view(
