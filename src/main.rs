@@ -2,7 +2,7 @@
 // TODO: Overhaul status bar
 
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
-use libadwaita::{builders::WindowTitleBuilder, ffi::AdwToolbarView, prelude::*, HeaderBar, WindowTitle};
+use libadwaita::{prelude::*, HeaderBar, WindowTitle};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,
@@ -65,7 +65,10 @@ impl SimpleComponent for MainStruct {
         let file_list_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
-        let editor_box = gtk::Box::builder()
+        let editor_box_vertical = gtk::Box::builder()
+            .orientation(gtk::Orientation::Vertical)
+            .build();
+        let editor_box_horizontal = gtk::Box::builder()
             .orientation(gtk::Orientation::Horizontal)
             .build();
         let status_bar_box = gtk::Box::builder()
@@ -171,12 +174,13 @@ impl SimpleComponent for MainStruct {
         file_list_box.append(&file_list_scroll);
         file_list_box.append(&file_list_context_menu);
         side_bar_box.append(&file_list_box);
-        editor_box.append(&side_bar_box);
-        editor_box.append(&editor_scroll_window);
-        editor_box.append(&mini_map);
+        editor_box_vertical.append(&editor_scroll_window);
+        editor_box_vertical.append(&status_bar_box);
+        editor_box_horizontal.append(&side_bar_box);
+        editor_box_horizontal.append(&editor_box_vertical);
+        editor_box_horizontal.append(&mini_map);
         main_box.append(&header);
-        main_box.append(&editor_box);
-        main_box.append(&status_bar_box);
+        main_box.append(&editor_box_horizontal);
 
         // Setup the window
         root.set_content(Some(&main_box));
