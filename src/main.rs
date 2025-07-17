@@ -2,7 +2,7 @@
 // TODO: Overhaul status bar
 
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
-use libadwaita::{prelude::*, HeaderBar, WindowTitle};
+use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,

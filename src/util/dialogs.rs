@@ -1,6 +1,7 @@
 use gtk4::{AboutDialog, glib::clone};
 use libadwaita::{
-    prelude::*, HeaderBar, PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow, SwitchRow, ToolbarView, WindowTitle
+    HeaderBar, PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow,
+    SwitchRow, ToolbarView, WindowTitle, prelude::*,
 };
 use sourceview5::prelude::ViewExt;
 
@@ -62,12 +63,12 @@ pub fn create_preferences_dialog(
     );
 
     let page = PreferencesPage::builder().title("Page").build();
-	page.add(&tab_group);
-	let title = WindowTitle::new("Preferences", "");
+    page.add(&tab_group);
+    let title = WindowTitle::new("Preferences", "");
     let header = HeaderBar::builder().title_widget(&title).build();
-	let toolbar = ToolbarView::builder().build();
-	toolbar.add_top_bar(&header);
-	toolbar.set_content(Some(&page));
+    let toolbar = ToolbarView::builder().build();
+    toolbar.add_top_bar(&header);
+    toolbar.set_content(Some(&page));
 
     let dialog = PreferencesDialog::builder()
         .title("Preferences")

@@ -79,7 +79,7 @@ fn show_item(self_from: &mut MainStruct, files: Result<DirEntry, Error>) {
     if let Ok(repo) = Repository::discover(&self_from.current_folder_path) {
         self_from.git_info.0 = repo.head().unwrap().shorthand().unwrap().to_string();
         self_from.git_info.1 = true;
-    } else {        
+    } else {
         self_from.git_info.0 = "".to_string();
         self_from.git_info.1 = false;
     }
