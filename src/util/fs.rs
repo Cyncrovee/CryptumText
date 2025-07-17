@@ -125,10 +125,10 @@ pub fn load_settings(self_from: &mut MainStruct) {
     });
     match settings.view_file_list {
         true => {
-            self_from.file_list.set_visible(true);
+            self_from.side_bar_box.set_visible(true);
         }
         false => {
-            self_from.file_list.set_visible(false);
+            self_from.side_bar_box.set_visible(false);
         }
     }
     match settings.view_mini_map {
