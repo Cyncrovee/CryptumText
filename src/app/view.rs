@@ -26,10 +26,12 @@ pub(crate) fn handle_view(
         .iter_at_offset(main_struct.buffer.cursor_position());
     let cursor_line = cursor_iter.line();
     let cursor_row = cursor_iter.line_offset();
-    let mut cursor_position = cursor_line.to_string().to_owned();
-    cursor_position.push(':');
-    cursor_position.push_str(cursor_row.to_string().as_str());
+    let mut status_line_extras = cursor_line.to_string().to_owned();
+    status_line_extras.push(':');
+    status_line_extras.push_str(cursor_row.to_string().as_str());
+    status_line_extras.push_str(" | ");
+    status_line_extras.push_str(main_struct.git_info.0.as_str());
     main_struct
         .cursor_position_label
-        .set_label(&cursor_position);
+        .set_label(&status_line_extras);
 }

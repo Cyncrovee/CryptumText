@@ -28,6 +28,7 @@ pub struct MainStruct {
     pub current_folder_path: String,
     pub buffer_style: Option<sourceview5::StyleScheme>,
     pub view_hidden: bool,
+    pub git_info: (String, bool),
 }
 
 pub struct WidgetStruct {}

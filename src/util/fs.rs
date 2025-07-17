@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use git2::Repository;
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
 use sourceview5::prelude::{BufferExt, ViewExt};
 
@@ -75,6 +76,13 @@ fn show_item(self_from: &mut MainStruct, files: Result<DirEntry, Error>) {
     }
     label.set_text(&item_name);
     self_from.file_list.append(&label);
+    if let Ok(repo) = Repository::discover(&self_from.current_folder_path) {
+        self_from.git_info.0 = repo.head().unwrap().shorthand().unwrap().to_string();
+        self_from.git_info.1 = true;
+    } else {        
+        self_from.git_info.0 = "".to_string();
+        self_from.git_info.1 = false;
+    }
 }
 
 pub fn save_settings(self_from: &mut MainStruct) {

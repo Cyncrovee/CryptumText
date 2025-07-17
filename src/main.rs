@@ -189,6 +189,7 @@ impl SimpleComponent for MainStruct {
         // Set misc variables
         let current_folder_path = "".into();
         let view_hidden = true;
+        let git_info = ("".to_string(), false);
 
         // Apply user settings
         root.connect_show(clone!(
@@ -364,6 +365,7 @@ impl SimpleComponent for MainStruct {
             current_folder_path,
             buffer_style,
             view_hidden,
+            git_info,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }
