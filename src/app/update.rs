@@ -15,6 +15,8 @@ use crate::{
     util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
+use super::model::VisibiltyEnum;
+
 pub(crate) fn handle_messages(
     main_struct: &mut MainStruct,
     message: Message,
@@ -201,6 +203,17 @@ pub(crate) fn handle_messages(
         }
         Message::UpdateTabWidth(tab_width) => {
             main_struct.editor.set_tab_width(tab_width);
+            save_settings(main_struct);
+        }
+        Message::UpdateVisibility(item, visibilty) => {
+            match item {
+                VisibiltyEnum::SideBar => {
+                    main_struct.side_bar_box.set_visible(visibilty);
+                }
+                VisibiltyEnum::MiniMap => {
+                    main_struct.mini_map.set_visible(visibilty);
+                }
+            }
             save_settings(main_struct);
         }
         Message::UpDir => {

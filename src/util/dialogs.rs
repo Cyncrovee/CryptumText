@@ -5,12 +5,13 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app::model::{MainStruct, Message};
+use crate::app::model::{MainStruct, Message, VisibiltyEnum};
 
 pub fn create_preferences_dialog(
     main_struct: &mut MainStruct,
     sender: relm4::ComponentSender<MainStruct>,
 ) {
+    // Tab group setup
     let tab_type_switch_row = SwitchRow::builder()
         .title("Enable Using Spaces for Tabs")
         .activatable(false)
@@ -21,7 +22,6 @@ pub fn create_preferences_dialog(
         sender,
         move |row| sender.input(Message::UpdateTabType(row.is_active()))
     ));
-
     let tab_spaces_spin_row = SpinRow::builder()
         .title("Number of Spaces to Use for Tabs")
         .activatable(false)
@@ -43,7 +43,6 @@ pub fn create_preferences_dialog(
         sender,
         move |row| sender.input(Message::UpdateTabWidth(row.value() as u32))
     ));
-
     let tab_group = PreferencesGroup::builder().title("Tabs").build();
     tab_group.add(
         &PreferencesRow::builder()
@@ -62,8 +61,34 @@ pub fn create_preferences_dialog(
             .build(),
     );
 
+    // Visibility group setup
+    let file_list_visibilty_spin_row = SwitchRow::builder()
+        .title("Side Bar Visibility")
+        .activatable(false)
+        .active(main_struct.side_bar_box.is_visible())
+        .build();
+    file_list_visibilty_spin_row.connect_active_notify(clone!(
+        #[strong]
+        sender,
+        move |row| sender.input(Message::UpdateVisibility(
+            VisibiltyEnum::SideBar,
+            row.is_active()
+        ))
+    ));
+    let visibility_group = PreferencesGroup::builder().title("Visibility").build();
+    visibility_group.add(
+        &PreferencesRow::builder()
+            .title("Side Bar Visibility")
+            .activatable(false)
+            .child(&file_list_visibilty_spin_row)
+            .height_request(60)
+            .build(),
+    );
+
+    // Page and dialog setup
     let page = PreferencesPage::builder().title("Page").build();
     page.add(&tab_group);
+    page.add(&visibility_group);
     let title = WindowTitle::new("Preferences", "");
     let header = HeaderBar::builder().title_widget(&title).build();
     let toolbar = ToolbarView::builder().build();
