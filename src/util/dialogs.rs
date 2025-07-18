@@ -75,12 +75,33 @@ pub fn create_preferences_dialog(
             row.is_active()
         ))
     ));
+    let mini_map_visibilty_spin_row = SwitchRow::builder()
+        .title("Mini Map Visibility")
+        .activatable(false)
+        .active(main_struct.mini_map.is_visible())
+        .build();
+    mini_map_visibilty_spin_row.connect_active_notify(clone!(
+        #[strong]
+        sender,
+        move |row| sender.input(Message::UpdateVisibility(
+            VisibiltyEnum::MiniMap,
+            row.is_active()
+        ))
+    ));
     let visibility_group = PreferencesGroup::builder().title("Visibility").build();
     visibility_group.add(
         &PreferencesRow::builder()
             .title("Side Bar Visibility")
             .activatable(false)
             .child(&file_list_visibilty_spin_row)
+            .height_request(60)
+            .build(),
+    );
+    visibility_group.add(
+        &PreferencesRow::builder()
+            .title("Mini Map Visibility")
+            .activatable(false)
+            .child(&mini_map_visibilty_spin_row)
             .height_request(60)
             .build(),
     );
