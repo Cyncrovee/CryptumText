@@ -27,17 +27,10 @@ pub fn menu_bar() -> MenuModel {
 
     // Toggle
     let toggle_section = Menu::new();
-    toggle_section.insert_item(
-        0,
-        &MenuItem::new(
-            Some("Toggle File List Visibilty"),
-            Some("view.toggle_file_list"),
-        ),
-    );
     #[cfg(unix)]
     {
         toggle_section.insert_item(
-            1,
+            0,
             &MenuItem::new(
                 Some("Toggle Hidden Files"),
                 Some("view.toggle_hidden_files"),
@@ -45,14 +38,7 @@ pub fn menu_bar() -> MenuModel {
         );
     }
     toggle_section.insert_item(
-        2,
-        &MenuItem::new(
-            Some("Toggle Mini Map Visibilty"),
-            Some("view.toggle_mini_map"),
-        ),
-    );
-    toggle_section.insert_item(
-        3,
+        1,
         &MenuItem::new(
             Some("Toggle Editor Theme (Light/Dark)"),
             Some("view.toggle_buffer_style_scheme"),
