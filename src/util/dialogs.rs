@@ -64,6 +64,7 @@ pub fn create_preferences_dialog(
     // Visibility group setup
     let file_list_visibilty_spin_row = SwitchRow::builder()
         .title("Side Bar Visibility")
+        .subtitle("Ctrl+Alt+F")
         .activatable(false)
         .active(main_struct.side_bar_box.is_visible())
         .build();
@@ -77,6 +78,7 @@ pub fn create_preferences_dialog(
     ));
     let mini_map_visibilty_spin_row = SwitchRow::builder()
         .title("Mini Map Visibility")
+        .subtitle("Ctrl+Alt+M")
         .activatable(false)
         .active(main_struct.mini_map.is_visible())
         .build();
@@ -90,6 +92,7 @@ pub fn create_preferences_dialog(
     ));
     let hidden_files_visibilty_spin_row = SwitchRow::builder()
         .title("Hidden Files Visibility")
+        .subtitle("Ctrl+H")
         .activatable(false)
         .active(main_struct.view_hidden)
         .build();
