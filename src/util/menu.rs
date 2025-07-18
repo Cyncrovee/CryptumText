@@ -27,16 +27,6 @@ pub fn menu_bar() -> MenuModel {
 
     // Toggle
     let toggle_section = Menu::new();
-    #[cfg(unix)]
-    {
-        toggle_section.insert_item(
-            0,
-            &MenuItem::new(
-                Some("Toggle Hidden Files"),
-                Some("view.toggle_hidden_files"),
-            ),
-        );
-    }
     toggle_section.insert_item(
         1,
         &MenuItem::new(

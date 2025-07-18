@@ -37,6 +37,7 @@ pub struct WidgetStruct {}
 pub enum VisibiltyEnum {
     SideBar,
     MiniMap,
+    HiddenFiles,
 }
 
 #[derive(Debug)]

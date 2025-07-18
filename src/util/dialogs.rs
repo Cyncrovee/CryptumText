@@ -88,6 +88,19 @@ pub fn create_preferences_dialog(
             row.is_active()
         ))
     ));
+    let hidden_files_visibilty_spin_row = SwitchRow::builder()
+        .title("Hidden Files Visibility")
+        .activatable(false)
+        .active(main_struct.view_hidden)
+        .build();
+    hidden_files_visibilty_spin_row.connect_active_notify(clone!(
+        #[strong]
+        sender,
+        move |row| sender.input(Message::UpdateVisibility(
+            VisibiltyEnum::HiddenFiles,
+            row.is_active()
+        ))
+    ));
     let visibility_group = PreferencesGroup::builder().title("Visibility").build();
     visibility_group.add(
         &PreferencesRow::builder()
@@ -102,6 +115,15 @@ pub fn create_preferences_dialog(
             .title("Mini Map Visibility")
             .activatable(false)
             .child(&mini_map_visibilty_spin_row)
+            .height_request(60)
+            .build(),
+    );
+    #[cfg(unix)]
+    visibility_group.add(
+        &PreferencesRow::builder()
+            .title("Hidden Files Visibility")
+            .activatable(false)
+            .child(&hidden_files_visibilty_spin_row)
             .height_request(60)
             .build(),
     );

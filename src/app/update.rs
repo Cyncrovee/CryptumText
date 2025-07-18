@@ -213,6 +213,9 @@ pub(crate) fn handle_messages(
                 VisibiltyEnum::MiniMap => {
                     main_struct.mini_map.set_visible(visibilty);
                 }
+                VisibiltyEnum::HiddenFiles => {
+                    main_struct.view_hidden = visibilty;
+                }
             }
             save_settings(main_struct);
         }

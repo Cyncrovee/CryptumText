@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gtk4::{glib::GString, prelude::WidgetExt};
+use gtk4::glib::GString;
 use sourceview5::{Buffer, LanguageManager};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
@@ -16,13 +16,6 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .build();
 
     return editor;
-}
-
-pub fn update_file_list_visibility(side_bar: gtk4::Box) -> bool {
-    match side_bar.is_visible() {
-        true => true,
-        false => false,
-    }
 }
 
 pub fn update_syntax(
