@@ -34,7 +34,7 @@ pub struct MainStruct {
 pub struct WidgetStruct {}
 
 #[derive(Debug)]
-pub enum VisibiltyEnum {
+pub enum ItemVis {
     SideBar,
     MiniMap,
     HiddenFiles,
@@ -70,7 +70,7 @@ pub enum Message {
     LoadSettings,
     UpdateTabType(bool),
     UpdateTabWidth(u32),
-    UpdateVisibility(VisibiltyEnum, bool),
+    UpdateVisibility(ItemVis, bool),
     UpDir,
     RefreshFileList,
     CursorPositionChanged,

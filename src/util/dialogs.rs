@@ -5,7 +5,7 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app::model::{MainStruct, Message, VisibiltyEnum};
+use crate::app::model::{MainStruct, Message, ItemVis};
 
 pub fn create_preferences_dialog(
     main_struct: &mut MainStruct,
@@ -72,7 +72,7 @@ pub fn create_preferences_dialog(
         #[strong]
         sender,
         move |row| sender.input(Message::UpdateVisibility(
-            VisibiltyEnum::SideBar,
+            ItemVis::SideBar,
             row.is_active()
         ))
     ));
@@ -86,7 +86,7 @@ pub fn create_preferences_dialog(
         #[strong]
         sender,
         move |row| sender.input(Message::UpdateVisibility(
-            VisibiltyEnum::MiniMap,
+            ItemVis::MiniMap,
             row.is_active()
         ))
     ));
@@ -100,7 +100,7 @@ pub fn create_preferences_dialog(
         #[strong]
         sender,
         move |row| sender.input(Message::UpdateVisibility(
-            VisibiltyEnum::HiddenFiles,
+            ItemVis::HiddenFiles,
             row.is_active()
         ))
     ));

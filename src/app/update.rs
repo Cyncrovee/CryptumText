@@ -15,7 +15,7 @@ use crate::{
     util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
-use super::model::VisibiltyEnum;
+use super::model::ItemVis;
 
 pub(crate) fn handle_messages(
     main_struct: &mut MainStruct,
@@ -207,13 +207,13 @@ pub(crate) fn handle_messages(
         }
         Message::UpdateVisibility(item, visibilty) => {
             match item {
-                VisibiltyEnum::SideBar => {
+                ItemVis::SideBar => {
                     main_struct.side_bar_box.set_visible(visibilty);
                 }
-                VisibiltyEnum::MiniMap => {
+                ItemVis::MiniMap => {
                     main_struct.mini_map.set_visible(visibilty);
                 }
-                VisibiltyEnum::HiddenFiles => {
+                ItemVis::HiddenFiles => {
                     main_struct.view_hidden = visibilty;
                 }
             }
