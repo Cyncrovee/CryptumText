@@ -1,7 +1,7 @@
 // TODO: Add more options to preferences dialog
 // TODO: Overhaul status bar
 
-use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
+use gtk4::{gdk::ffi::GDK_BUTTON_SECONDARY, Button, MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -129,6 +129,7 @@ impl SimpleComponent for MainStruct {
         let editor = setup_editor(&buffer);
         let mini_map = sourceview5::Map::builder()
             .width_request(120)
+            .overflow(gtk4::Overflow::Visible)
             .view(&editor)
             .build();
         let file_type_label = gtk::Label::builder().build();

@@ -5,12 +5,33 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app::model::{MainStruct, Message, ItemVis};
+use crate::app::model::{ItemVis, MainStruct, Message};
 
 pub fn create_preferences_dialog(
     main_struct: &mut MainStruct,
     sender: relm4::ComponentSender<MainStruct>,
 ) {
+    // Editor group setup
+    let is_monospace_switch_row = SwitchRow::builder()
+        .title("Monospace")
+        .activatable(false)
+        .active(main_struct.editor.is_monospace())
+        .build();
+    is_monospace_switch_row.connect_active_notify(clone!(
+        #[strong]
+        sender,
+        move |row| sender.input(Message::UpdateMonospace(row.is_active()))
+    ));
+    let editor_group = PreferencesGroup::builder().title("Editor").build();
+    editor_group.add(
+        &PreferencesRow::builder()
+            .title("Monospace")
+            .activatable(false)
+            .child(&is_monospace_switch_row)
+            .height_request(60)
+            .build(),
+    );
+
     // Tab group setup
     let tab_type_switch_row = SwitchRow::builder()
         .title("Enable Using Spaces for Tabs")
@@ -71,10 +92,7 @@ pub fn create_preferences_dialog(
     file_list_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateVisibility(
-            ItemVis::SideBar,
-            row.is_active()
-        ))
+        move |row| sender.input(Message::UpdateVisibility(ItemVis::SideBar, row.is_active()))
     ));
     let mini_map_visibilty_spin_row = SwitchRow::builder()
         .title("Mini Map Visibility")
@@ -85,10 +103,7 @@ pub fn create_preferences_dialog(
     mini_map_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateVisibility(
-            ItemVis::MiniMap,
-            row.is_active()
-        ))
+        move |row| sender.input(Message::UpdateVisibility(ItemVis::MiniMap, row.is_active()))
     ));
     let hidden_files_visibilty_spin_row = SwitchRow::builder()
         .title("Hidden Files Visibility")
@@ -133,6 +148,7 @@ pub fn create_preferences_dialog(
 
     // Page and dialog setup
     let page = PreferencesPage::builder().title("Page").build();
+    page.add(&editor_group);
     page.add(&tab_group);
     page.add(&visibility_group);
     let title = WindowTitle::new("Preferences", "");

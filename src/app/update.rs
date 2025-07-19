@@ -195,6 +195,10 @@ pub(crate) fn handle_messages(
             println!("Loading Settings...");
             load_settings(main_struct);
         }
+        Message::UpdateMonospace(value) => {
+            main_struct.editor.set_monospace(value);
+            save_settings(main_struct);
+        }
         Message::UpdateTabType(use_spaces) => {
             main_struct
                 .editor

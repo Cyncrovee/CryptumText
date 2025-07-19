@@ -90,12 +90,13 @@ pub fn save_settings(self_from: &mut MainStruct) {
     config_path.push(Path::new("cryptum-text-settings.json"));
 
     let settings = AppSettings {
-        view_mini_map: self_from.mini_map.is_visible(),
-        view_file_list: self_from.file_list.is_visible(),
-        view_hidden_files: self_from.view_hidden,
+        editor_monospace: self_from.editor.is_monospace(),
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
         editor_use_spaces_for_tabs: self_from.editor.is_insert_spaces_instead_of_tabs(),
         editor_tab_width: self_from.editor.tab_width(),
+        view_mini_map: self_from.mini_map.is_visible(),
+        view_file_list: self_from.file_list.is_visible(),
+        view_hidden_files: self_from.view_hidden,
     };
 
     serde_json::to_string(&settings).unwrap();
@@ -116,37 +117,14 @@ pub fn load_settings(self_from: &mut MainStruct) {
     let settings_file = read_to_string(&config_path).unwrap();
 
     let settings: AppSettings = serde_json::from_str(&settings_file).unwrap_or(AppSettings {
-        view_mini_map: true,
-        view_file_list: true,
-        view_hidden_files: false,
+        editor_monospace: true,
         editor_theme: self_from.buffer_style.as_ref().unwrap().to_string(),
         editor_use_spaces_for_tabs: true,
         editor_tab_width: 4,
+        view_mini_map: true,
+        view_file_list: true,
+        view_hidden_files: false,
     });
-    match settings.view_file_list {
-        true => {
-            self_from.side_bar_box.set_visible(true);
-        }
-        false => {
-            self_from.side_bar_box.set_visible(false);
-        }
-    }
-    match settings.view_mini_map {
-        true => {
-            // Pass
-        }
-        false => {
-            self_from.mini_map.set_visible(false);
-        }
-    }
-    match settings.view_hidden_files {
-        true => {
-            self_from.view_hidden = true;
-        }
-        false => {
-            self_from.view_hidden = false;
-        }
-    }
     match settings.editor_theme.as_str() {
         "Adwaita" => {
             self_from.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita");
@@ -161,6 +139,38 @@ pub fn load_settings(self_from: &mut MainStruct) {
                 .set_style_scheme(self_from.buffer_style.as_ref());
         }
         &_ => {}
+    }
+    match settings.editor_monospace{
+        true => {
+            self_from.editor.set_monospace(true);
+        }
+        false => {
+            self_from.editor.set_monospace(false);
+        }
+    }
+    match settings.view_file_list {
+        true => {
+            self_from.side_bar_box.set_visible(true);
+        }
+        false => {
+            self_from.side_bar_box.set_visible(false);
+        }
+    }
+    match settings.view_mini_map {
+        true => {
+            self_from.mini_map.set_visible(true);
+        }
+        false => {
+            self_from.mini_map.set_visible(false);
+        }
+    }
+    match settings.view_hidden_files {
+        true => {
+            self_from.view_hidden = true;
+        }
+        false => {
+            self_from.view_hidden = false;
+        }
     }
     self_from
         .editor

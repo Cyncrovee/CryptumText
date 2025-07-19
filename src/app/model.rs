@@ -68,6 +68,7 @@ pub enum Message {
     OpenFolderExternal,
     // Other
     LoadSettings,
+    UpdateMonospace(bool),
     UpdateTabType(bool),
     UpdateTabWidth(u32),
     UpdateVisibility(ItemVis, bool),
@@ -79,10 +80,11 @@ pub enum Message {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct AppSettings {
+    pub editor_theme: String,
+    pub editor_monospace: bool,
+    pub editor_use_spaces_for_tabs: bool,
+    pub editor_tab_width: u32,
     pub view_mini_map: bool,
     pub view_file_list: bool,
     pub view_hidden_files: bool,
-    pub editor_theme: String,
-    pub editor_use_spaces_for_tabs: bool,
-    pub editor_tab_width: u32,
 }
