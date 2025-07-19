@@ -25,7 +25,7 @@ pub fn create_preferences_dialog(
     let editor_group = PreferencesGroup::builder().title("Editor").build();
     editor_group.add(
         &PreferencesRow::builder()
-            .title("Monospace")
+            .title("Use Monospace Font")
             .activatable(false)
             .child(&is_monospace_switch_row)
             .height_request(60)
