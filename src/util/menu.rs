@@ -44,11 +44,15 @@ pub fn extras_menu_bar() -> MenuModel {
 
     menu.insert_item(
         0,
-        &MenuItem::new(Some("About Cryptum Text"), Some("about.show_about")),
+        &MenuItem::new(Some("Preferences"), Some("about.show_preferences")),
     );
     menu.insert_item(
         1,
-        &MenuItem::new(Some("Preferences"), Some("about.show_preferences")),
+        &MenuItem::new(Some("Keyboard Shortcuts"), Some("about.show_keyboard_shortcuts")),
+    );
+    menu.insert_item(
+        2,
+        &MenuItem::new(Some("About Cryptum Text"), Some("about.show_about")),
     );
 
     return menu.into();

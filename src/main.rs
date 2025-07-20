@@ -313,15 +313,20 @@ impl SimpleComponent for MainStruct {
             ),
         ));
         // About actions
-        about_action_group.add_action(RelmAction::<ShowAboutAction>::new_stateless(clone!(
+        about_action_group.add_action(RelmAction::<ShowKeyboardShortcutsAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ShowAbout)
+            move |_| sender.input(Message::ShowKeyboardShortcuts)
         )));
         about_action_group.add_action(RelmAction::<ShowPreferencesAction>::new_stateless(clone!(
             #[strong]
             sender,
             move |_| sender.input(Message::ShowPreferences)
+        )));
+        about_action_group.add_action(RelmAction::<ShowAboutAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ShowAbout)
         )));
         // File list actions
         file_list_action_group.add_action(RelmAction::<DeleteItemAction>::new_stateless(clone!(
@@ -408,8 +413,9 @@ relm4::new_stateless_action!(
     "toggle_buffer_style_scheme"
 );
 // About
-relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
+relm4::new_stateless_action!(ShowKeyboardShortcutsAction, AboutActionGroup, "show_keyboard_shortcuts");
 relm4::new_stateless_action!(ShowPreferencesAction, AboutActionGroup, "show_preferences");
+relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 // File list context menu
 relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
 relm4::new_stateless_action!(

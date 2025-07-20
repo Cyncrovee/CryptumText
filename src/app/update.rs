@@ -147,11 +147,14 @@ pub(crate) fn handle_messages(
             save_settings(main_struct);
         }
         // About
-        Message::ShowAbout => {
-            crate::util::dialogs::create_about_dialog();
+        Message::ShowKeyboardShortcuts => {
+            crate::util::dialogs::create_keyboard_shortcut_dialog();
         }
         Message::ShowPreferences => {
             crate::util::dialogs::create_preferences_dialog(main_struct, sender);
+        }
+        Message::ShowAbout => {
+            crate::util::dialogs::create_about_dialog();
         }
         // File list
         Message::FileListContext(x, y) => {

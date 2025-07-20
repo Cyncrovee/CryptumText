@@ -60,8 +60,9 @@ pub enum Message {
     ToggleMiniMap,
     ToggleBufferStyleScheme,
     // About
-    ShowAbout,
+    ShowKeyboardShortcuts,
     ShowPreferences,
+    ShowAbout,
     // File list
     FileListContext(i32, i32),
     DeleteItem,

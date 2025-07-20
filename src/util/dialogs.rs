@@ -1,4 +1,4 @@
-use gtk4::{AboutDialog, glib::clone};
+use gtk4::{glib::clone, AboutDialog, ShortcutsWindow};
 use libadwaita::{
     HeaderBar, PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow,
     SwitchRow, ToolbarView, WindowTitle, prelude::*,
@@ -173,4 +173,8 @@ pub fn create_about_dialog() {
         .license_type(gtk4::License::Gpl30Only)
         .build()
         .show();
+}
+
+pub fn create_keyboard_shortcut_dialog() {
+    ShortcutsWindow::builder().build().show();
 }
