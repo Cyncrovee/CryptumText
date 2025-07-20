@@ -1,4 +1,4 @@
-use gtk4::{glib::clone, AboutDialog, ShortcutsWindow};
+use gtk4::{glib::clone, AboutDialog, ShortcutsGroup, ShortcutsSection, ShortcutsShortcut, ShortcutsWindow};
 use libadwaita::{
     HeaderBar, PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow,
     SwitchRow, ToolbarView, WindowTitle, prelude::*,
@@ -176,5 +176,19 @@ pub fn create_about_dialog() {
 }
 
 pub fn create_keyboard_shortcut_dialog() {
-    ShortcutsWindow::builder().build().show();
+    let new_file_shortcut = ShortcutsShortcut::builder().title("New File").accelerator("<control><shift>n").build();
+    let open_file_shortcut = ShortcutsShortcut::builder().title("Open File").accelerator("<control>o").build();
+    let open_folder_shortcut = ShortcutsShortcut::builder().title("Open Folder").accelerator("<control><shift>o").build();
+    let save_file_shortcut = ShortcutsShortcut::builder().title("Save File").accelerator("<control>s").build();
+    let save_file_as_shortcut = ShortcutsShortcut::builder().title("Save File As").accelerator("<control><shift>s").build();
+    let file_group = ShortcutsGroup::builder().title("File").build();
+    file_group.append(&new_file_shortcut);
+    file_group.append(&open_file_shortcut);
+    file_group.append(&open_folder_shortcut);
+    file_group.append(&save_file_shortcut);
+    file_group.append(&save_file_as_shortcut);
+    let section = ShortcutsSection::builder().build();
+    section.append(&file_group);
+    let dialog = ShortcutsWindow::builder().child(&section).build();
+    dialog.show();
 }
