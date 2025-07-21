@@ -176,6 +176,7 @@ pub fn create_about_dialog() {
 }
 
 pub fn create_keyboard_shortcut_dialog() {
+    // File shortcut group
     let new_file_shortcut = ShortcutsShortcut::builder().title("New File").accelerator("<control><shift>n").build();
     let open_file_shortcut = ShortcutsShortcut::builder().title("Open File").accelerator("<control>o").build();
     let open_folder_shortcut = ShortcutsShortcut::builder().title("Open Folder").accelerator("<control><shift>o").build();
@@ -187,8 +188,18 @@ pub fn create_keyboard_shortcut_dialog() {
     file_group.append(&open_folder_shortcut);
     file_group.append(&save_file_shortcut);
     file_group.append(&save_file_as_shortcut);
+
+    // View shortcut group
+    let toggle_list_shortcut = ShortcutsShortcut::builder().title("Toggle File List Visibility").accelerator("<control><alt>f").build();
+    let toggle_mini_map_shortcut = ShortcutsShortcut::builder().title("Toggle Mini Map Visibility").accelerator("<control><alt>m").build();
+    let toggle_hidden_shortcut = ShortcutsShortcut::builder().title("Toggle Hidden Files Visibility (UNIX)").accelerator("<control>h").build();
+    let edit_group = ShortcutsGroup::builder().title("View").build();
+    edit_group.append(&toggle_list_shortcut);
+    edit_group.append(&toggle_mini_map_shortcut);
+    edit_group.append(&toggle_hidden_shortcut);
+
     let section = ShortcutsSection::builder().build();
     section.append(&file_group);
-    let dialog = ShortcutsWindow::builder().child(&section).build();
-    dialog.show();
+    section.append(&edit_group);
+    ShortcutsWindow::builder().child(&section).build().show();
 }
