@@ -167,16 +167,6 @@ pub fn create_preferences_dialog(
     dialog.present(Some(&main_struct.root));
 }
 
-pub fn create_about_dialog() {
-    AboutDialog::builder()
-        .program_name("Cryptum Text")
-        .version("Dev Version")
-        .copyright("Ella Hart (Cyncrovee)")
-        .license_type(gtk4::License::Gpl30Only)
-        .build()
-        .show();
-}
-
 pub fn create_keyboard_shortcut_dialog() {
     // File shortcut group
     let new_file_shortcut = ShortcutsShortcut::builder()
@@ -242,4 +232,14 @@ pub fn create_keyboard_shortcut_dialog() {
     section.append(&edit_group);
     section.append(&about_group);
     ShortcutsWindow::builder().child(&section).build().show();
+}
+
+pub fn create_about_dialog() {
+    AboutDialog::builder()
+        .program_name("Cryptum Text")
+        .version("Dev Version")
+        .copyright("Ella Hart (Cyncrovee)")
+        .license_type(gtk4::License::Gpl30Only)
+        .build()
+        .show();
 }
