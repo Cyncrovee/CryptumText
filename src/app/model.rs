@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use libadwaita::WindowTitle;
+use libadwaita::{ToastOverlay, WindowTitle};
 use relm4::{Controller, prelude::*};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
 use serde::{Deserialize, Serialize};
@@ -24,6 +24,7 @@ pub struct MainStruct {
     pub file_type_label: gtk::Label,
     pub cursor_position_label: gtk::Label,
     pub mini_map: sourceview5::Map,
+    pub toast_overlay: ToastOverlay,
     // Misc
     pub current_file_path: String,
     pub current_folder_path: String,

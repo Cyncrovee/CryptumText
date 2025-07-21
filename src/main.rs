@@ -1,8 +1,8 @@
 // TODO: Add more options to preferences dialog
 // TODO: Overhaul status bar
 
-use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
-use libadwaita::{HeaderBar, WindowTitle, prelude::*};
+use gtk4::{gdk::ffi::GDK_BUTTON_SECONDARY, Button, MenuButton, Overlay, ScrolledWindow};
+use libadwaita::{prelude::*, HeaderBar, ToastOverlay, WindowTitle};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,
@@ -134,6 +134,7 @@ impl SimpleComponent for MainStruct {
             .build();
         let file_type_label = gtk::Label::builder().build();
         let cursor_position_label = gtk::Label::builder().build();
+        let toast_overlay = ToastOverlay::new();
 
         // Define containers
         let main_box = gtk::Box::builder()
@@ -175,13 +176,14 @@ impl SimpleComponent for MainStruct {
         file_list_box.append(&file_list_scroll);
         file_list_box.append(&file_list_context_menu);
         side_bar_box.append(&file_list_box);
+        toast_overlay.set_child(Some(&editor_box_horizontal));
         editor_box_vertical.append(&editor_scroll_window);
         editor_box_vertical.append(&status_bar_box);
         editor_box_horizontal.append(&side_bar_box);
         editor_box_horizontal.append(&editor_box_vertical);
         editor_box_horizontal.append(&mini_map);
         main_box.append(&header);
-        main_box.append(&editor_box_horizontal);
+        main_box.append(&toast_overlay);
 
         // Setup the window
         root.set_content(Some(&main_box));
@@ -371,6 +373,7 @@ impl SimpleComponent for MainStruct {
             file_type_label,
             cursor_position_label,
             mini_map,
+            toast_overlay,
             // Misc
             current_file_path,
             current_folder_path,
