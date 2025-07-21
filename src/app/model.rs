@@ -6,6 +6,7 @@ use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
 use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
 
+// Structs
 pub struct MainStruct {
     // Containers
     pub root: libadwaita::ApplicationWindow,
@@ -31,15 +32,20 @@ pub struct MainStruct {
     pub git_info: (String, bool),
 }
 
-pub struct WidgetStruct {}
-
-#[derive(Debug)]
-pub enum ItemVis {
-    SideBar,
-    MiniMap,
-    HiddenFiles,
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AppSettings {
+    pub editor_theme: String,
+    pub editor_monospace: bool,
+    pub editor_use_spaces_for_tabs: bool,
+    pub editor_tab_width: u32,
+    pub view_mini_map: bool,
+    pub view_file_list: bool,
+    pub view_hidden_files: bool,
 }
 
+pub struct WidgetStruct {}
+
+// Enums
 #[derive(Debug)]
 pub enum Message {
     // File
@@ -79,13 +85,9 @@ pub enum Message {
     Ignore,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AppSettings {
-    pub editor_theme: String,
-    pub editor_monospace: bool,
-    pub editor_use_spaces_for_tabs: bool,
-    pub editor_tab_width: u32,
-    pub view_mini_map: bool,
-    pub view_file_list: bool,
-    pub view_hidden_files: bool,
+#[derive(Debug)]
+pub enum ItemVis {
+    SideBar,
+    MiniMap,
+    HiddenFiles,
 }
