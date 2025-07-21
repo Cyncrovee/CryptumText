@@ -224,8 +224,22 @@ pub fn create_keyboard_shortcut_dialog() {
     edit_group.append(&toggle_mini_map_shortcut);
     edit_group.append(&toggle_hidden_shortcut);
 
+    // About shortcut group
+    let show_preferences_shortcut = ShortcutsShortcut::builder()
+        .title("Show Preferences Dialog")
+        .accelerator("<control>comma")
+        .build();
+    let show_keyboard_shortcuts_shortcut  = ShortcutsShortcut::builder()
+        .title("Show Keyboard Shortcuts Dialog")
+        .accelerator("<control>question")
+        .build();
+    let about_group = ShortcutsGroup::builder().title("About").build();
+    about_group.append(&show_preferences_shortcut);
+    about_group.append(&show_keyboard_shortcuts_shortcut);
+
     let section = ShortcutsSection::builder().build();
     section.append(&file_group);
     section.append(&edit_group);
+    section.append(&about_group);
     ShortcutsWindow::builder().child(&section).build().show();
 }
