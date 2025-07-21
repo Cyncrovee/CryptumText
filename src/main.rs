@@ -248,6 +248,9 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
         program.set_accelerators_for_action::<ToggleHiddenFilesAction>(&["<control>h"]);
         program.set_accelerators_for_action::<ToggleMiniMapAction>(&["<control><alt>m"]);
+        // About accelerators
+        program.set_accelerators_for_action::<ShowPreferencesAction>(&["<control>comma"]);
+        program.set_accelerators_for_action::<ShowKeyboardShortcutsAction>(&["<control>question"]);
 
         // Create action groups and add actions to them
         let mut file_action_group = RelmActionGroup::<FileActionGroup>::new();
