@@ -48,7 +48,10 @@ pub fn extras_menu_bar() -> MenuModel {
     );
     menu.insert_item(
         1,
-        &MenuItem::new(Some("Keyboard Shortcuts"), Some("about.show_keyboard_shortcuts")),
+        &MenuItem::new(
+            Some("Keyboard Shortcuts"),
+            Some("about.show_keyboard_shortcuts"),
+        ),
     );
     menu.insert_item(
         2,

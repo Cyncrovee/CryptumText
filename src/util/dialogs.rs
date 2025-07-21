@@ -1,4 +1,6 @@
-use gtk4::{glib::clone, AboutDialog, ShortcutsGroup, ShortcutsSection, ShortcutsShortcut, ShortcutsWindow};
+use gtk4::{
+    AboutDialog, ShortcutsGroup, ShortcutsSection, ShortcutsShortcut, ShortcutsWindow, glib::clone,
+};
 use libadwaita::{
     HeaderBar, PreferencesDialog, PreferencesGroup, PreferencesPage, PreferencesRow, SpinRow,
     SwitchRow, ToolbarView, WindowTitle, prelude::*,
@@ -177,11 +179,26 @@ pub fn create_about_dialog() {
 
 pub fn create_keyboard_shortcut_dialog() {
     // File shortcut group
-    let new_file_shortcut = ShortcutsShortcut::builder().title("New File").accelerator("<control><shift>n").build();
-    let open_file_shortcut = ShortcutsShortcut::builder().title("Open File").accelerator("<control>o").build();
-    let open_folder_shortcut = ShortcutsShortcut::builder().title("Open Folder").accelerator("<control><shift>o").build();
-    let save_file_shortcut = ShortcutsShortcut::builder().title("Save File").accelerator("<control>s").build();
-    let save_file_as_shortcut = ShortcutsShortcut::builder().title("Save File As").accelerator("<control><shift>s").build();
+    let new_file_shortcut = ShortcutsShortcut::builder()
+        .title("New File")
+        .accelerator("<control><shift>n")
+        .build();
+    let open_file_shortcut = ShortcutsShortcut::builder()
+        .title("Open File")
+        .accelerator("<control>o")
+        .build();
+    let open_folder_shortcut = ShortcutsShortcut::builder()
+        .title("Open Folder")
+        .accelerator("<control><shift>o")
+        .build();
+    let save_file_shortcut = ShortcutsShortcut::builder()
+        .title("Save File")
+        .accelerator("<control>s")
+        .build();
+    let save_file_as_shortcut = ShortcutsShortcut::builder()
+        .title("Save File As")
+        .accelerator("<control><shift>s")
+        .build();
     let file_group = ShortcutsGroup::builder().title("File").build();
     file_group.append(&new_file_shortcut);
     file_group.append(&open_file_shortcut);
@@ -190,9 +207,18 @@ pub fn create_keyboard_shortcut_dialog() {
     file_group.append(&save_file_as_shortcut);
 
     // View shortcut group
-    let toggle_list_shortcut = ShortcutsShortcut::builder().title("Toggle File List Visibility").accelerator("<control><alt>f").build();
-    let toggle_mini_map_shortcut = ShortcutsShortcut::builder().title("Toggle Mini Map Visibility").accelerator("<control><alt>m").build();
-    let toggle_hidden_shortcut = ShortcutsShortcut::builder().title("Toggle Hidden Files Visibility (UNIX)").accelerator("<control>h").build();
+    let toggle_list_shortcut = ShortcutsShortcut::builder()
+        .title("Toggle File List Visibility")
+        .accelerator("<control><alt>f")
+        .build();
+    let toggle_mini_map_shortcut = ShortcutsShortcut::builder()
+        .title("Toggle Mini Map Visibility")
+        .accelerator("<control><alt>m")
+        .build();
+    let toggle_hidden_shortcut = ShortcutsShortcut::builder()
+        .title("Toggle Hidden Files Visibility (UNIX)")
+        .accelerator("<control>h")
+        .build();
     let edit_group = ShortcutsGroup::builder().title("View").build();
     edit_group.append(&toggle_list_shortcut);
     edit_group.append(&toggle_mini_map_shortcut);

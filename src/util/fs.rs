@@ -140,7 +140,7 @@ pub fn load_settings(self_from: &mut MainStruct) {
         }
         &_ => {}
     }
-    match settings.editor_monospace{
+    match settings.editor_monospace {
         true => {
             self_from.editor.set_monospace(true);
         }

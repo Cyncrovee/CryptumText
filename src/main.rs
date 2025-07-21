@@ -1,7 +1,7 @@
 // TODO: Add more options to preferences dialog
 // TODO: Overhaul status bar
 
-use gtk4::{gdk::ffi::GDK_BUTTON_SECONDARY, Button, MenuButton, ScrolledWindow};
+use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -313,11 +313,13 @@ impl SimpleComponent for MainStruct {
             ),
         ));
         // About actions
-        about_action_group.add_action(RelmAction::<ShowKeyboardShortcutsAction>::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::ShowKeyboardShortcuts)
-        )));
+        about_action_group.add_action(RelmAction::<ShowKeyboardShortcutsAction>::new_stateless(
+            clone!(
+                #[strong]
+                sender,
+                move |_| sender.input(Message::ShowKeyboardShortcuts)
+            ),
+        ));
         about_action_group.add_action(RelmAction::<ShowPreferencesAction>::new_stateless(clone!(
             #[strong]
             sender,
@@ -413,7 +415,11 @@ relm4::new_stateless_action!(
     "toggle_buffer_style_scheme"
 );
 // About
-relm4::new_stateless_action!(ShowKeyboardShortcutsAction, AboutActionGroup, "show_keyboard_shortcuts");
+relm4::new_stateless_action!(
+    ShowKeyboardShortcutsAction,
+    AboutActionGroup,
+    "show_keyboard_shortcuts"
+);
 relm4::new_stateless_action!(ShowPreferencesAction, AboutActionGroup, "show_preferences");
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
 // File list context menu
