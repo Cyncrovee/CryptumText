@@ -209,17 +209,22 @@ pub fn create_keyboard_shortcut_dialog() {
         .title("Toggle Hidden Files Visibility (UNIX)")
         .accelerator("<control>h")
         .build();
+    let toggle_fullscreen_shortcut = ShortcutsShortcut::builder()
+        .title("Toggle Fullscreen")
+        .accelerator("F11")
+        .build();
     let edit_group = ShortcutsGroup::builder().title("View").build();
     edit_group.append(&toggle_list_shortcut);
     edit_group.append(&toggle_mini_map_shortcut);
     edit_group.append(&toggle_hidden_shortcut);
+    edit_group.append(&toggle_fullscreen_shortcut);
 
     // About shortcut group
     let show_preferences_shortcut = ShortcutsShortcut::builder()
         .title("Show Preferences Dialog")
         .accelerator("<control>comma")
         .build();
-    let show_keyboard_shortcuts_shortcut  = ShortcutsShortcut::builder()
+    let show_keyboard_shortcuts_shortcut = ShortcutsShortcut::builder()
         .title("Show Keyboard Shortcuts Dialog")
         .accelerator("<control>question")
         .build();

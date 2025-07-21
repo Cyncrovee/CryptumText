@@ -1,8 +1,8 @@
 // TODO: Add more options to preferences dialog
 // TODO: Overhaul status bar
 
-use gtk4::{gdk::ffi::GDK_BUTTON_SECONDARY, Button, MenuButton, Overlay, ScrolledWindow};
-use libadwaita::{prelude::*, HeaderBar, ToastOverlay, WindowTitle};
+use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
+use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,
@@ -250,6 +250,7 @@ impl SimpleComponent for MainStruct {
         program.set_accelerators_for_action::<ToggleFileListAction>(&["<control><alt>f"]);
         program.set_accelerators_for_action::<ToggleHiddenFilesAction>(&["<control>h"]);
         program.set_accelerators_for_action::<ToggleMiniMapAction>(&["<control><alt>m"]);
+        program.set_accelerators_for_action::<ToggleFullscreenAction>(&["F11"]);
         // About accelerators
         program.set_accelerators_for_action::<ShowPreferencesAction>(&["<control>comma"]);
         program.set_accelerators_for_action::<ShowKeyboardShortcutsAction>(&["<control>question"]);
@@ -317,6 +318,11 @@ impl SimpleComponent for MainStruct {
                 move |_| sender.input(Message::ToggleBufferStyleScheme)
             ),
         ));
+        view_action_group.add_action(RelmAction::<ToggleFullscreenAction>::new_stateless(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleFullscreen)
+        )));
         // About actions
         about_action_group.add_action(RelmAction::<ShowKeyboardShortcutsAction>::new_stateless(
             clone!(
@@ -420,6 +426,7 @@ relm4::new_stateless_action!(
     ViewActionGroup,
     "toggle_buffer_style_scheme"
 );
+relm4::new_stateless_action!(ToggleFullscreenAction, ViewActionGroup, "toggle_fullscreen");
 // About
 relm4::new_stateless_action!(
     ShowKeyboardShortcutsAction,

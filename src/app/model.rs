@@ -66,6 +66,7 @@ pub enum Message {
     ToggleHiddenFiles,
     ToggleMiniMap,
     ToggleBufferStyleScheme,
+    ToggleFullscreen,
     // About
     ShowKeyboardShortcuts,
     ShowPreferences,

@@ -28,11 +28,15 @@ pub fn menu_bar() -> MenuModel {
     // Toggle
     let toggle_section = Menu::new();
     toggle_section.insert_item(
-        1,
+        0,
         &MenuItem::new(
             Some("Toggle Editor Theme (Light/Dark)"),
             Some("view.toggle_buffer_style_scheme"),
         ),
+    );
+    toggle_section.insert_item(
+        1,
+        &MenuItem::new(Some("Toggle Fullscreen"), Some("view.toggle_fullscreen")),
     );
     menu.insert_section(4, None, &toggle_section);
 

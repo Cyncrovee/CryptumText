@@ -146,6 +146,14 @@ pub(crate) fn handle_messages(
             }
             save_settings(main_struct);
         }
+        Message::ToggleFullscreen => match main_struct.root.is_fullscreen() {
+            true => {
+                main_struct.root.set_fullscreened(false);
+            }
+            false => {
+                main_struct.root.set_fullscreened(true);
+            }
+        },
         // About
         Message::ShowKeyboardShortcuts => {
             crate::util::dialogs::create_keyboard_shortcut_dialog();
