@@ -249,8 +249,6 @@ pub(crate) fn handle_messages(
                 main_struct.file_list.unselect_all();
             }
         }
-        Message::Ignore => {
-            println!("Test");
-        }
+        Message::Ignore => {}
     }
 }
