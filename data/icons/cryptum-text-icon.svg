@@ -7,7 +7,7 @@
    viewBox="0 0 50 49.999998"
    version="1.1"
    id="svg5"
-   sodipodi:docname="drawing.svg"
+   sodipodi:docname="cryptum-text-icon.svg"
    inkscape:export-filename="cryptum-text-logo.svg"
    inkscape:export-xdpi="96"
    inkscape:export-ydpi="96"
@@ -30,11 +30,11 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="5.572125"
-     inkscape:cx="90.629697"
-     inkscape:cy="87.489064"
-     inkscape:window-width="2560"
-     inkscape:window-height="1371"
-     inkscape:window-x="0"
+     inkscape:cx="135.85481"
+     inkscape:cy="97.53909"
+     inkscape:window-width="2494"
+     inkscape:window-height="1369"
+     inkscape:window-x="66"
      inkscape:window-y="32"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
@@ -136,10 +136,10 @@
       <cc:Work
          rdf:about="">
         <cc:license
-           rdf:resource="http://creativecommons.org/licenses/by/4.0/" />
+           rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
       </cc:Work>
       <cc:License
-         rdf:about="http://creativecommons.org/licenses/by/4.0/">
+         rdf:about="http://creativecommons.org/licenses/by-sa/4.0/">
         <cc:permits
            rdf:resource="http://creativecommons.org/ns#Reproduction" />
         <cc:permits
@@ -150,6 +150,8 @@
            rdf:resource="http://creativecommons.org/ns#Attribution" />
         <cc:permits
            rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#ShareAlike" />
       </cc:License>
     </rdf:RDF>
   </metadata>
