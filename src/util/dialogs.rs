@@ -169,68 +169,72 @@ pub fn create_preferences_dialog(
 
 pub fn create_keyboard_shortcut_dialog() {
     // File shortcut group
-    let new_file_shortcut = ShortcutsShortcut::builder()
-        .title("New File")
-        .accelerator("<control><shift>n")
-        .build();
-    let open_file_shortcut = ShortcutsShortcut::builder()
-        .title("Open File")
-        .accelerator("<control>o")
-        .build();
-    let open_folder_shortcut = ShortcutsShortcut::builder()
-        .title("Open Folder")
-        .accelerator("<control><shift>o")
-        .build();
-    let save_file_shortcut = ShortcutsShortcut::builder()
-        .title("Save File")
-        .accelerator("<control>s")
-        .build();
-    let save_file_as_shortcut = ShortcutsShortcut::builder()
-        .title("Save File As")
-        .accelerator("<control><shift>s")
-        .build();
+    let file_shortcut_array: [ShortcutsShortcut; 5] = [
+        ShortcutsShortcut::builder()
+            .title("New File")
+            .accelerator("<control><shift>n")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Open File")
+            .accelerator("<control>o")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Open Folder")
+            .accelerator("<control><shift>o")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Save File")
+            .accelerator("<control>s")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Save File As")
+            .accelerator("<control><shift>s")
+            .build(),
+    ];
     let file_group = ShortcutsGroup::builder().title("File").build();
-    file_group.append(&new_file_shortcut);
-    file_group.append(&open_file_shortcut);
-    file_group.append(&open_folder_shortcut);
-    file_group.append(&save_file_shortcut);
-    file_group.append(&save_file_as_shortcut);
+    for shortcut in file_shortcut_array {
+        file_group.append(&shortcut);
+    }
 
     // View shortcut group
-    let toggle_list_shortcut = ShortcutsShortcut::builder()
-        .title("Toggle File List Visibility")
-        .accelerator("<control><alt>f")
-        .build();
-    let toggle_mini_map_shortcut = ShortcutsShortcut::builder()
-        .title("Toggle Mini Map Visibility")
-        .accelerator("<control><alt>m")
-        .build();
-    let toggle_hidden_shortcut = ShortcutsShortcut::builder()
-        .title("Toggle Hidden Files Visibility (UNIX)")
-        .accelerator("<control>h")
-        .build();
-    let toggle_fullscreen_shortcut = ShortcutsShortcut::builder()
-        .title("Toggle Fullscreen")
-        .accelerator("F11")
-        .build();
+    let view_shortcut_array: [ShortcutsShortcut; 4] = [
+        ShortcutsShortcut::builder()
+            .title("Toggle File List Visibility")
+            .accelerator("<control><alt>f")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Toggle Mini Map Visibility")
+            .accelerator("<control><alt>m")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Toggle Hidden Files Visibility (UNIX)")
+            .accelerator("<control>h")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Toggle Fullscreen")
+            .accelerator("F11")
+            .build(),
+    ];
     let edit_group = ShortcutsGroup::builder().title("View").build();
-    edit_group.append(&toggle_list_shortcut);
-    edit_group.append(&toggle_mini_map_shortcut);
-    edit_group.append(&toggle_hidden_shortcut);
-    edit_group.append(&toggle_fullscreen_shortcut);
+    for shortcut in view_shortcut_array {
+        edit_group.append(&shortcut);
+    }
 
     // About shortcut group
-    let show_preferences_shortcut = ShortcutsShortcut::builder()
-        .title("Show Preferences Dialog")
-        .accelerator("<control>comma")
-        .build();
-    let show_keyboard_shortcuts_shortcut = ShortcutsShortcut::builder()
-        .title("Show Keyboard Shortcuts Dialog")
-        .accelerator("<control>question")
-        .build();
+    let about_shortcuts_array: [ShortcutsShortcut; 2] = [
+        ShortcutsShortcut::builder()
+            .title("Show Preferences Dialog")
+            .accelerator("<control>comma")
+            .build(),
+        ShortcutsShortcut::builder()
+            .title("Show Keyboard Shortcuts Dialog")
+            .accelerator("<control>question")
+            .build(),
+    ];
     let about_group = ShortcutsGroup::builder().title("About").build();
-    about_group.append(&show_preferences_shortcut);
-    about_group.append(&show_keyboard_shortcuts_shortcut);
+    for shortcut in about_shortcuts_array {
+        about_group.append(&shortcut);
+    }
 
     let section = ShortcutsSection::builder().build();
     section.append(&file_group);
