@@ -30,7 +30,9 @@ pub fn load_file(self_from: &mut MainStruct) {
             }
         }
         Err(_) => {
-            self_from.toast_overlay.add_toast(Toast::new("Failed to Read File!"));
+            self_from
+                .toast_overlay
+                .add_toast(Toast::new("Failed to Read File!"));
         }
     }
 }
@@ -67,7 +69,9 @@ pub fn load_folder(self_from: &mut MainStruct, path: &String) {
             }
         }
         Err(_) => {
-            self_from.toast_overlay.add_toast(Toast::new("Failed to Read Folder!"));
+            self_from
+                .toast_overlay
+                .add_toast(Toast::new("Failed to Read Folder!"));
         }
     }
 }
