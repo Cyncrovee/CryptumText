@@ -50,17 +50,15 @@ pub fn create_preferences_dialog(
         .activatable(false)
         .climb_rate(1.0)
         .digits(0)
+        .adjustment(&gtk4::Adjustment::new(
+            main_struct.editor.tab_width() as f64,
+            1.0,
+            32.0,
+            1.0,
+            5.0,
+            0.0,
+        ))
         .build();
-    let tabs_amount = main_struct.editor.tab_width();
-    let tabs_amount = tabs_amount as f64;
-    tab_spaces_spin_row.set_adjustment(Some(&gtk4::Adjustment::new(
-        tabs_amount,
-        1.0,
-        32.0,
-        1.0,
-        5.0,
-        0.0,
-    )));
     tab_spaces_spin_row.connect_value_notify(clone!(
         #[strong]
         sender,
@@ -153,10 +151,12 @@ pub fn create_preferences_dialog(
     page.add(&editor_group);
     page.add(&tab_group);
     page.add(&visibility_group);
-    let title = WindowTitle::new("Preferences", "");
-    let header = HeaderBar::builder().title_widget(&title).build();
     let toolbar = ToolbarView::builder().build();
-    toolbar.add_top_bar(&header);
+    toolbar.add_top_bar(
+        &HeaderBar::builder()
+            .title_widget(&WindowTitle::new("Preferences", ""))
+            .build(),
+    );
     toolbar.set_content(Some(&page));
 
     let dialog = PreferencesDialog::builder()
