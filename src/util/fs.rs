@@ -5,7 +5,6 @@ use std::{
 };
 
 use git2::Repository;
-use gtk4::{TreeStore, TreeViewColumn};
 use libadwaita::Toast;
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
 use sourceview5::prelude::{BufferExt, ViewExt};
@@ -20,10 +19,7 @@ pub fn load_file(main_struct: &mut MainStruct) {
         Ok(f) => {
             main_struct.buffer.set_text(&f);
             main_struct.current_file_path = Some(main_struct.current_file_path.clone()).unwrap();
-            match update_syntax(
-                &main_struct.language_manager,
-                &main_struct.current_file_path,
-            ) {
+            match update_syntax(&main_struct.language_manager, &main_struct.current_file_path) {
                 Some(language) => {
                     main_struct.buffer.set_highlight_syntax(true);
                     main_struct.buffer.set_language(Some(&language));
@@ -80,43 +76,6 @@ pub fn load_folder(main_struct: &mut MainStruct, path: &String) {
     }
 }
 
-pub fn load_folder_to_tree(main_struct: &mut MainStruct, path: &String) {
-    match read_dir(&path.clone()) {
-        Ok(dir) => {
-            for col in main_struct.file_tree.columns() {
-                main_struct.file_tree.remove_column(&col);
-            }
-            let model = TreeStore::new(&[String::static_type()]);
-            let mut dir_col_num: u16 = 1;
-            let col = gtk::TreeViewColumn::new();
-            let cell = gtk::CellRendererText::new();
-            col.pack_start(&cell, true);
-            col.add_attribute(&cell, "text", 0);
-            main_struct.file_tree.append_column(&col);
-            for files in dir {
-                let file = files.unwrap();
-                match file.metadata().unwrap().is_file() {
-                    true => {
-                        model.insert_with_values(
-                            None,
-                            None,
-                            &[(0, &file.file_name().to_os_string().into_string().unwrap())],
-                        );
-                    }
-                    false => {
-                        main_struct.file_tree.append_column(&TreeViewColumn::new());
-                    }
-                }
-            }
-            main_struct.file_tree.set_model(Some(&model));
-        }
-        Err(_) => {
-            main_struct
-                .toast_overlay
-                .add_toast(Toast::new("Failed to Read Folder!"));
-        }
-    }
-}
 fn show_item(main_struct: &mut MainStruct, files: Result<DirEntry, Error>) {
     let label = gtk::Label::builder().build();
     let dir_entry = files.as_ref().unwrap();
@@ -184,8 +143,7 @@ pub fn load_settings(main_struct: &mut MainStruct) {
                 .set_style_scheme(main_struct.buffer_style.as_ref());
         }
         "Adwaita Dark" => {
-            main_struct.buffer_style =
-                sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+            main_struct.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
             main_struct
                 .buffer
                 .set_style_scheme(main_struct.buffer_style.as_ref());

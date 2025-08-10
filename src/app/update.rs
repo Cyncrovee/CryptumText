@@ -12,7 +12,7 @@ use sourceview5::prelude::{BufferExt, ViewExt};
 use crate::{
     app::model::{MainStruct, Message},
     fs::{load_file, load_folder, load_settings, save_settings},
-    util::{fs::load_folder_to_tree, menu::{file_list_context_menu_model, file_list_context_menu_model_item}},
+    util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
 use super::model::ItemVis;
@@ -54,8 +54,7 @@ pub(crate) fn handle_messages(
         Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
             main_struct.current_folder_path = path.clone().into_os_string().into_string().unwrap();
-            load_folder_to_tree(main_struct, &path.into_os_string().into_string().unwrap());
-            // load_folder(main_struct, &path.into_os_string().into_string().unwrap());
+            load_folder(main_struct, &path.into_os_string().into_string().unwrap());
         }
         Message::OpenRequest => main_struct.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
