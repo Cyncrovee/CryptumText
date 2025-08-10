@@ -112,6 +112,11 @@ impl SimpleComponent for MainStruct {
             .vexpand(true)
             .activate_on_single_click(false)
             .build();
+        let file_tree = gtk::TreeView::builder()
+            .css_classes(vec!["navigation-sidebar"])
+            .vexpand(true)
+            .activate_on_single_click(false)
+            .build();
         let file_list_context_menu = gtk::PopoverMenu::builder()
             .has_arrow(false)
             .halign(gtk4::Align::Start)
@@ -175,7 +180,7 @@ impl SimpleComponent for MainStruct {
         side_bar_box.append(&file_list_button_box);
         file_list_box.append(&file_list_scroll);
         file_list_box.append(&file_list_context_menu);
-        side_bar_box.append(&file_list_box);
+        side_bar_box.append(&file_tree);
         toast_overlay.set_child(Some(&editor_box_horizontal));
         editor_box_vertical.append(&editor_scroll_window);
         editor_box_vertical.append(&status_bar_box);
@@ -368,6 +373,7 @@ impl SimpleComponent for MainStruct {
             side_bar_box,
             // Widgets
             file_list,
+            file_tree,
             file_list_context_menu,
             editor,
             buffer,

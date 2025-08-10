@@ -13,6 +13,7 @@ pub struct MainStruct {
     pub side_bar_box: gtk::Box,
     // Widgets
     pub file_list: gtk::ListBox,
+    pub file_tree: gtk::TreeView,
     pub file_list_context_menu: gtk::PopoverMenu,
     pub editor: sourceview5::View,
     pub buffer: sourceview5::Buffer,
