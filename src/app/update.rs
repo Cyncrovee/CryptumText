@@ -5,6 +5,7 @@ use std::{
 };
 
 use gtk4::{gdk::Rectangle, prelude::*};
+use libadwaita::Toast;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::{BufferExt, ViewExt};
@@ -254,6 +255,9 @@ pub(crate) fn handle_messages(
             if let Some(_) = main_struct.file_list.selected_row() {
                 main_struct.file_list.unselect_all();
             }
+        }
+        Message::QuickToast(toast_text) => {
+            main_struct.toast_overlay.add_toast(Toast::new(&toast_text))
         }
         Message::Ignore => {}
     }

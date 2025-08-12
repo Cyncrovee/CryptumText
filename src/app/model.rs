@@ -85,6 +85,7 @@ pub enum Message {
     UpDir,
     RefreshFileList,
     CursorPositionChanged,
+    QuickToast(String),
     Ignore,
 }
 

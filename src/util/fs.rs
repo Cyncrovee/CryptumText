@@ -89,14 +89,31 @@ fn show_item(
     files: Result<DirEntry, Error>,
     sender: &relm4::ComponentSender<MainStruct>,
 ) {
-    let entry = files.unwrap();
-    if let Ok(m) = entry.metadata()
-        && m.is_file()
-    {
-        match m.is_file() {
-            true => show_file(main_struct, entry),
-            false => show_dir(main_struct, entry, sender),
+    if let Ok(entry) = files {
+        if let Ok(entry_data) = entry.metadata() {
+            match entry_data.is_file() {
+                true => show_file(main_struct, entry),
+                false => show_dir(main_struct, entry, sender),
+            }
+        } else {
+            match entry.path().into_os_string().into_string() {
+                Ok(path) => {
+                    sender.input(Message::QuickToast(format!(
+                        "Failed to get metadata for: {}",
+                        path
+                    )));
+                }
+                Err(_) => {
+                    sender.input(Message::QuickToast(format!(
+                        "Failed to get metadata for DirEntry!",
+                    )));
+                }
+            }
         }
+    } else {
+        sender.input(Message::QuickToast(
+            "Result<DirEntry, Error> returned Error!".to_string(),
+        ));
     }
 }
 
