@@ -90,14 +90,13 @@ fn show_item(
     sender: &relm4::ComponentSender<MainStruct>,
 ) {
     let entry = files.unwrap();
-    if entry
-        .metadata()
-        .expect("Failed to get item metadata!")
-        .is_file()
+    if let Ok(m) = entry.metadata()
+        && m.is_file()
     {
-        show_file(main_struct, entry);
-    } else {
-        show_dir(main_struct, entry, sender);
+        match m.is_file() {
+            true => show_file(main_struct, entry),
+            false => show_dir(main_struct, entry, sender),
+        }
     }
 }
 
