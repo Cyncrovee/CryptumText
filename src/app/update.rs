@@ -248,10 +248,16 @@ pub(crate) fn handle_messages(
             save_settings(main_struct);
         }
         Message::UpDir => {
-            if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent() {
-                let up_dir = &path.to_str().unwrap().to_string();
+            if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent()
+                && let Some(path_str) = path.to_str()
+            {
+                let up_dir = path_str.to_string();
                 main_struct.current_folder_path = up_dir.clone();
                 load_folder(main_struct, &up_dir, sender);
+            } else {
+                sender.input(Message::QuickToast(
+                    "Failed to convert to PathBuf or failed to convert to &str!".to_string(),
+                ))
             }
         }
         Message::RefreshFileList => {
