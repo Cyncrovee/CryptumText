@@ -219,7 +219,9 @@ impl SimpleComponent for MainStruct {
         file_list.connect_row_activated(clone!(
             #[strong]
             sender,
-            move |_, _| sender.input(Message::LoadFileFromList)
+            move |_, row| sender.input(Message::LoadFileFromList(
+                row.child().unwrap().widget_name().to_string()
+            ))
         ));
         file_list_context_gesture.connect_released(clone!(
             #[strong]

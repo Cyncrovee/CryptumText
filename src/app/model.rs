@@ -51,7 +51,8 @@ pub struct WidgetStruct {}
 pub enum Message {
     // File
     NewFile,
-    LoadFileFromList,
+    ExpandLocalList(Vec<gtk::Label>),
+    LoadFileFromList(String),
     FolderRequest,
     FolderResponse(PathBuf),
     OpenRequest,

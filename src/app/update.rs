@@ -29,32 +29,34 @@ pub(crate) fn handle_messages(
             main_struct.current_file_path = "".to_string();
             main_struct.file_list.unselect_all();
         }
-        Message::LoadFileFromList => {
-            if let Some(row) = main_struct.file_list.selected_row() {
-                let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
-                let file_list_name = row.child().unwrap().widget_name();
-                let file_list_path = Path::new(file_list_name.as_str());
-                file_list_pathbuf.push(file_list_path);
-                match PathBuf::from(&file_list_pathbuf).is_dir() {
-                    true => {
-                        main_struct.current_folder_path =
-                            file_list_pathbuf.into_os_string().into_string().unwrap();
-                        let path = main_struct.current_folder_path.clone();
-                        load_folder(main_struct, &path);
-                    }
-                    false => {
-                        main_struct.current_file_path =
-                            file_list_pathbuf.into_os_string().into_string().unwrap();
-                        load_file(main_struct);
-                    }
-                }
-                main_struct.file_list.unselect_all();
+        Message::ExpandLocalList(label_vec) => {
+            for label in label_vec {
+                label
+                    .parent()
+                    .unwrap()
+                    .set_visible(!label.parent().unwrap().is_visible());
+            }
+        }
+        Message::LoadFileFromList(val) => {
+            if Path::new(&val).exists() {
+                // let path = PathBuf::from(&val);
+                main_struct.current_file_path = val;
+                // main_struct.current_folder_path =
+                //     path.parent().unwrap().to_string_lossy().to_string();
+                load_file(main_struct);
+            } else {
+                print!("Failed to load file: ");
+                println!("{}", val);
             }
         }
         Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
             main_struct.current_folder_path = path.clone().into_os_string().into_string().unwrap();
-            load_folder(main_struct, &path.into_os_string().into_string().unwrap());
+            load_folder(
+                main_struct,
+                &path.into_os_string().into_string().unwrap(),
+                sender,
+            );
         }
         Message::OpenRequest => main_struct.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
@@ -111,7 +113,7 @@ pub(crate) fn handle_messages(
         Message::ToggleHiddenFiles => {
             let current_folder = main_struct.current_folder_path.clone();
             main_struct.view_hidden = !main_struct.view_hidden;
-            load_folder(main_struct, &current_folder);
+            load_folder(main_struct, &current_folder, sender);
             save_settings(main_struct);
         }
         Message::ToggleMiniMap => {
@@ -194,7 +196,7 @@ pub(crate) fn handle_messages(
                 trash::delete(file_list_pathbuf).unwrap();
             }
             let path = main_struct.current_folder_path.clone();
-            load_folder(main_struct, &path);
+            load_folder(main_struct, &path, sender);
         }
         Message::OpenFolderExternal => {
             if let Ok(_) = fs::exists(&main_struct.current_folder_path) {
@@ -238,11 +240,15 @@ pub(crate) fn handle_messages(
             if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent() {
                 let up_dir = &path.to_str().unwrap().to_string();
                 main_struct.current_folder_path = up_dir.clone();
-                load_folder(main_struct, &up_dir);
+                load_folder(main_struct, &up_dir, sender);
             }
         }
         Message::RefreshFileList => {
-            load_folder(main_struct, &main_struct.current_folder_path.clone());
+            // load_folder(
+            //     main_struct,
+            //     &main_struct.current_folder_path.clone(),
+            //     sender,
+            // );
         }
         Message::CursorPositionChanged => {
             if let Some(_) = main_struct.file_list.selected_row() {

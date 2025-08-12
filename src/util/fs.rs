@@ -1,16 +1,17 @@
 use std::{
     fs::{DirEntry, read_dir, read_to_string},
     io::Error,
-    path::{Path, PathBuf},
+    path::Path,
 };
 
 use git2::Repository;
+use gtk4::{gdk::ffi::GDK_BUTTON_PRIMARY, glib::clone};
 use libadwaita::Toast;
 use relm4::{RelmRemoveAllExt, gtk::prelude::*, prelude::*};
 use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
-    app::model::{AppSettings, MainStruct},
+    app::model::{AppSettings, MainStruct, Message},
     util::widget::update_syntax,
 };
 
@@ -19,7 +20,10 @@ pub fn load_file(main_struct: &mut MainStruct) {
         Ok(f) => {
             main_struct.buffer.set_text(&f);
             main_struct.current_file_path = Some(main_struct.current_file_path.clone()).unwrap();
-            match update_syntax(&main_struct.language_manager, &main_struct.current_file_path) {
+            match update_syntax(
+                &main_struct.language_manager,
+                &main_struct.current_file_path,
+            ) {
                 Some(language) => {
                     main_struct.buffer.set_highlight_syntax(true);
                     main_struct.buffer.set_language(Some(&language));
@@ -32,12 +36,16 @@ pub fn load_file(main_struct: &mut MainStruct) {
         Err(_) => {
             main_struct
                 .toast_overlay
-                .add_toast(Toast::new("Failed to Read File!"));
+                .add_toast(Toast::new(&main_struct.current_file_path));
         }
     }
 }
 
-pub fn load_folder(main_struct: &mut MainStruct, path: &String) {
+pub fn load_folder(
+    main_struct: &mut MainStruct,
+    path: &String,
+    sender: relm4::ComponentSender<MainStruct>,
+) {
     match read_dir(&path.clone()) {
         Ok(dir) => {
             main_struct.file_list.remove_all();
@@ -46,7 +54,7 @@ pub fn load_folder(main_struct: &mut MainStruct, path: &String) {
                 {
                     match main_struct.view_hidden {
                         true => {
-                            show_item(main_struct, files);
+                            show_item(main_struct, files, &sender);
                         }
                         false => {
                             if let false = files
@@ -57,15 +65,15 @@ pub fn load_folder(main_struct: &mut MainStruct, path: &String) {
                                 .unwrap()
                                 .starts_with(&['.'])
                             {
-                                show_item(main_struct, files);
+                                show_item(main_struct, files, &sender);
                             }
                         }
                     }
                 }
-                #[cfg(any(not(unix)))]
-                {
-                    show_item(main_struct, files);
-                }
+                // #[cfg(any(not(unix)))]
+                // {
+                //     show_item(main_struct, files);
+                // }
             }
         }
         Err(_) => {
@@ -76,15 +84,30 @@ pub fn load_folder(main_struct: &mut MainStruct, path: &String) {
     }
 }
 
-fn show_item(main_struct: &mut MainStruct, files: Result<DirEntry, Error>) {
-    let label = gtk::Label::builder().build();
-    let dir_entry = files.as_ref().unwrap();
-    label.set_widget_name(dir_entry.file_name().as_os_str().to_str().unwrap());
-    let mut item_name = dir_entry.file_name().into_string().unwrap();
-    if let true = PathBuf::from(dir_entry.path().into_os_string().into_string().unwrap()).is_dir() {
-        item_name.push_str("/");
+fn show_item(
+    main_struct: &mut MainStruct,
+    files: Result<DirEntry, Error>,
+    sender: &relm4::ComponentSender<MainStruct>,
+) {
+    let entry = files.unwrap();
+    if entry
+        .metadata()
+        .expect("Failed to get item metadata!")
+        .is_file()
+    {
+        show_file(main_struct, entry);
+    } else {
+        show_dir(main_struct, entry, sender);
     }
-    label.set_text(&item_name);
+}
+
+fn show_file(main_struct: &mut MainStruct, entry: DirEntry) {
+    let dir_entry = entry;
+    let item_name = dir_entry.file_name().into_string().unwrap();
+    let label = gtk::Label::builder()
+        .name(dir_entry.path().into_os_string().into_string().unwrap())
+        .label(&item_name)
+        .build();
     main_struct.file_list.append(&label);
     if let Ok(repo) = Repository::discover(&main_struct.current_folder_path) {
         main_struct.git_info.0 = repo.head().unwrap().shorthand().unwrap().to_string();
@@ -93,6 +116,77 @@ fn show_item(main_struct: &mut MainStruct, files: Result<DirEntry, Error>) {
         main_struct.git_info.0 = "".to_string();
         main_struct.git_info.1 = false;
     }
+}
+
+fn show_dir(
+    main_struct: &mut MainStruct,
+    entry: DirEntry,
+    sender: &relm4::ComponentSender<MainStruct>,
+) {
+    let mut dir_label_text = entry.file_name().to_owned();
+    dir_label_text.push("/");
+    let dir_label = gtk::Label::new(Some(&dir_label_text.as_os_str().to_str().unwrap()));
+    let mut local_file_vec = Vec::default();
+    for dir_entry in read_dir(entry.path()).expect("Failed to read directory!") {
+        match dir_entry
+            .as_ref()
+            .expect("Failed to get DirEntry as reference!")
+            .metadata()
+            .expect("Failed to get item metadata!")
+            .is_file()
+        {
+            true => {
+                let mut label_hidden_name = dir_label_text.clone().into_string().unwrap();
+                label_hidden_name.push_str(
+                    &dir_entry
+                        .as_ref()
+                        .unwrap()
+                        .file_name()
+                        .into_string()
+                        .unwrap(),
+                );
+                let local_dir_entry = dir_entry.as_ref();
+                // let local_label_gesture = gtk::GestureClick::builder()
+                //     .button(GDK_BUTTON_PRIMARY as u32)
+                //     .name(local_dir_entry.unwrap().path().into_os_string().into_string().unwrap())
+                //     .build();
+                // local_label_gesture.connect_released(clone!(
+                //     #[strong]
+                //     sender,
+                //     move |g, _, _, _| sender
+                //         .input(Message::LoadFileFromList(g.name().unwrap().to_string()))
+                // ));
+                let label = gtk::Label::builder()
+                    .name(
+                        local_dir_entry
+                            .unwrap()
+                            .path()
+                            .into_os_string()
+                            .into_string()
+                            .unwrap(),
+                    )
+                    .label(dir_entry.unwrap().file_name().as_os_str().to_str().unwrap())
+                    .build();
+                // label.add_controller(local_label_gesture);
+                local_file_vec.push(label);
+            }
+            false => {}
+        }
+    }
+    main_struct.file_list.append(&dir_label);
+    for label in local_file_vec.clone() {
+        main_struct.file_list.append(&label);
+        label.parent().unwrap().set_visible(false);
+    }
+    let dir_label_gesture = gtk::GestureClick::builder()
+        .button(GDK_BUTTON_PRIMARY as u32)
+        .build();
+    dir_label_gesture.connect_released(clone!(
+        #[strong]
+        sender,
+        move |_, _, _, _| sender.input(Message::ExpandLocalList(local_file_vec.clone()))
+    ));
+    dir_label.add_controller(dir_label_gesture);
 }
 
 pub fn save_settings(main_struct: &mut MainStruct) {
@@ -143,7 +237,8 @@ pub fn load_settings(main_struct: &mut MainStruct) {
                 .set_style_scheme(main_struct.buffer_style.as_ref());
         }
         "Adwaita Dark" => {
-            main_struct.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+            main_struct.buffer_style =
+                sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
             main_struct
                 .buffer
                 .set_style_scheme(main_struct.buffer_style.as_ref());
