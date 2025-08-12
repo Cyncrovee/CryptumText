@@ -85,7 +85,7 @@ pub(crate) fn handle_messages(
                 // The program will attempt to save file, falling back to "Save As"
                 // if it can't create the file from the current file path
                 if let Ok(mut file) = File::create(&main_struct.current_file_path) {
-                    file.write_all(
+                    if let Err(_) = file.write_all(
                         main_struct
                             .buffer
                             .text(
@@ -94,8 +94,9 @@ pub(crate) fn handle_messages(
                                 false,
                             )
                             .as_bytes(),
-                    )
-                    .unwrap();
+                    ) {
+                        sender.input(Message::QuickToast("Error when saving file!".to_string()))
+                    }
                 } else {
                     sender.input(Message::SaveAsRequest);
                 }
