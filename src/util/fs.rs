@@ -156,7 +156,6 @@ fn show_dir(
                     )
                     .label(dir_entry.unwrap().file_name().as_os_str().to_str().unwrap())
                     .build();
-                // label.add_controller(local_label_gesture);
                 local_file_vec.push(label);
             }
             false => {}
