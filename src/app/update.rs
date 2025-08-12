@@ -32,10 +32,13 @@ pub(crate) fn handle_messages(
         }
         Message::ExpandLocalList(label_vec) => {
             for label in label_vec {
-                label
-                    .parent()
-                    .unwrap()
-                    .set_visible(!label.parent().unwrap().is_visible());
+                if let Some(label_parent) = label.parent() {
+                    label_parent.set_visible(!label_parent.is_visible());
+                } else {
+                    sender.input(Message::QuickToast(
+                        "Failed to get parent for label!".to_string(),
+                    ))
+                }
             }
         }
         Message::LoadFileFromList(val) => {
