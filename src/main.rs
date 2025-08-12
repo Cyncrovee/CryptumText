@@ -23,10 +23,10 @@ use app::{
 
 mod util;
 use util::{
-    fs,
     menu::{extras_menu_bar, menu_bar},
     widget::setup_editor,
 };
+mod files_dirs;
 
 impl SimpleComponent for MainStruct {
     type Init = String;

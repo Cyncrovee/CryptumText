@@ -11,9 +11,7 @@ use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
-    app::model::{MainStruct, Message},
-    fs::{load_file, load_folder, load_settings, save_settings},
-    util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
+    app::model::{MainStruct, Message}, files_dirs::{file::load_file, file_list::load_folder, settings::{load_settings, save_settings}}, util::menu::{file_list_context_menu_model, file_list_context_menu_model_item}
 };
 
 use super::model::ItemVis;
