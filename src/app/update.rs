@@ -52,12 +52,14 @@ pub(crate) fn handle_messages(
         }
         Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
-            main_struct.current_folder_path = path.clone().into_os_string().into_string().unwrap();
-            load_folder(
-                main_struct,
-                &path.into_os_string().into_string().unwrap(),
-                sender,
-            );
+            if let Ok(path_string) = path.clone().into_os_string().into_string() {
+                main_struct.current_folder_path = path_string.clone();
+                load_folder(main_struct, &path_string, sender);
+            } else {
+                sender.input(Message::QuickToast(
+                    "Failed to convert OsString to String".to_string(),
+                ))
+            }
         }
         Message::OpenRequest => main_struct.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
