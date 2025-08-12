@@ -189,12 +189,22 @@ pub(crate) fn handle_messages(
             }
         }
         Message::DeleteItem => {
-            if let Some(row) = main_struct.file_list.selected_row() {
+            if let Some(row) = main_struct.file_list.selected_row()
+                && let Some(row_child) = row.child()
+            {
                 let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
-                let file_list_name = &row.child().unwrap().widget_name();
+                let file_list_name = &row_child.widget_name();
                 let file_list_path = Path::new(file_list_name);
                 file_list_pathbuf.push(file_list_path);
-                trash::delete(file_list_pathbuf).unwrap();
+                if let Err(_) = trash::delete(file_list_pathbuf) {
+                    sender.input(Message::QuickToast(
+                        "Error when moving item to trash!".to_string(),
+                    ))
+                }
+            } else {
+                sender.input(Message::QuickToast(
+                    "Failed to get selected row or child of selected row!".to_string(),
+                ))
             }
             let path = main_struct.current_folder_path.clone();
             load_folder(main_struct, &path, sender);
