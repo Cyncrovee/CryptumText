@@ -43,10 +43,7 @@ pub(crate) fn handle_messages(
         }
         Message::LoadFileFromList(val) => {
             if Path::new(&val).exists() {
-                // let path = PathBuf::from(&val);
                 main_struct.current_file_path = val;
-                // main_struct.current_folder_path =
-                //     path.parent().unwrap().to_string_lossy().to_string();
                 load_file(main_struct);
             } else {
                 print!("Failed to load file: ");
