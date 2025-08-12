@@ -219,9 +219,17 @@ impl SimpleComponent for MainStruct {
         file_list.connect_row_activated(clone!(
             #[strong]
             sender,
-            move |_, row| sender.input(Message::LoadFileFromList(
-                row.child().unwrap().widget_name().to_string()
-            ))
+            move |_, row| {
+                if let Some(row_child) = row.child() {
+                    sender.input(Message::LoadFileFromList(
+                        row_child.widget_name().to_string(),
+                    ))
+                } else {
+                    sender.input(Message::QuickToast(
+                        "Failed to get child for file list row!".to_string(),
+                    ))
+                }
+            }
         ));
         file_list_context_gesture.connect_released(clone!(
             #[strong]
