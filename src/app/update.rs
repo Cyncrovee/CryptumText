@@ -1,6 +1,5 @@
 use std::{
-    fs::{self, File, exists},
-    io::Write,
+    fs,
     path::{Path, PathBuf},
 };
 
@@ -11,7 +10,7 @@ use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::{BufferExt, ViewExt};
 
 use crate::{
-    app::model::{MainStruct, Message}, files_dirs::{file::load_file, file_list::load_folder, settings::{load_settings, save_settings}}, util::menu::{file_list_context_menu_model, file_list_context_menu_model_item}
+    app::model::{MainStruct, Message}, files_dirs::{file::{load_file, save_file}, file_list::load_folder, settings::{load_settings, save_settings}}, util::menu::{file_list_context_menu_model, file_list_context_menu_model_item}
 };
 
 use super::model::ItemVis;
@@ -79,26 +78,7 @@ pub(crate) fn handle_messages(
             Err(_) => {}
         },
         Message::SaveFile => {
-            if let Ok(_) = exists(&main_struct.current_file_path) {
-                // The program will attempt to save file, falling back to "Save As"
-                // if it can't create the file from the current file path
-                if let Ok(mut file) = File::create(&main_struct.current_file_path) {
-                    if let Err(_) = file.write_all(
-                        main_struct
-                            .buffer
-                            .text(
-                                &main_struct.buffer.start_iter(),
-                                &main_struct.buffer.end_iter(),
-                                false,
-                            )
-                            .as_bytes(),
-                    ) {
-                        sender.input(Message::QuickToast("Error when saving file!".to_string()))
-                    }
-                } else {
-                    sender.input(Message::SaveAsRequest);
-                }
-            }
+            save_file(main_struct, sender);
         }
         // Edit
         Message::ClearEditor => {
