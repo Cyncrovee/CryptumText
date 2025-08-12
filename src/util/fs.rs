@@ -70,10 +70,10 @@ pub fn load_folder(
                         }
                     }
                 }
-                // #[cfg(any(not(unix)))]
-                // {
-                //     show_item(main_struct, files);
-                // }
+                #[cfg(any(not(unix)))]
+                {
+                    show_item(main_struct, files);
+                }
             }
         }
         Err(_) => {
@@ -146,16 +146,6 @@ fn show_dir(
                         .unwrap(),
                 );
                 let local_dir_entry = dir_entry.as_ref();
-                // let local_label_gesture = gtk::GestureClick::builder()
-                //     .button(GDK_BUTTON_PRIMARY as u32)
-                //     .name(local_dir_entry.unwrap().path().into_os_string().into_string().unwrap())
-                //     .build();
-                // local_label_gesture.connect_released(clone!(
-                //     #[strong]
-                //     sender,
-                //     move |g, _, _, _| sender
-                //         .input(Message::LoadFileFromList(g.name().unwrap().to_string()))
-                // ));
                 let label = gtk::Label::builder()
                     .name(
                         local_dir_entry
