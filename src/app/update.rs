@@ -245,11 +245,11 @@ pub(crate) fn handle_messages(
             }
         }
         Message::RefreshFileList => {
-            // load_folder(
-            //     main_struct,
-            //     &main_struct.current_folder_path.clone(),
-            //     sender,
-            // );
+            load_folder(
+                main_struct,
+                &main_struct.current_folder_path.clone(),
+                sender,
+            );
         }
         Message::CursorPositionChanged => {
             if let Some(_) = main_struct.file_list.selected_row() {
