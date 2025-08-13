@@ -55,9 +55,9 @@ pub(crate) fn handle_messages(
         }
         Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
-            if let Ok(path_string) = path.clone().into_os_string().into_string() {
-                main_struct.current_folder_path = path_string.clone();
-                load_folder(main_struct, &path_string, sender);
+            if let Ok(path_string) = path.into_os_string().into_string() {
+                main_struct.current_folder_path = path_string;
+                load_folder(main_struct, sender);
             } else {
                 sender.input(Message::QuickToast(
                     "Failed to convert OsString to String".to_string(),
@@ -99,9 +99,8 @@ pub(crate) fn handle_messages(
             save_settings(main_struct);
         }
         Message::ToggleHiddenFiles => {
-            let current_folder = main_struct.current_folder_path.clone();
             main_struct.view_hidden = !main_struct.view_hidden;
-            load_folder(main_struct, &current_folder, sender);
+            load_folder(main_struct, sender);
             save_settings(main_struct);
         }
         Message::ToggleMiniMap => {
@@ -193,8 +192,7 @@ pub(crate) fn handle_messages(
                     "Failed to get selected row or child of selected row!".to_string(),
                 ))
             }
-            let path = main_struct.current_folder_path.clone();
-            load_folder(main_struct, &path, sender);
+            load_folder(main_struct, sender);
         }
         Message::OpenFolderExternal => {
             if let Ok(_) = fs::exists(&main_struct.current_folder_path) {
@@ -239,8 +237,8 @@ pub(crate) fn handle_messages(
                 && let Some(path_str) = path.to_str()
             {
                 let up_dir = path_str.to_string();
-                main_struct.current_folder_path = up_dir.clone();
-                load_folder(main_struct, &up_dir, sender);
+                main_struct.current_folder_path = up_dir;
+                load_folder(main_struct, sender);
             } else {
                 sender.input(Message::QuickToast(
                     "Failed to convert to PathBuf or failed to convert to &str!".to_string(),
@@ -248,11 +246,7 @@ pub(crate) fn handle_messages(
             }
         }
         Message::RefreshFileList => {
-            load_folder(
-                main_struct,
-                &main_struct.current_folder_path.clone(),
-                sender,
-            );
+            load_folder(main_struct, sender);
         }
         Message::CursorPositionChanged => {
             if let Some(_) = main_struct.file_list.selected_row() {

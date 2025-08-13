@@ -9,10 +9,9 @@ use crate::app::model::{MainStruct, Message};
 
 pub fn load_folder(
     main_struct: &mut MainStruct,
-    path: &String,
     sender: relm4::ComponentSender<MainStruct>,
 ) {
-    match read_dir(&path.clone()) {
+    match read_dir(&main_struct.current_folder_path) {
         Ok(dir) => {
             main_struct.file_list.remove_all();
             for files in dir {
