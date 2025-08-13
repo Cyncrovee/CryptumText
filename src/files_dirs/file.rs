@@ -16,7 +16,6 @@ pub fn load_file(main_struct: &mut MainStruct) {
     match std::fs::read_to_string(&main_struct.current_file_path) {
         Ok(f) => {
             main_struct.buffer.set_text(&f);
-            main_struct.current_file_path = main_struct.current_file_path.clone();
             match update_syntax(
                 &main_struct.language_manager,
                 &main_struct.current_file_path,
