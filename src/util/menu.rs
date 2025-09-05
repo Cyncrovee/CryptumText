@@ -40,27 +40,23 @@ pub fn menu_bar() -> MenuModel {
     );
     menu.insert_section(4, None, &toggle_section);
 
-    return menu.into();
-}
-
-pub fn extras_menu_bar() -> MenuModel {
-    let menu = Menu::new();
-
-    menu.insert_item(
+    let extras_section = Menu::new();
+    extras_section.insert_item(
         0,
         &MenuItem::new(Some("Preferences"), Some("about.show_preferences")),
     );
-    menu.insert_item(
+    extras_section.insert_item(
         1,
         &MenuItem::new(
             Some("Keyboard Shortcuts"),
             Some("about.show_keyboard_shortcuts"),
         ),
     );
-    menu.insert_item(
+    extras_section.insert_item(
         2,
         &MenuItem::new(Some("About Cryptum Text"), Some("about.show_about")),
     );
+    menu.insert_section(5, None, &extras_section);
 
     return menu.into();
 }

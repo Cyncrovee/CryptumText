@@ -22,10 +22,7 @@ use app::{
 };
 
 mod util;
-use util::{
-    menu::{extras_menu_bar, menu_bar},
-    widget::setup_editor,
-};
+use util::{menu::menu_bar, widget::setup_editor};
 mod files_dirs;
 
 impl SimpleComponent for MainStruct {
@@ -82,13 +79,8 @@ impl SimpleComponent for MainStruct {
             .icon_name("open-menu-symbolic")
             .menu_model(&menu_bar())
             .build();
-        let extras = MenuButton::builder()
-            .icon_name("help-about-symbolic")
-            .menu_model(&extras_menu_bar())
-            .build();
         let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_start(&hamburger);
-        header.pack_end(&extras);
         let up_button = Button::builder()
             .icon_name("go-up-symbolic")
             .width_request(40)
