@@ -80,7 +80,7 @@ impl SimpleComponent for MainStruct {
             .menu_model(&menu_bar())
             .build();
         let header = HeaderBar::builder().title_widget(&title).build();
-        header.pack_start(&hamburger);
+        header.pack_end(&hamburger);
         let up_button = Button::builder()
             .icon_name("go-up-symbolic")
             .width_request(40)
