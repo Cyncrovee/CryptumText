@@ -81,6 +81,9 @@ pub fn update_file_type(file: &str) -> Option<GString> {
                 "jsonc" => {
                     return Some("JSONC File".into());
                 }
+                "base" => {
+                    return Some("Obsidian Base File".into());
+                }
                 // Shell Files
                 "sh" => {
                     return Some("Shell Script".into());
