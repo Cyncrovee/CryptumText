@@ -358,11 +358,11 @@ impl SimpleComponent for MainStruct {
         ));
 
         // Register action groups
-        file_action_group.register_for_main_application();
-        edit_action_group.register_for_main_application();
-        view_action_group.register_for_main_application();
-        about_action_group.register_for_main_application();
-        file_list_action_group.register_for_main_application();
+        file_action_group.register_for_widget(&root);
+        edit_action_group.register_for_widget(&root);
+        view_action_group.register_for_widget(&root);
+        about_action_group.register_for_widget(&root);
+        file_list_action_group.register_for_widget(&root);
 
         let model = MainStruct {
             // Containers
