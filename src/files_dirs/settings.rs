@@ -31,19 +31,14 @@ pub fn load_settings(main_struct: &mut MainStruct) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
-    if let Err(_) = read_to_string(&config_path) {
+    if read_to_string(&config_path).is_err() {
         std::fs::write(&config_path, "").unwrap()
     }
     let settings_file = read_to_string(&config_path).unwrap();
 
     let settings: AppSettings = serde_json::from_str(&settings_file).unwrap_or(AppSettings {
-        editor_monospace: true,
         editor_theme: main_struct.buffer_style.as_ref().unwrap().to_string(),
-        editor_use_spaces_for_tabs: true,
-        editor_tab_width: 4,
-        view_mini_map: true,
-        view_file_list: true,
-        view_hidden_files: false,
+        ..Default::default()
     });
     match settings.editor_theme.as_str() {
         "Adwaita" => {

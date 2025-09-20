@@ -44,6 +44,20 @@ pub struct AppSettings {
     pub view_hidden_files: bool,
 }
 
+impl Default for AppSettings {
+    fn default() -> Self {
+        AppSettings {
+            editor_theme: "Adwaita".to_string(),
+            editor_monospace: true,
+            editor_use_spaces_for_tabs: true,
+            editor_tab_width: 4,
+            view_mini_map: true,
+            view_file_list: true,
+            view_hidden_files: false,
+        }
+    }
+}
+
 pub struct WidgetStruct {}
 
 // Enums

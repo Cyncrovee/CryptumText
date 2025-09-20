@@ -233,7 +233,7 @@ impl SimpleComponent for MainStruct {
                 sender.input(Message::FileListContext(x32, y32));
             }
         ));
-        file_list.add_controller(file_list_context_gesture);
+        file_list_scroll.add_controller(file_list_context_gesture);
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
