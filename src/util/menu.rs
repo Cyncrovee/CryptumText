@@ -58,7 +58,7 @@ pub fn menu_bar() -> MenuModel {
     );
     menu.insert_section(5, None, &extras_section);
 
-    return menu.into();
+    menu.into()
 }
 
 pub fn file_list_context_menu_model() -> MenuModel {
@@ -73,7 +73,7 @@ pub fn file_list_context_menu_model() -> MenuModel {
         ),
     );
 
-    return menu.into();
+    menu.into()
 }
 
 pub fn file_list_context_menu_model_item() -> MenuModel {
@@ -92,5 +92,5 @@ pub fn file_list_context_menu_model_item() -> MenuModel {
         ),
     );
 
-    return menu.into();
+    menu.into()
 }

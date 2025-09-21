@@ -49,8 +49,10 @@ impl SimpleComponent for MainStruct {
         program.connect_startup(|_| libadwaita::init().unwrap());
 
         // Define and setup dialogs
-        let mut load_folder_dialog_settings = OpenDialogSettings::default();
-        load_folder_dialog_settings.folder_mode = true;
+        let load_folder_dialog_settings = OpenDialogSettings {
+            folder_mode: true,
+            ..Default::default()
+        };
         let folder_dialog = OpenDialog::builder()
             .transient_for_native(&root)
             .launch(load_folder_dialog_settings)

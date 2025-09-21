@@ -72,17 +72,18 @@ pub(crate) fn handle_messages(
         Message::SaveAsRequest => main_struct
             .save_as_dialog
             .emit(SaveDialogMsg::SaveAs("".to_string())),
-        Message::SaveAsResponse(path) => match std::fs::write(
-            &path,
-            main_struct.buffer.text(
-                &main_struct.buffer.start_iter(),
-                &main_struct.buffer.end_iter(),
-                false,
-            ),
-        ) {
-            Ok(_) => {}
-            Err(_) => {}
-        },
+        Message::SaveAsResponse(path) => {
+            if std::fs::write(
+                &path,
+                main_struct.buffer.text(
+                    &main_struct.buffer.start_iter(),
+                    &main_struct.buffer.end_iter(),
+                    false,
+                ),
+            )
+            .is_ok()
+            {}
+        }
         Message::SaveFile => {
             save_file(main_struct, sender);
         }
@@ -182,7 +183,7 @@ pub(crate) fn handle_messages(
                 let file_list_name = &row_child.widget_name();
                 let file_list_path = Path::new(file_list_name);
                 file_list_pathbuf.push(file_list_path);
-                if let Err(_) = trash::delete(file_list_pathbuf) {
+                if trash::delete(file_list_pathbuf).is_err() {
                     sender.input(Message::QuickToast(
                         "Error when moving item to trash!".to_string(),
                     ))
@@ -195,9 +196,9 @@ pub(crate) fn handle_messages(
             load_folder(main_struct, sender);
         }
         Message::OpenFolderExternal => {
-            if let Ok(_) = fs::exists(&main_struct.current_folder_path) {
-                if let Ok(_) = open::that(&main_struct.current_folder_path) {}
-            }
+            if fs::exists(&main_struct.current_folder_path).is_ok()
+                && open::that(&main_struct.current_folder_path).is_ok()
+            {}
         }
         // Other
         Message::LoadSettings => {
@@ -249,7 +250,7 @@ pub(crate) fn handle_messages(
             load_folder(main_struct, sender);
         }
         Message::CursorPositionChanged => {
-            if let Some(_) = main_struct.file_list.selected_row() {
+            if main_struct.file_list.selected_row().is_some() {
                 main_struct.file_list.unselect_all();
             }
         }
