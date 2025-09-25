@@ -1,6 +1,3 @@
-// TODO: Add more options to preferences dialog
-// TODO: Overhaul status bar
-
 use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
