@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
 
 // Structs
+#[derive(Debug)]
 pub struct MainStruct {
     // Containers
     pub root: libadwaita::ApplicationWindow,
