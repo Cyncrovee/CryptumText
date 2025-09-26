@@ -11,20 +11,13 @@ use crate::app::model::MainStruct;
 
 pub fn load_folder_view(main_struct: &mut MainStruct) {
     let file = File::for_path(&main_struct.current_folder_path);
-    let dir_list = DirectoryList::new(Some("standard::name,standard::path"), Some(&file));
-    let model = TreeListModel::new(dir_list, true, true, |o| {
-        let dir_str = o
-            .downcast_ref::<FileInfo>()
-            .unwrap()
-            .attribute_string("path")
-            .unwrap()
-            .to_string();
+    let dir_list = DirectoryList::new(Some("standard::name"), Some(&file));
+    let model = TreeListModel::new(dir_list, false, true, move |o| {
+        let dir_str = o.downcast_ref::<FileInfo>().unwrap().name();
         let dir_path = Path::new(&dir_str);
         if dir_path.is_dir() {
-            let dir_list_local = DirectoryList::new(
-                Some("standard::name,standard::path"),
-                Some(&File::for_path(dir_path)),
-            );
+            let dir_list_local =
+                DirectoryList::new(Some("standard::name"), Some(&File::for_path(dir_path)));
             Some(dir_list_local.into())
         } else {
             None
@@ -41,6 +34,7 @@ pub fn load_folder_view(main_struct: &mut MainStruct) {
         let item = list_item.item().unwrap();
         let file_info = item.downcast_ref::<FileInfo>().unwrap();
         let tree = list_item.child().and_downcast::<TreeExpander>().unwrap();
+        tree.set_list_row(model.row(list_item.position()).as_ref());
         tree.set_child(Some(&Label::new(Some(file_info.name().to_str().unwrap()))));
     });
     main_struct.file_view.set_model(Some(&selection));
