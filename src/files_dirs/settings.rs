@@ -9,19 +9,17 @@ pub fn save_settings(main_struct: &mut MainStruct) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
-    let settings = AppSettings {
-        editor_monospace: main_struct.editor.is_monospace(),
-        editor_theme: main_struct.buffer_style.as_ref().unwrap().to_string(),
-        editor_use_spaces_for_tabs: main_struct.editor.is_insert_spaces_instead_of_tabs(),
-        editor_tab_width: main_struct.editor.tab_width(),
-        view_mini_map: main_struct.mini_map.is_visible(),
-        view_hidden_files: main_struct.view_hidden,
-    };
-
-    serde_json::to_string(&settings).unwrap();
     std::fs::write(
         config_path,
-        serde_json::to_string_pretty(&settings).unwrap(),
+        serde_json::to_string_pretty(&AppSettings {
+            editor_monospace: main_struct.editor.is_monospace(),
+            editor_theme: main_struct.buffer_style.as_ref().unwrap().to_string(),
+            editor_use_spaces_for_tabs: main_struct.editor.is_insert_spaces_instead_of_tabs(),
+            editor_tab_width: main_struct.editor.tab_width(),
+            view_mini_map: main_struct.mini_map.is_visible(),
+            view_hidden_files: main_struct.view_hidden,
+        })
+        .unwrap(),
     )
     .unwrap();
 }
@@ -55,30 +53,9 @@ pub fn load_settings(main_struct: &mut MainStruct) {
         }
         &_ => {}
     }
-    match settings.editor_monospace {
-        true => {
-            main_struct.editor.set_monospace(true);
-        }
-        false => {
-            main_struct.editor.set_monospace(false);
-        }
-    }
-    match settings.view_mini_map {
-        true => {
-            main_struct.mini_map.set_visible(true);
-        }
-        false => {
-            main_struct.mini_map.set_visible(false);
-        }
-    }
-    match settings.view_hidden_files {
-        true => {
-            main_struct.view_hidden = true;
-        }
-        false => {
-            main_struct.view_hidden = false;
-        }
-    }
+    main_struct.editor.set_monospace(settings.editor_monospace);
+    main_struct.mini_map.set_visible(settings.view_mini_map);
+    main_struct.view_hidden = settings.view_hidden_files;
     main_struct
         .editor
         .set_insert_spaces_instead_of_tabs(settings.editor_use_spaces_for_tabs);
