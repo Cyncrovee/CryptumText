@@ -15,7 +15,6 @@ pub fn save_settings(main_struct: &mut MainStruct) {
         editor_use_spaces_for_tabs: main_struct.editor.is_insert_spaces_instead_of_tabs(),
         editor_tab_width: main_struct.editor.tab_width(),
         view_mini_map: main_struct.mini_map.is_visible(),
-        view_file_list: main_struct.file_list.is_visible(),
         view_hidden_files: main_struct.view_hidden,
     };
 
@@ -62,14 +61,6 @@ pub fn load_settings(main_struct: &mut MainStruct) {
         }
         false => {
             main_struct.editor.set_monospace(false);
-        }
-    }
-    match settings.view_file_list {
-        true => {
-            main_struct.side_bar_box.set_visible(true);
-        }
-        false => {
-            main_struct.side_bar_box.set_visible(false);
         }
     }
     match settings.view_mini_map {

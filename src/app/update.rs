@@ -1,9 +1,6 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::fs;
 
-use gtk4::{gdk::Rectangle, prelude::*};
+use gtk4::prelude::*;
 use libadwaita::Toast;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
@@ -12,11 +9,10 @@ use sourceview5::prelude::{BufferExt, ViewExt};
 use crate::{
     app::model::{MainStruct, Message},
     files_dirs::{
-        file::{load_file, save_file},
-        file_list::load_folder,
+        file_list::load_folder_view,
+        load_save::{load_file, save_file},
         settings::{load_settings, save_settings},
     },
-    util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
 };
 
 use super::model::ItemVis;
@@ -31,33 +27,12 @@ pub(crate) fn handle_messages(
         Message::NewFile => {
             main_struct.buffer.set_text("");
             main_struct.current_file_path = "".to_string();
-            main_struct.file_list.unselect_all();
-        }
-        Message::ExpandLocalList(label_vec) => {
-            for label in label_vec {
-                if let Some(label_parent) = label.parent() {
-                    label_parent.set_visible(!label_parent.is_visible());
-                } else {
-                    sender.input(Message::QuickToast(
-                        "Failed to get parent for label!".to_string(),
-                    ))
-                }
-            }
-        }
-        Message::LoadFileFromList(val) => {
-            if Path::new(&val).exists() {
-                main_struct.current_file_path = val;
-                load_file(main_struct);
-            } else {
-                print!("Failed to load file: ");
-                println!("{}", val);
-            }
         }
         Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
             if let Ok(path_string) = path.into_os_string().into_string() {
                 main_struct.current_folder_path = path_string;
-                load_folder(main_struct, sender);
+                load_folder_view(main_struct);
             } else {
                 sender.input(Message::QuickToast(
                     "Failed to convert OsString to String".to_string(),
@@ -101,7 +76,6 @@ pub(crate) fn handle_messages(
         }
         Message::ToggleHiddenFiles => {
             main_struct.view_hidden = !main_struct.view_hidden;
-            load_folder(main_struct, sender);
             save_settings(main_struct);
         }
         Message::ToggleMiniMap => {
@@ -155,46 +129,7 @@ pub(crate) fn handle_messages(
             crate::util::dialogs::create_about_dialog();
         }
         // File list
-        Message::FileListContext(x, y) => {
-            let rect = Rectangle::new(x, y, 1, 1);
-            main_struct
-                .file_list_context_menu
-                .set_pointing_to(Some(&rect));
-            match main_struct.file_list.selected_row() {
-                Some(_) => {
-                    main_struct
-                        .file_list_context_menu
-                        .set_menu_model(Some(&file_list_context_menu_model_item()));
-                    main_struct.file_list_context_menu.popup();
-                }
-                None => {
-                    main_struct
-                        .file_list_context_menu
-                        .set_menu_model(Some(&file_list_context_menu_model()));
-                    main_struct.file_list_context_menu.popup();
-                }
-            }
-        }
-        Message::DeleteItem => {
-            if let Some(row) = main_struct.file_list.selected_row()
-                && let Some(row_child) = row.child()
-            {
-                let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
-                let file_list_name = &row_child.widget_name();
-                let file_list_path = Path::new(file_list_name);
-                file_list_pathbuf.push(file_list_path);
-                if trash::delete(file_list_pathbuf).is_err() {
-                    sender.input(Message::QuickToast(
-                        "Error when moving item to trash!".to_string(),
-                    ))
-                }
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to get selected row or child of selected row!".to_string(),
-                ))
-            }
-            load_folder(main_struct, sender);
-        }
+        Message::DeleteItem => {}
         Message::OpenFolderExternal => {
             if fs::exists(&main_struct.current_folder_path).is_ok()
                 && open::that(&main_struct.current_folder_path).is_ok()
@@ -233,27 +168,7 @@ pub(crate) fn handle_messages(
             }
             save_settings(main_struct);
         }
-        Message::UpDir => {
-            if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent()
-                && let Some(path_str) = path.to_str()
-            {
-                let up_dir = path_str.to_string();
-                main_struct.current_folder_path = up_dir;
-                load_folder(main_struct, sender);
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to convert to PathBuf or failed to convert to &str!".to_string(),
-                ))
-            }
-        }
-        Message::RefreshFileList => {
-            load_folder(main_struct, sender);
-        }
-        Message::CursorPositionChanged => {
-            if main_struct.file_list.selected_row().is_some() {
-                main_struct.file_list.unselect_all();
-            }
-        }
+        Message::CursorPositionChanged => {}
         Message::QuickToast(toast_text) => {
             main_struct.toast_overlay.add_toast(Toast::new(&toast_text))
         }

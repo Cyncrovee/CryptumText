@@ -12,8 +12,7 @@ pub struct MainStruct {
     pub root: libadwaita::ApplicationWindow,
     pub side_bar_box: gtk::Box,
     // Widgets
-    pub file_list: gtk::ListBox,
-    pub file_list_context_menu: gtk::PopoverMenu,
+    pub file_view: gtk::ListView,
     pub editor: sourceview5::View,
     pub buffer: sourceview5::Buffer,
     pub language_manager: LanguageManager,
@@ -40,7 +39,6 @@ pub struct AppSettings {
     pub editor_use_spaces_for_tabs: bool,
     pub editor_tab_width: u32,
     pub view_mini_map: bool,
-    pub view_file_list: bool,
     pub view_hidden_files: bool,
 }
 
@@ -52,7 +50,6 @@ impl Default for AppSettings {
             editor_use_spaces_for_tabs: true,
             editor_tab_width: 4,
             view_mini_map: true,
-            view_file_list: true,
             view_hidden_files: false,
         }
     }
@@ -65,8 +62,6 @@ pub struct WidgetStruct {}
 pub enum Message {
     // File
     NewFile,
-    ExpandLocalList(Vec<gtk::Label>),
-    LoadFileFromList(String),
     FolderRequest,
     FolderResponse(PathBuf),
     OpenRequest,
@@ -87,7 +82,6 @@ pub enum Message {
     ShowPreferences,
     ShowAbout,
     // File list
-    FileListContext(i32, i32),
     DeleteItem,
     OpenFolderExternal,
     // Other
@@ -96,8 +90,6 @@ pub enum Message {
     UpdateTabType(bool),
     UpdateTabWidth(u32),
     UpdateVisibility(ItemVis, bool),
-    UpDir,
-    RefreshFileList,
     CursorPositionChanged,
     QuickToast(String),
     Ignore,

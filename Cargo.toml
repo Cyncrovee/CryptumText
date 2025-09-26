@@ -6,6 +6,7 @@ license = "GPL-3.0"
 
 [dependencies]
 dirs = "6.0.0"
+gio = { version = "0.21.2", features = ["v2_74", "v2_78"] }
 git2 = "0.20.2"
 gtk4 = "0.9.6"
 libadwaita = { version = "0.7.2", features = ["v1_4", "v1_5", "v1_7"] }

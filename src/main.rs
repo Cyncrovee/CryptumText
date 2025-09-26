@@ -1,4 +1,4 @@
-use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
+use gtk4::{MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -80,36 +80,15 @@ impl SimpleComponent for MainStruct {
             .build();
         let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_end(&hamburger);
-        let up_button = Button::builder()
-            .icon_name("go-up-symbolic")
-            .width_request(40)
-            .height_request(40)
-            .margin_start(5)
-            .margin_end(5)
-            .margin_top(5)
-            .margin_bottom(5)
-            .build();
-        let refesh_button = Button::builder()
-            .icon_name("update-symbolic")
-            .width_request(40)
-            .height_request(40)
-            .margin_start(5)
-            .margin_end(5)
-            .margin_top(5)
-            .margin_bottom(5)
-            .build();
-        let file_list = gtk::ListBox::builder()
+        let file_view = gtk::ListView::builder()
             .css_classes(vec!["navigation-sidebar"])
             .vexpand(true)
-            .activate_on_single_click(false)
+            .orientation(gtk4::Orientation::Vertical)
+            .height_request(500)
             .build();
-        let file_list_context_menu = gtk::PopoverMenu::builder()
-            .has_arrow(false)
-            .halign(gtk4::Align::Start)
-            .build();
-        let file_list_scroll = ScrolledWindow::builder()
+        let file_view_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
-            .child(&file_list)
+            .child(&file_view)
             .build();
         let language_manager = LanguageManager::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
@@ -161,11 +140,8 @@ impl SimpleComponent for MainStruct {
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
-        file_list_button_box.append(&up_button);
-        file_list_button_box.append(&refesh_button);
         side_bar_box.append(&file_list_button_box);
-        file_list_box.append(&file_list_scroll);
-        file_list_box.append(&file_list_context_menu);
+        file_list_box.append(&file_view_scroll);
         side_bar_box.append(&file_list_box);
         toast_overlay.set_child(Some(&editor_box_horizontal));
         editor_box_vertical.append(&editor_scroll_window);
@@ -193,46 +169,6 @@ impl SimpleComponent for MainStruct {
         ));
 
         // Setup events/gestures
-        let file_list_context_gesture = gtk::GestureClick::builder()
-            .button(GDK_BUTTON_SECONDARY as u32)
-            .build();
-
-        up_button.connect_clicked(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::UpDir)
-        ));
-        refesh_button.connect_clicked(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::RefreshFileList)
-        ));
-        file_list.connect_row_activated(clone!(
-            #[strong]
-            sender,
-            move |_, row| {
-                if let Some(row_child) = row.child() {
-                    sender.input(Message::LoadFileFromList(
-                        row_child.widget_name().to_string(),
-                    ))
-                } else {
-                    sender.input(Message::QuickToast(
-                        "Failed to get child for file list row!".to_string(),
-                    ))
-                }
-            }
-        ));
-        file_list_context_gesture.connect_released(clone!(
-            #[strong]
-            sender,
-            move |g, _, x, y| {
-                let x32: i32 = x as i32;
-                let y32: i32 = y as i32;
-                g.set_state(gtk::EventSequenceState::Claimed);
-                sender.input(Message::FileListContext(x32, y32));
-            }
-        ));
-        file_list_scroll.add_controller(file_list_context_gesture);
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -368,8 +304,7 @@ impl SimpleComponent for MainStruct {
             root,
             side_bar_box,
             // Widgets
-            file_list,
-            file_list_context_menu,
+            file_view,
             editor,
             buffer,
             language_manager,
