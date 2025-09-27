@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::PathBuf;
 
 use gtk4::{
     DirectoryList, Label, SignalListItemFactory, SingleSelection, TreeExpander, TreeListModel,
@@ -10,14 +10,17 @@ use sourceview5::prelude::{Cast, CastNone};
 use crate::app::model::MainStruct;
 
 pub fn load_folder_view(main_struct: &mut MainStruct) {
-    let file = File::for_path(&main_struct.current_folder_path);
+    let path = main_struct.current_folder_path.clone();
+    let file = File::for_path(&path);
     let dir_list = DirectoryList::new(Some("standard::name"), Some(&file));
-    let model = TreeListModel::new(dir_list, false, true, move |o| {
+    let model = TreeListModel::new(dir_list, false, false, move |o| {
         let dir_str = o.downcast_ref::<FileInfo>().unwrap().name();
-        let dir_path = Path::new(&dir_str);
+        let mut dir_path = PathBuf::new();
+        dir_path.push(&path);
+        dir_path.push(&dir_str);
         if dir_path.is_dir() {
-            let dir_list_local =
-                DirectoryList::new(Some("standard::name"), Some(&File::for_path(dir_path)));
+            let file_local = File::for_path(dir_path);
+            let dir_list_local = DirectoryList::new(Some("standard::name"), Some(&file_local));
             Some(dir_list_local.into())
         } else {
             None
