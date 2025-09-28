@@ -5,7 +5,7 @@ use gtk4::{
     gio::{File, FileInfo},
     prelude::ListItemExt,
 };
-use sourceview5::prelude::{Cast, CastNone};
+use sourceview5::prelude::*;
 
 use crate::app::model::MainStruct;
 
@@ -19,8 +19,7 @@ pub fn load_folder_view(main_struct: &mut MainStruct) {
         dir_path.push(&path);
         dir_path.push(&dir_str);
         if dir_path.is_dir() {
-            let file_local = File::for_path(dir_path);
-            let dir_list_local = DirectoryList::new(Some("standard::name"), Some(&file_local));
+            let dir_list_local = DirectoryList::new(None, Some(&File::for_path(dir_path)));
             Some(dir_list_local.into())
         } else {
             None

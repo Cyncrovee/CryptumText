@@ -9,8 +9,8 @@ use sourceview5::prelude::{BufferExt, ViewExt};
 use crate::{
     app::model::{MainStruct, Message},
     files_dirs::{
-        file_list::load_folder_view,
-        load_save::{load_file, save_file},
+        file::{load_file, save_file},
+        folder::load_folder_view,
         settings::{load_settings, save_settings},
     },
 };
