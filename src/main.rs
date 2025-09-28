@@ -20,7 +20,7 @@ use app::{
 
 mod util;
 use util::{menu::menu_bar, widget::setup_editor};
-mod files_dirs;
+mod fs;
 
 impl SimpleComponent for MainStruct {
     type Init = String;
