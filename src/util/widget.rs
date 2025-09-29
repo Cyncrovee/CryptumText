@@ -1,9 +1,12 @@
 use std::path::PathBuf;
 
-use gtk4::glib::GString;
+use gtk4::{glib::GString, prelude::WidgetExt};
 use sourceview5::{Buffer, LanguageManager, prelude::BufferExt};
 
-use crate::{app::model::State, fs::settings::save_settings};
+use crate::{
+    app::model::{ItemVis, State},
+    fs::settings::save_settings,
+};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     sourceview5::View::builder()
@@ -29,6 +32,21 @@ pub(crate) fn toggle_buffer_style(state: &mut State) {
             state.buffer.set_style_scheme(state.buffer_style.as_ref());
         }
         _ => {}
+    }
+    save_settings(state);
+}
+
+pub(crate) fn update_vis(item: ItemVis, vis: bool, state: &mut State) {
+    match item {
+        ItemVis::SideBar => {
+            state.side_bar_box.set_visible(vis);
+        }
+        ItemVis::MiniMap => {
+            state.mini_map.set_visible(vis);
+        }
+        ItemVis::HiddenFiles => {
+            state.view_hidden = vis;
+        }
     }
     save_settings(state);
 }

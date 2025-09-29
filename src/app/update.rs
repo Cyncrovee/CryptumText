@@ -13,10 +13,8 @@ use crate::{
         folder::load_folder_view,
         settings::{load_settings, save_settings},
     },
-    util::widget::toggle_buffer_style,
+    util::widget::{toggle_buffer_style, update_vis},
 };
-
-use super::model::ItemVis;
 
 pub(crate) fn handle_messages(
     state: &mut State,
@@ -126,19 +124,8 @@ pub(crate) fn handle_messages(
             state.editor.set_tab_width(tab_width);
             save_settings(state);
         }
-        Message::UpdateVisibility(item, visibilty) => {
-            match item {
-                ItemVis::SideBar => {
-                    state.side_bar_box.set_visible(visibilty);
-                }
-                ItemVis::MiniMap => {
-                    state.mini_map.set_visible(visibilty);
-                }
-                ItemVis::HiddenFiles => {
-                    state.view_hidden = visibilty;
-                }
-            }
-            save_settings(state);
+        Message::UpdateVisibility(item, vis) => {
+            update_vis(item, vis, state);
         }
         Message::CursorPositionChanged => {}
         Message::QuickToast(toast_text) => state.toast_overlay.add_toast(Toast::new(&toast_text)),
