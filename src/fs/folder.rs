@@ -7,9 +7,9 @@ use gtk4::{
 };
 use sourceview5::prelude::*;
 
-use crate::app::model::MainStruct;
+use crate::app::model::State;
 
-pub fn load_folder_view(main_struct: &mut MainStruct) {
+pub fn load_folder_view(main_struct: &mut State) {
     let path = main_struct.current_folder_path.clone();
     let file = File::for_path(&path);
     let dir_list = DirectoryList::new(Some("standard::name"), Some(&file));

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use gtk4::glib::GString;
 use sourceview5::{Buffer, LanguageManager, prelude::BufferExt};
 
-use crate::{app::model::MainStruct, fs::settings::save_settings};
+use crate::{app::model::State, fs::settings::save_settings};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     sourceview5::View::builder()
@@ -18,7 +18,7 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .build()
 }
 
-pub(crate) fn toggle_buffer_style(state: &mut MainStruct) {
+pub(crate) fn toggle_buffer_style(state: &mut State) {
     match state.buffer_style.as_ref().unwrap().to_string().as_str() {
         "Adwaita Dark" => {
             state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita");

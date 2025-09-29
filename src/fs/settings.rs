@@ -3,9 +3,9 @@ use std::{fs::read_to_string, path::Path};
 use gtk4::prelude::*;
 use sourceview5::prelude::*;
 
-use crate::app::model::{AppSettings, MainStruct};
+use crate::app::model::{AppSettings, State};
 
-pub fn save_settings(main_struct: &mut MainStruct) {
+pub fn save_settings(main_struct: &mut State) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 
@@ -24,7 +24,7 @@ pub fn save_settings(main_struct: &mut MainStruct) {
     .unwrap();
 }
 
-pub fn load_settings(main_struct: &mut MainStruct) {
+pub fn load_settings(main_struct: &mut State) {
     let mut config_path = dirs::config_dir().unwrap();
     config_path.push(Path::new("cryptum-text-settings.json"));
 

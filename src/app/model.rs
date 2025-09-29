@@ -8,7 +8,7 @@ use sourceview5::LanguageManager;
 
 // Structs
 #[derive(Debug)]
-pub struct MainStruct {
+pub struct State {
     // Containers
     pub root: libadwaita::ApplicationWindow,
     pub side_bar_box: gtk::Box,

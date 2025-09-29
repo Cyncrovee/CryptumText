@@ -8,11 +8,11 @@ use libadwaita::Toast;
 use sourceview5::prelude::BufferExt;
 
 use crate::{
-    app::model::{MainStruct, Message},
+    app::model::{Message, State},
     util::widget::update_syntax,
 };
 
-pub fn load_file(main_struct: &mut MainStruct) {
+pub fn load_file(main_struct: &mut State) {
     match std::fs::read_to_string(&main_struct.current_file_path) {
         Ok(f) => {
             main_struct.buffer.set_text(&f);
@@ -37,7 +37,7 @@ pub fn load_file(main_struct: &mut MainStruct) {
     }
 }
 
-pub fn save_file(main_struct: &mut MainStruct, sender: relm4::ComponentSender<MainStruct>) {
+pub fn save_file(main_struct: &mut State, sender: relm4::ComponentSender<State>) {
     if exists(&main_struct.current_file_path).is_ok() {
         // The program will attempt to save file, falling back to "Save As"
         // if it can't create the file from the current file path

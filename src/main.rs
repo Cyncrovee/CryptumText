@@ -13,7 +13,7 @@ use sourceview5::LanguageManager;
 
 mod app;
 use app::{
-    model::{MainStruct, Message, WidgetStruct},
+    model::{Message, State, WidgetStruct},
     update::handle_messages,
     view::handle_view,
 };
@@ -22,7 +22,7 @@ mod util;
 use util::{menu::menu_bar, widget::setup_editor};
 mod fs;
 
-impl SimpleComponent for MainStruct {
+impl SimpleComponent for State {
     type Init = String;
     type Input = Message;
     type Output = ();
@@ -299,7 +299,7 @@ impl SimpleComponent for MainStruct {
         about_action_group.register_for_widget(&root);
         file_list_action_group.register_for_widget(&root);
 
-        let model = MainStruct {
+        let model = State {
             // Containers
             root,
             side_bar_box,
@@ -381,5 +381,5 @@ relm4::new_stateless_action!(
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");
-    program.run::<MainStruct>("".to_string());
+    program.run::<State>("".to_string());
 }
