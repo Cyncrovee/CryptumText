@@ -1,4 +1,4 @@
-use gtk4::{MenuButton, ScrolledWindow};
+use gtk4::{LayoutManager, MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -102,8 +102,8 @@ impl SimpleComponent for State {
             .overflow(gtk4::Overflow::Visible)
             .view(&editor)
             .build();
-        let file_type_label = gtk::Label::builder().build();
-        let cursor_position_label = gtk::Label::builder().build();
+        let file_type_label = gtk::Label::builder().halign(gtk4::Align::Start).build();
+        let cursor_position_label = gtk::Label::builder().halign(gtk4::Align::End).build();
         let toast_overlay = ToastOverlay::new();
 
         // Define containers
@@ -128,6 +128,7 @@ impl SimpleComponent for State {
             .build();
         let status_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Horizontal)
+            .homogeneous(true)
             .build();
         let editor_scroll_window = gtk::ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Automatic)
@@ -136,19 +137,17 @@ impl SimpleComponent for State {
 
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
-        status_bar_box.append(&gtk::Label::builder().label("   ").build());
         status_bar_box.append(&file_type_label);
-        status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
         side_bar_box.append(&file_list_button_box);
         file_list_box.append(&file_view_scroll);
         side_bar_box.append(&file_list_box);
-        toast_overlay.set_child(Some(&editor_box_horizontal));
-        editor_box_vertical.append(&editor_scroll_window);
-        editor_box_vertical.append(&status_bar_box);
+        toast_overlay.set_child(Some(&editor_box_vertical));
         editor_box_horizontal.append(&side_bar_box);
-        editor_box_horizontal.append(&editor_box_vertical);
+        editor_box_horizontal.append(&editor_scroll_window);
         editor_box_horizontal.append(&mini_map);
+        editor_box_vertical.append(&editor_box_horizontal);
+        editor_box_vertical.append(&status_bar_box);
         main_box.append(&header);
         main_box.append(&toast_overlay);
 
