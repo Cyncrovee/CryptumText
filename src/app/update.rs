@@ -4,7 +4,7 @@ use gtk4::prelude::*;
 use libadwaita::Toast;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
-use sourceview5::prelude::{BufferExt, ViewExt};
+use sourceview5::prelude::ViewExt;
 
 use crate::{
     app::model::{MainStruct, Message},
@@ -13,6 +13,7 @@ use crate::{
         folder::load_folder_view,
         settings::{load_settings, save_settings},
     },
+    util::widget::toggle_buffer_style,
 };
 
 use super::model::ItemVis;
@@ -85,30 +86,7 @@ pub(crate) fn handle_messages(
             save_settings(main_struct);
         }
         Message::ToggleBufferStyleScheme => {
-            match main_struct
-                .buffer_style
-                .as_ref()
-                .unwrap()
-                .to_string()
-                .as_str()
-            {
-                "Adwaita Dark" => {
-                    main_struct.buffer_style =
-                        sourceview5::StyleSchemeManager::new().scheme("Adwaita");
-                    main_struct
-                        .buffer
-                        .set_style_scheme(main_struct.buffer_style.as_ref());
-                }
-                "Adwaita" => {
-                    main_struct.buffer_style =
-                        sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-                    main_struct
-                        .buffer
-                        .set_style_scheme(main_struct.buffer_style.as_ref());
-                }
-                _ => {}
-            }
-            save_settings(main_struct);
+            toggle_buffer_style(main_struct);
         }
         Message::ToggleFullscreen => match main_struct.root.is_fullscreen() {
             true => {

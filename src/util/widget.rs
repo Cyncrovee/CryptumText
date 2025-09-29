@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
 use gtk4::glib::GString;
-use sourceview5::{Buffer, LanguageManager};
+use sourceview5::{Buffer, LanguageManager, prelude::BufferExt};
+
+use crate::{app::model::MainStruct, fs::settings::save_settings};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     sourceview5::View::builder()
@@ -14,6 +16,21 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .show_line_numbers(true)
         .auto_indent(true)
         .build()
+}
+
+pub(crate) fn toggle_buffer_style(state: &mut MainStruct) {
+    match state.buffer_style.as_ref().unwrap().to_string().as_str() {
+        "Adwaita Dark" => {
+            state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita");
+            state.buffer.set_style_scheme(state.buffer_style.as_ref());
+        }
+        "Adwaita" => {
+            state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+            state.buffer.set_style_scheme(state.buffer_style.as_ref());
+        }
+        _ => {}
+    }
+    save_settings(state);
 }
 
 pub fn update_syntax(
