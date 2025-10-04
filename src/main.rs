@@ -1,4 +1,4 @@
-use gtk4::{LayoutManager, MenuButton, ScrolledWindow};
+use gtk4::{MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -158,7 +158,6 @@ impl SimpleComponent for State {
         // Set misc variables
         let current_folder_path = "".into();
         let view_hidden = true;
-        let git_info = ("".to_string(), false);
 
         // Apply user settings
         root.connect_show(clone!(
@@ -320,7 +319,6 @@ impl SimpleComponent for State {
             current_folder_path,
             buffer_style,
             view_hidden,
-            git_info,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }

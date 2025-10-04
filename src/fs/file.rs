@@ -12,27 +12,24 @@ use crate::{
     util::widget::update_syntax,
 };
 
-pub fn load_file(main_struct: &mut State) {
-    match std::fs::read_to_string(&main_struct.current_file_path) {
+pub fn load_file(state: &mut State) {
+    match std::fs::read_to_string(&state.current_file_path) {
         Ok(f) => {
-            main_struct.buffer.set_text(&f);
-            match update_syntax(
-                &main_struct.language_manager,
-                &main_struct.current_file_path,
-            ) {
+            state.buffer.set_text(&f);
+            match update_syntax(&state.language_manager, &state.current_file_path) {
                 Some(language) => {
-                    main_struct.buffer.set_highlight_syntax(true);
-                    main_struct.buffer.set_language(Some(&language));
+                    state.buffer.set_highlight_syntax(true);
+                    state.buffer.set_language(Some(&language));
                 }
                 None => {
-                    main_struct.buffer.set_highlight_syntax(false);
+                    state.buffer.set_highlight_syntax(false);
                 }
             }
         }
         Err(_) => {
-            main_struct
+            state
                 .toast_overlay
-                .add_toast(Toast::new(&main_struct.current_file_path));
+                .add_toast(Toast::new(&state.current_file_path));
         }
     }
 }

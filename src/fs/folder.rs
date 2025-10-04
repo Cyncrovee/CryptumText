@@ -9,8 +9,8 @@ use sourceview5::prelude::*;
 
 use crate::app::model::State;
 
-pub fn load_folder_view(main_struct: &mut State) {
-    let path = main_struct.current_folder_path.clone();
+pub fn load_folder_view(state: &mut State) {
+    let path = state.current_folder_path.clone();
     let file = File::for_path(&path);
     let dir_list = DirectoryList::new(Some("standard::name"), Some(&file));
     let model = TreeListModel::new(dir_list, false, false, move |o| {
@@ -39,6 +39,6 @@ pub fn load_folder_view(main_struct: &mut State) {
         tree.set_list_row(model.row(list_item.position()).as_ref());
         tree.set_child(Some(&Label::new(Some(file_info.name().to_str().unwrap()))));
     });
-    main_struct.file_view.set_model(Some(&selection));
-    main_struct.file_view.set_factory(Some(&factory));
+    state.file_view.set_model(Some(&selection));
+    state.file_view.set_factory(Some(&factory));
 }
