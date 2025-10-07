@@ -90,7 +90,7 @@ impl SimpleComponent for MainStruct {
             .margin_bottom(5)
             .build();
         let refesh_button = Button::builder()
-            .icon_name("update-symbolic")
+            .icon_name("view-refresh-symbolic")
             .width_request(40)
             .height_request(40)
             .margin_start(5)
