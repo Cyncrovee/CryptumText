@@ -113,10 +113,6 @@ impl SimpleComponent for State {
         let side_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
-        let file_list_button_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .halign(gtk4::Align::Center)
-            .build();
         let file_list_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
@@ -139,7 +135,6 @@ impl SimpleComponent for State {
         editor_scroll_window.set_child(Some(&editor));
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&cursor_position_label);
-        side_bar_box.append(&file_list_button_box);
         file_list_box.append(&file_view_scroll);
         side_bar_box.append(&file_list_box);
         toast_overlay.set_child(Some(&editor_box_vertical));
