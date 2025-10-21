@@ -11,7 +11,7 @@ pub(crate) fn handle_view(
     _sender: relm4::ComponentSender<State>,
 ) {
     state.title.set_subtitle(&state.current_folder_path);
-    match update_file_type(&state.current_file_path) {
+    match update_file_type(&state.current_file_path.display().to_string()) {
         Some(file_type) => {
             state
                 .file_type_label

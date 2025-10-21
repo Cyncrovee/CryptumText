@@ -16,7 +16,10 @@ pub fn load_file(state: &mut State) {
     match std::fs::read_to_string(&state.current_file_path) {
         Ok(f) => {
             state.buffer.set_text(&f);
-            match update_syntax(&state.language_manager, &state.current_file_path) {
+            match update_syntax(
+                &state.language_manager,
+                &state.current_file_path.display().to_string(),
+            ) {
                 Some(language) => {
                     state.buffer.set_highlight_syntax(true);
                     state.buffer.set_language(Some(&language));
@@ -29,7 +32,7 @@ pub fn load_file(state: &mut State) {
         Err(_) => {
             state
                 .toast_overlay
-                .add_toast(Toast::new(&state.current_file_path));
+                .add_toast(Toast::new(&state.current_file_path.display().to_string()));
         }
     }
 }

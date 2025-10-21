@@ -2,13 +2,14 @@ use gtk4::{
     DirectoryList, Label, SignalListItemFactory, SingleSelection, TreeExpander, TreeListModel,
     TreeListRow,
     gio::{File, FileInfo, FileType},
+    glib::clone,
     prelude::ListItemExt,
 };
 use sourceview5::prelude::*;
 
-use crate::app::model::State;
+use crate::app::model::{Message, State};
 
-pub fn load_folder_view(state: &mut State) {
+pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>) {
     let dir_list = DirectoryList::new(
         Some("standard::*"),
         Some(&File::for_path(&state.current_folder_path)),
@@ -32,6 +33,21 @@ pub fn load_folder_view(state: &mut State) {
         }
     });
     let selection = SingleSelection::new(Some(model.clone()));
+    selection.connect_selection_changed(clone!(
+        #[strong]
+        sender,
+        move |selection, _, _| {
+            let file_info = selection
+                .selected_item()
+                .unwrap()
+                .downcast::<TreeListRow>()
+                .unwrap()
+                .item()
+                .and_downcast::<FileInfo>()
+                .unwrap();
+            sender.input(Message::LoadFileFromTree(file_info));
+        }
+    ));
     let factory = SignalListItemFactory::new();
     factory.connect_setup(move |_, list_item| {
         list_item.set_child(Some(

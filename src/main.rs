@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use gtk4::{MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
@@ -23,7 +25,7 @@ use util::{menu::menu_bar, widget::setup_editor};
 mod fs;
 
 impl SimpleComponent for State {
-    type Init = String;
+    type Init = PathBuf;
     type Input = Message;
     type Output = ();
     type Root = libadwaita::ApplicationWindow;
@@ -373,5 +375,5 @@ relm4::new_stateless_action!(
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");
-    program.run::<State>("".to_string());
+    program.run::<State>(PathBuf::new());
 }

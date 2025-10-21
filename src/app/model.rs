@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use gtk4::gio::FileInfo;
 use libadwaita::{ToastOverlay, WindowTitle};
 use relm4::{Controller, prelude::*};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
@@ -26,7 +27,7 @@ pub struct State {
     pub mini_map: sourceview5::Map,
     pub toast_overlay: ToastOverlay,
     // Misc
-    pub current_file_path: String,
+    pub current_file_path: PathBuf,
     pub current_folder_path: String,
     pub buffer_style: Option<sourceview5::StyleScheme>,
     pub view_hidden: bool,
@@ -69,6 +70,7 @@ pub enum Message {
     SaveAsRequest,
     SaveAsResponse(PathBuf),
     SaveFile,
+    LoadFileFromTree(FileInfo),
     // Edit
     ClearEditor,
     // View

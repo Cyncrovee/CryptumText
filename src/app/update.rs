@@ -1,6 +1,9 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
-use gtk4::prelude::*;
+use gtk4::{
+    gio::{File, FileType},
+    prelude::*,
+};
 use libadwaita::Toast;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
@@ -25,13 +28,13 @@ pub(crate) fn handle_messages(
         // File
         Message::NewFile => {
             state.buffer.set_text("");
-            state.current_file_path = "".to_string();
+            state.current_file_path = PathBuf::new();
         }
         Message::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
             if let Ok(path_string) = path.into_os_string().into_string() {
                 state.current_folder_path = path_string;
-                load_folder_view(state);
+                load_folder_view(state, sender);
             } else {
                 sender.input(Message::QuickToast(
                     "Failed to convert OsString to String".to_string(),
@@ -40,7 +43,7 @@ pub(crate) fn handle_messages(
         }
         Message::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
-            state.current_file_path = path.into_os_string().into_string().unwrap();
+            state.current_file_path = path;
             load_file(state);
         }
         Message::SaveAsRequest => state
@@ -58,6 +61,17 @@ pub(crate) fn handle_messages(
         }
         Message::SaveFile => {
             save_file(state, sender);
+        }
+        Message::LoadFileFromTree(file_info) => {
+            if file_info.file_type() == FileType::Regular {
+                if let Some(file_object) = file_info.attribute_object("standard::file")
+                    && let Some(file) = file_object.downcast_ref::<File>()
+                    && let Some(path) = file.path()
+                {
+                    state.current_file_path = path;
+                    load_file(state);
+                }
+            }
         }
         // Edit
         Message::ClearEditor => {
