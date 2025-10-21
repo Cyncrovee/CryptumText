@@ -10,7 +10,9 @@ pub(crate) fn handle_view(
     _widgets: &mut WidgetStruct,
     _sender: relm4::ComponentSender<State>,
 ) {
-    state.title.set_subtitle(&state.current_folder_path);
+    state
+        .title
+        .set_subtitle(&state.current_folder_path.display().to_string());
     match update_file_type(&state.current_file_path.display().to_string()) {
         Some(file_type) => {
             state
@@ -22,9 +24,7 @@ pub(crate) fn handle_view(
         }
     }
     let cursor_iter = &state.buffer.iter_at_offset(state.buffer.cursor_position());
-    let cursor_line = cursor_iter.line();
-    let cursor_row = cursor_iter.line_offset();
     state
         .cursor_position_label
-        .set_label(format!("{}:{}   ", cursor_line, cursor_row).as_str());
+        .set_label(format!("{}:{}   ", cursor_iter.line(), cursor_iter.line_offset()).as_str());
 }

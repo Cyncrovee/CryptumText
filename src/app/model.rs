@@ -28,7 +28,7 @@ pub struct State {
     pub toast_overlay: ToastOverlay,
     // Misc
     pub current_file_path: PathBuf,
-    pub current_folder_path: String,
+    pub current_folder_path: PathBuf,
     pub buffer_style: Option<sourceview5::StyleScheme>,
     pub view_hidden: bool,
 }

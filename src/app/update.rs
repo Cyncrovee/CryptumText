@@ -32,14 +32,8 @@ pub(crate) fn handle_messages(
         }
         Message::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
-            if let Ok(path_string) = path.into_os_string().into_string() {
-                state.current_folder_path = path_string;
-                load_folder_view(state, sender);
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to convert OsString to String".to_string(),
-                ))
-            }
+            state.current_folder_path = path;
+            load_folder_view(state, sender);
         }
         Message::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
@@ -50,14 +44,12 @@ pub(crate) fn handle_messages(
             .save_as_dialog
             .emit(SaveDialogMsg::SaveAs("".to_string())),
         Message::SaveAsResponse(path) => {
-            if std::fs::write(
+            _ = std::fs::write(
                 &path,
                 state
                     .buffer
                     .text(&state.buffer.start_iter(), &state.buffer.end_iter(), false),
             )
-            .is_ok()
-            {}
         }
         Message::SaveFile => {
             save_file(state, sender);
