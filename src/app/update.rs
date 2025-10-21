@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 
 use gtk4::{
     gio::{File, FileType},
@@ -62,17 +62,6 @@ pub(crate) fn handle_messages(
         Message::SaveFile => {
             save_file(state, sender);
         }
-        Message::LoadFileFromTree(file_info) => {
-            if file_info.file_type() == FileType::Regular {
-                if let Some(file_object) = file_info.attribute_object("standard::file")
-                    && let Some(file) = file_object.downcast_ref::<File>()
-                    && let Some(path) = file.path()
-                {
-                    state.current_file_path = path;
-                    load_file(state);
-                }
-            }
-        }
         // Edit
         Message::ClearEditor => {
             state.buffer.set_text("");
@@ -115,11 +104,16 @@ pub(crate) fn handle_messages(
             crate::util::dialogs::create_about_dialog();
         }
         // File list
-        Message::DeleteItem => {}
-        Message::OpenFolderExternal => {
-            if fs::exists(&state.current_folder_path).is_ok()
-                && open::that(&state.current_folder_path).is_ok()
-            {}
+        Message::LoadFileFromTree(file_info) => {
+            if file_info.file_type() == FileType::Regular
+                && let Some(file) = file_info
+                    .attribute_object("standard::file")
+                    .and_downcast_ref::<File>()
+                && let Some(path) = file.path()
+            {
+                state.current_file_path = path;
+                load_file(state);
+            }
         }
         // Other
         Message::LoadSettings => {

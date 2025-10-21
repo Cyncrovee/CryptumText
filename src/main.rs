@@ -192,7 +192,6 @@ impl SimpleComponent for State {
         let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
         let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
         let mut about_action_group = RelmActionGroup::<AboutActionGroup>::new();
-        let mut file_list_action_group = RelmActionGroup::<FileListActionGroup>::new();
         // File actions
         file_action_group.add_action(RelmAction::<NewFileAction>::new_stateless(clone!(
             #[strong]
@@ -273,26 +272,12 @@ impl SimpleComponent for State {
             sender,
             move |_| sender.input(Message::ShowAbout)
         )));
-        // File list actions
-        file_list_action_group.add_action(RelmAction::<DeleteItemAction>::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::DeleteItem)
-        )));
-        file_list_action_group.add_action(RelmAction::<OpenFolderExternalAction>::new_stateless(
-            clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::OpenFolderExternal)
-            ),
-        ));
 
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
         view_action_group.register_for_widget(&root);
         about_action_group.register_for_widget(&root);
-        file_list_action_group.register_for_widget(&root);
 
         let model = State {
             // Containers
@@ -334,7 +319,6 @@ relm4::new_action_group!(FileActionGroup, "file");
 relm4::new_action_group!(EditActionGroup, "edit");
 relm4::new_action_group!(ViewActionGroup, "view");
 relm4::new_action_group!(AboutActionGroup, "about");
-relm4::new_action_group!(FileListActionGroup, "list");
 // File
 relm4::new_stateless_action!(NewFileAction, FileActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, FileActionGroup, "save_as");
@@ -365,13 +349,6 @@ relm4::new_stateless_action!(
 );
 relm4::new_stateless_action!(ShowPreferencesAction, AboutActionGroup, "show_preferences");
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
-// File list context menu
-relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
-relm4::new_stateless_action!(
-    OpenFolderExternalAction,
-    FileListActionGroup,
-    "open_folder_external"
-);
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");

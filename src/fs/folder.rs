@@ -15,18 +15,13 @@ pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>
         Some(&File::for_path(&state.current_folder_path)),
     );
     let model = TreeListModel::new(dir_list, false, false, move |o| {
-        let file_info = o.downcast_ref::<FileInfo>().unwrap();
-        if file_info.file_type() == FileType::Directory {
-            let dir_list_local = DirectoryList::new(
-                Some("standard::*"),
-                Some(
-                    file_info
-                        .attribute_object("standard::file")
-                        .unwrap()
-                        .dynamic_cast_ref::<File>()
-                        .unwrap(),
-                ),
-            );
+        if let Some(file_info) = o.downcast_ref::<FileInfo>()
+            && file_info.file_type() == FileType::Directory
+            && let Some(file) = file_info
+                .attribute_object("standard::file")
+                .and_dynamic_cast_ref::<File>()
+        {
+            let dir_list_local = DirectoryList::new(Some("standard::*"), Some(file));
             Some(dir_list_local.into())
         } else {
             None
@@ -37,15 +32,11 @@ pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>
         #[strong]
         sender,
         move |selection, _, _| {
-            let file_info = selection
-                .selected_item()
-                .unwrap()
-                .downcast::<TreeListRow>()
-                .unwrap()
-                .item()
-                .and_downcast::<FileInfo>()
-                .unwrap();
-            sender.input(Message::LoadFileFromTree(file_info));
+            if let Some(row) = selection.selected_item().and_downcast::<TreeListRow>()
+                && let Some(file_info) = row.item().and_downcast::<FileInfo>()
+            {
+                sender.input(Message::LoadFileFromTree(file_info));
+            }
         }
     ));
     let factory = SignalListItemFactory::new();

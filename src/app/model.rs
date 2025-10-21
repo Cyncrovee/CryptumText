@@ -70,7 +70,6 @@ pub enum Message {
     SaveAsRequest,
     SaveAsResponse(PathBuf),
     SaveFile,
-    LoadFileFromTree(FileInfo),
     // Edit
     ClearEditor,
     // View
@@ -83,9 +82,8 @@ pub enum Message {
     ShowKeyboardShortcuts,
     ShowPreferences,
     ShowAbout,
-    // File list
-    DeleteItem,
-    OpenFolderExternal,
+    // File tree
+    LoadFileFromTree(FileInfo),
     // Other
     LoadSettings,
     UpdateMonospace(bool),
