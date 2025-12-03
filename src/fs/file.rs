@@ -8,7 +8,7 @@ use libadwaita::Toast;
 use sourceview5::prelude::BufferExt;
 
 use crate::{
-    app::model::{Message, State},
+    app::model::{Msg, State},
     util::widget::update_syntax,
 };
 
@@ -56,7 +56,7 @@ pub fn save_file(state: &mut State, sender: relm4::ComponentSender<State>) {
                     .add_toast(Toast::new("Error when saving file!"));
             }
         } else {
-            sender.input(Message::SaveAsRequest);
+            sender.input(Msg::SaveAsRequest);
         }
     }
 }

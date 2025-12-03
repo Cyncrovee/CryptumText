@@ -3,7 +3,7 @@ use std::{fs::read_to_string, path::Path};
 use gtk4::prelude::*;
 use sourceview5::prelude::*;
 
-use crate::app::model::{AppSettings, State};
+use crate::app::model::{Settings, State};
 
 pub fn save_settings(state: &mut State) {
     let mut config_path = dirs::config_dir().unwrap();
@@ -11,7 +11,7 @@ pub fn save_settings(state: &mut State) {
 
     std::fs::write(
         config_path,
-        serde_json::to_string_pretty(&AppSettings {
+        serde_json::to_string_pretty(&Settings {
             editor_monospace: state.editor.is_monospace(),
             editor_theme: state.buffer_style.as_ref().unwrap().to_string(),
             editor_use_spaces_for_tabs: state.editor.is_insert_spaces_instead_of_tabs(),
@@ -34,7 +34,7 @@ pub fn load_settings(state: &mut State) {
     }
     let settings_file = read_to_string(&config_path).unwrap();
 
-    let settings: AppSettings = serde_json::from_str(&settings_file).unwrap_or(AppSettings {
+    let settings: Settings = serde_json::from_str(&settings_file).unwrap_or(Settings {
         editor_theme: state.buffer_style.as_ref().unwrap().to_string(),
         ..Default::default()
     });

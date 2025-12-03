@@ -7,7 +7,7 @@ use gtk4::{
 };
 use sourceview5::prelude::*;
 
-use crate::app::model::{Message, State};
+use crate::app::model::{Msg, State};
 
 pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>) {
     let dir_list = DirectoryList::new(
@@ -35,7 +35,7 @@ pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>
             if let Some(row) = selection.selected_item().and_downcast::<TreeListRow>()
                 && let Some(file_info) = row.item().and_downcast::<FileInfo>()
             {
-                sender.input(Message::LoadFileFromTree(file_info));
+                sender.input(Msg::LoadFileFromTree(file_info));
             }
         }
     ));

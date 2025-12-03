@@ -9,7 +9,7 @@ use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::ViewExt;
 
 use crate::{
-    app::model::{Message, State},
+    app::model::{Msg, State},
     fs::{
         file::{load_file, save_file},
         folder::load_folder_view,
@@ -20,29 +20,29 @@ use crate::{
 
 pub(crate) fn handle_messages(
     state: &mut State,
-    message: Message,
+    message: Msg,
     sender: relm4::ComponentSender<State>,
 ) {
     match message {
         // File
-        Message::NewFile => {
+        Msg::NewFile => {
             state.buffer.set_text("");
             state.current_file_path = PathBuf::new();
         }
-        Message::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
-        Message::FolderResponse(path) => {
+        Msg::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
+        Msg::FolderResponse(path) => {
             state.current_folder_path = path;
             load_folder_view(state, sender);
         }
-        Message::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
-        Message::OpenResponse(path) => {
+        Msg::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
+        Msg::OpenResponse(path) => {
             state.current_file_path = path;
             load_file(state);
         }
-        Message::SaveAsRequest => state
+        Msg::SaveAsRequest => state
             .save_as_dialog
             .emit(SaveDialogMsg::SaveAs("".to_string())),
-        Message::SaveAsResponse(path) => {
+        Msg::SaveAsResponse(path) => {
             _ = std::fs::write(
                 &path,
                 state
@@ -50,43 +50,43 @@ pub(crate) fn handle_messages(
                     .text(&state.buffer.start_iter(), &state.buffer.end_iter(), false),
             )
         }
-        Message::SaveFile => {
+        Msg::SaveFile => {
             save_file(state, sender);
         }
         // Edit
-        Message::ClearEditor => {
+        Msg::ClearEditor => {
             state.buffer.set_text("");
             state.buffer.undo();
         }
         // View
-        Message::ToggleFileTree => {
+        Msg::ToggleFileTree => {
             state.nav_view.set_show_sidebar(!state.nav_view.shows_sidebar());
             save_settings(state);
         }
-        Message::ToggleHiddenFiles => {
+        Msg::ToggleHiddenFiles => {
             state.view_hidden = !state.view_hidden;
             save_settings(state);
         }
-        Message::ToggleMiniMap => {
+        Msg::ToggleMiniMap => {
             state.mini_map.set_visible(!state.mini_map.is_visible());
             save_settings(state);
         }
-        Message::ToggleBufferStyleScheme => {
+        Msg::ToggleBufferStyleScheme => {
             toggle_buffer_style(state);
         }
-        Message::ToggleFullscreen => state.root.set_fullscreened(!state.root.is_fullscreen()),
+        Msg::ToggleFullscreen => state.root.set_fullscreened(!state.root.is_fullscreen()),
         // About
-        Message::ShowKeyboardShortcuts => {
+        Msg::ShowKeyboardShortcuts => {
             crate::util::dialogs::create_keyboard_shortcut_dialog();
         }
-        Message::ShowPreferences => {
+        Msg::ShowPreferences => {
             crate::util::dialogs::create_preferences_dialog(state, sender);
         }
-        Message::ShowAbout => {
+        Msg::ShowAbout => {
             crate::util::dialogs::create_about_dialog();
         }
         // File list
-        Message::LoadFileFromTree(file_info) => {
+        Msg::LoadFileFromTree(file_info) => {
             if file_info.file_type() == FileType::Regular
                 && let Some(file) = file_info
                     .attribute_object("standard::file")
@@ -98,26 +98,26 @@ pub(crate) fn handle_messages(
             }
         }
         // Other
-        Message::LoadSettings => {
+        Msg::LoadSettings => {
             println!("Loading Settings...");
             load_settings(state);
         }
-        Message::UpdateMonospace(value) => {
+        Msg::UpdateMonospace(value) => {
             state.editor.set_monospace(value);
             save_settings(state);
         }
-        Message::UpdateTabType(use_spaces) => {
+        Msg::UpdateTabType(use_spaces) => {
             state.editor.set_insert_spaces_instead_of_tabs(use_spaces);
             save_settings(state);
         }
-        Message::UpdateTabWidth(tab_width) => {
+        Msg::UpdateTabWidth(tab_width) => {
             state.editor.set_tab_width(tab_width);
             save_settings(state);
         }
-        Message::UpdateVisibility(item, vis) => {
+        Msg::UpdateVisibility(item, vis) => {
             update_vis(item, vis, state);
         }
-        Message::CursorPositionChanged => {}
-        Message::Ignore => {}
+        Msg::CursorPositionChanged => {}
+        Msg::Ignore => {}
     }
 }

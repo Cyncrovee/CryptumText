@@ -18,7 +18,7 @@ use sourceview5::LanguageManager;
 
 mod app;
 use app::{
-    model::{Message, State, WidgetStruct},
+    model::{Msg, State, WidgetStruct},
     update::handle_messages,
     view::handle_view,
 };
@@ -29,7 +29,7 @@ mod fs;
 
 impl SimpleComponent for State {
     type Init = PathBuf;
-    type Input = Message;
+    type Input = Msg;
     type Output = ();
     type Root = libadwaita::ApplicationWindow;
     type Widgets = WidgetStruct;
@@ -59,22 +59,22 @@ impl SimpleComponent for State {
             .transient_for_native(&root)
             .launch(load_folder_dialog_settings)
             .forward(sender.input_sender(), |response| match response {
-                OpenDialogResponse::Accept(path) => Message::FolderResponse(path),
-                OpenDialogResponse::Cancel => Message::Ignore,
+                OpenDialogResponse::Accept(path) => Msg::FolderResponse(path),
+                OpenDialogResponse::Cancel => Msg::Ignore,
             });
         let open_dialog = OpenDialog::builder()
             .transient_for_native(&root)
             .launch(OpenDialogSettings::default())
             .forward(sender.input_sender(), |response| match response {
-                OpenDialogResponse::Accept(path) => Message::OpenResponse(path),
-                OpenDialogResponse::Cancel => Message::Ignore,
+                OpenDialogResponse::Accept(path) => Msg::OpenResponse(path),
+                OpenDialogResponse::Cancel => Msg::Ignore,
             });
         let save_as_dialog = SaveDialog::builder()
             .transient_for_native(&root)
             .launch(SaveDialogSettings::default())
             .forward(sender.input_sender(), |response| match response {
-                SaveDialogResponse::Accept(path) => Message::SaveAsResponse(path),
-                SaveDialogResponse::Cancel => Message::Ignore,
+                SaveDialogResponse::Accept(path) => Msg::SaveAsResponse(path),
+                SaveDialogResponse::Cancel => Msg::Ignore,
             });
 
         // Define and edit widgets
@@ -171,19 +171,19 @@ impl SimpleComponent for State {
         root.connect_show(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::LoadSettings)
+            move |_| sender.input(Msg::LoadSettings)
         ));
 
         // Setup events/gestures
         sidebar_button.connect_clicked(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ToggleFileTree)
+            move |_| sender.input(Msg::ToggleFileTree)
         ));
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::CursorPositionChanged)
+            move |_| sender.input(Msg::CursorPositionChanged)
         ));
 
         // Setup actions
@@ -212,81 +212,81 @@ impl SimpleComponent for State {
         file_action_group.add_action(RelmAction::<NewFileAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::NewFile)
+            move |_| sender.input(Msg::NewFile)
         )));
         file_action_group.add_action(RelmAction::<SaveAsAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::SaveAsRequest)
+            move |_| sender.input(Msg::SaveAsRequest)
         )));
         file_action_group.add_action(RelmAction::<SaveAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::SaveFile)
+            move |_| sender.input(Msg::SaveFile)
         )));
         file_action_group.add_action(RelmAction::<OpenAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::OpenRequest)
+            move |_| sender.input(Msg::OpenRequest)
         )));
         file_action_group.add_action(RelmAction::<OpenFolderAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::FolderRequest)
+            move |_| sender.input(Msg::FolderRequest)
         )));
         // Edit actions
         edit_action_group.add_action(RelmAction::<ClearAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ClearEditor)
+            move |_| sender.input(Msg::ClearEditor)
         )));
         // View actions
         view_action_group.add_action(RelmAction::<ToggleFileListAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ToggleFileTree)
+            move |_| sender.input(Msg::ToggleFileTree)
         )));
         view_action_group.add_action(RelmAction::<ToggleHiddenFilesAction>::new_stateless(
             clone!(
                 #[strong]
                 sender,
-                move |_| sender.input(Message::ToggleHiddenFiles)
+                move |_| sender.input(Msg::ToggleHiddenFiles)
             ),
         ));
         view_action_group.add_action(RelmAction::<ToggleMiniMapAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ToggleMiniMap)
+            move |_| sender.input(Msg::ToggleMiniMap)
         )));
         view_action_group.add_action(RelmAction::<ToggleBufferStyleAction>::new_stateless(
             clone!(
                 #[strong]
                 sender,
-                move |_| sender.input(Message::ToggleBufferStyleScheme)
+                move |_| sender.input(Msg::ToggleBufferStyleScheme)
             ),
         ));
         view_action_group.add_action(RelmAction::<ToggleFullscreenAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ToggleFullscreen)
+            move |_| sender.input(Msg::ToggleFullscreen)
         )));
         // About actions
         about_action_group.add_action(RelmAction::<ShowKeyboardShortcutsAction>::new_stateless(
             clone!(
                 #[strong]
                 sender,
-                move |_| sender.input(Message::ShowKeyboardShortcuts)
+                move |_| sender.input(Msg::ShowKeyboardShortcuts)
             ),
         ));
         about_action_group.add_action(RelmAction::<ShowPreferencesAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ShowPreferences)
+            move |_| sender.input(Msg::ShowPreferences)
         )));
         about_action_group.add_action(RelmAction::<ShowAboutAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ShowAbout)
+            move |_| sender.input(Msg::ShowAbout)
         )));
 
         // Register action groups

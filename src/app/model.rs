@@ -34,7 +34,7 @@ pub struct State {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct AppSettings {
+pub struct Settings {
     pub editor_theme: String,
     pub editor_monospace: bool,
     pub editor_use_spaces_for_tabs: bool,
@@ -44,9 +44,9 @@ pub struct AppSettings {
     pub view_hidden_files: bool,
 }
 
-impl Default for AppSettings {
+impl Default for Settings {
     fn default() -> Self {
-        AppSettings {
+        Settings {
             editor_theme: "Adwaita".to_string(),
             editor_monospace: true,
             editor_use_spaces_for_tabs: true,
@@ -62,7 +62,7 @@ pub struct WidgetStruct {}
 
 // Enums
 #[derive(Debug)]
-pub enum Message {
+pub enum Msg {
     // File
     NewFile,
     FolderRequest,

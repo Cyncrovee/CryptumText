@@ -7,7 +7,7 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app::model::{ItemVis, Message, State};
+use crate::app::model::{ItemVis, Msg, State};
 
 pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSender<State>) {
     // Editor group setup
@@ -19,7 +19,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     is_monospace_switch_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateMonospace(row.is_active()))
+        move |row| sender.input(Msg::UpdateMonospace(row.is_active()))
     ));
     let editor_group = PreferencesGroup::builder().title("Editor").build();
     editor_group.add(
@@ -40,7 +40,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     tab_type_switch_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateTabType(row.is_active()))
+        move |row| sender.input(Msg::UpdateTabType(row.is_active()))
     ));
     let tab_spaces_spin_row = SpinRow::builder()
         .title("Number of Spaces to Use for Tabs")
@@ -59,7 +59,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     tab_spaces_spin_row.connect_value_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateTabWidth(row.value() as u32))
+        move |row| sender.input(Msg::UpdateTabWidth(row.value() as u32))
     ));
     let tab_group = PreferencesGroup::builder().title("Tabs").build();
     tab_group.add(
@@ -90,7 +90,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     file_tree_vis_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |_| sender.input(Message::ToggleFileTree)
+        move |_| sender.input(Msg::ToggleFileTree)
     ));
     let mini_map_visibilty_spin_row = SwitchRow::builder()
         .title("Mini Map Visibility")
@@ -101,7 +101,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     mini_map_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateVisibility(ItemVis::MiniMap, row.is_active()))
+        move |row| sender.input(Msg::UpdateVisibility(ItemVis::MiniMap, row.is_active()))
     ));
     let hidden_files_visibilty_spin_row = SwitchRow::builder()
         .title("Hidden Files Visibility")
@@ -112,7 +112,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     hidden_files_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateVisibility(
+        move |row| sender.input(Msg::UpdateVisibility(
             ItemVis::HiddenFiles,
             row.is_active()
         ))
