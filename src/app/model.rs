@@ -91,7 +91,6 @@ pub enum Message {
     UpdateTabWidth(u32),
     UpdateVisibility(ItemVis, bool),
     CursorPositionChanged,
-    QuickToast(String),
     Ignore,
 }
 

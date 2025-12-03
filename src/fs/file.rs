@@ -32,30 +32,28 @@ pub fn load_file(state: &mut State) {
         Err(_) => {
             state
                 .toast_overlay
-                .add_toast(Toast::new(&state.current_file_path.display().to_string()));
+                .add_toast(Toast::new("Error when loading file!"));
         }
     }
 }
 
-pub fn save_file(main_struct: &mut State, sender: relm4::ComponentSender<State>) {
-    if exists(&main_struct.current_file_path).is_ok() {
-        // The program will attempt to save file, falling back to "Save As"
-        // if it can't create the file from the current file path
-        if let Ok(mut file) = File::create(&main_struct.current_file_path) {
+/// The program will attempt to save file, falling back to "Save As"
+/// if it can't create the file from the current file path.
+pub fn save_file(state: &mut State, sender: relm4::ComponentSender<State>) {
+    if exists(&state.current_file_path).is_ok() {
+        if let Ok(mut file) = File::create(&state.current_file_path) {
             if file
                 .write_all(
-                    main_struct
+                    state
                         .buffer
-                        .text(
-                            &main_struct.buffer.start_iter(),
-                            &main_struct.buffer.end_iter(),
-                            false,
-                        )
+                        .text(&state.buffer.start_iter(), &state.buffer.end_iter(), false)
                         .as_bytes(),
                 )
                 .is_err()
             {
-                sender.input(Message::QuickToast("Error when saving file!".to_string()))
+                state
+                    .toast_overlay
+                    .add_toast(Toast::new("Error when saving file!"));
             }
         } else {
             sender.input(Message::SaveAsRequest);

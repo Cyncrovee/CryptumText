@@ -4,7 +4,6 @@ use gtk4::{
     gio::{File, FileType},
     prelude::*,
 };
-use libadwaita::Toast;
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
 use sourceview5::prelude::ViewExt;
@@ -128,7 +127,6 @@ pub(crate) fn handle_messages(
             update_vis(item, vis, state);
         }
         Message::CursorPositionChanged => {}
-        Message::QuickToast(toast_text) => state.toast_overlay.add_toast(Toast::new(&toast_text)),
         Message::Ignore => {}
     }
 }
