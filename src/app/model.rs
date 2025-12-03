@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use gtk4::gio::FileInfo;
-use libadwaita::{ToastOverlay, WindowTitle};
-use relm4::{Controller, prelude::*};
+use libadwaita::{OverlaySplitView, ToastOverlay, WindowTitle};
+use relm4::{prelude::*, Controller};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
 use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
@@ -12,7 +12,7 @@ use sourceview5::LanguageManager;
 pub struct State {
     // Containers
     pub root: libadwaita::ApplicationWindow,
-    pub side_bar_box: gtk::Box,
+    pub nav_view: OverlaySplitView,
     // Widgets
     pub file_view: gtk::ListView,
     pub editor: sourceview5::View,
@@ -39,6 +39,7 @@ pub struct AppSettings {
     pub editor_monospace: bool,
     pub editor_use_spaces_for_tabs: bool,
     pub editor_tab_width: u32,
+    pub view_sidebar: bool,
     pub view_mini_map: bool,
     pub view_hidden_files: bool,
 }
@@ -50,6 +51,7 @@ impl Default for AppSettings {
             editor_monospace: true,
             editor_use_spaces_for_tabs: true,
             editor_tab_width: 4,
+            view_sidebar: true,
             view_mini_map: true,
             view_hidden_files: false,
         }
@@ -73,7 +75,7 @@ pub enum Message {
     // Edit
     ClearEditor,
     // View
-    ToggleFileList,
+    ToggleFileTree,
     ToggleHiddenFiles,
     ToggleMiniMap,
     ToggleBufferStyleScheme,

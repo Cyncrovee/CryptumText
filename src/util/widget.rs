@@ -39,7 +39,7 @@ pub(crate) fn toggle_buffer_style(state: &mut State) {
 pub(crate) fn update_vis(item: ItemVis, vis: bool, state: &mut State) {
     match item {
         ItemVis::SideBar => {
-            state.side_bar_box.set_visible(vis);
+            state.nav_view.set_show_sidebar(vis);
         }
         ItemVis::MiniMap => {
             state.mini_map.set_visible(vis);

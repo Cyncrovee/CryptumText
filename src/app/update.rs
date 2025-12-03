@@ -59,10 +59,8 @@ pub(crate) fn handle_messages(
             state.buffer.undo();
         }
         // View
-        Message::ToggleFileList => {
-            state
-                .side_bar_box
-                .set_visible(!state.side_bar_box.is_visible());
+        Message::ToggleFileTree => {
+            state.nav_view.set_show_sidebar(!state.nav_view.shows_sidebar());
             save_settings(state);
         }
         Message::ToggleHiddenFiles => {

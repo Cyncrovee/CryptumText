@@ -80,16 +80,17 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
     );
 
     // Visibility group setup
-    let file_list_visibilty_spin_row = SwitchRow::builder()
-        .title("Side Bar Visibility")
+    let file_tree_vis_spin_row = SwitchRow::builder()
+        .title
+        ("Side Bar Visibility")
         .subtitle("Ctrl+Alt+F")
         .activatable(false)
-        .active(state.side_bar_box.is_visible())
+        .active(state.nav_view.shows_sidebar())
         .build();
-    file_list_visibilty_spin_row.connect_active_notify(clone!(
+    file_tree_vis_spin_row.connect_active_notify(clone!(
         #[strong]
         sender,
-        move |row| sender.input(Message::UpdateVisibility(ItemVis::SideBar, row.is_active()))
+        move |_| sender.input(Message::ToggleFileTree)
     ));
     let mini_map_visibilty_spin_row = SwitchRow::builder()
         .title("Mini Map Visibility")
@@ -121,7 +122,7 @@ pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSend
         &PreferencesRow::builder()
             .title("Side Bar Visibility")
             .activatable(false)
-            .child(&file_list_visibilty_spin_row)
+            .child(&file_tree_vis_spin_row)
             .height_request(60)
             .build(),
     );

@@ -1,7 +1,10 @@
 use std::path::PathBuf;
 
 use gtk4::{MenuButton, ScrolledWindow};
-use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
+use libadwaita::{
+    prelude::*, HeaderBar, NavigationPage, OverlaySplitView, ToastOverlay,
+    WindowTitle,
+};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
     gtk::glib::clone,
@@ -82,15 +85,18 @@ impl SimpleComponent for State {
             .build();
         let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_end(&hamburger);
-        let file_view = gtk::ListView::builder()
+        let sidebar_button = gtk::Button::builder().icon_name("sidebar-show-symbolic").build();
+        header.pack_start(&sidebar_button);
+        let sidebar_header = HeaderBar::builder().build();
+        let file_tree = gtk::ListView::builder()
             .css_classes(vec!["navigation-sidebar"])
             .vexpand(true)
             .orientation(gtk4::Orientation::Vertical)
             .height_request(500)
             .build();
-        let file_view_scroll = ScrolledWindow::builder()
+        let file_tree_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
-            .child(&file_view)
+            .child(&file_tree)
             .build();
         let language_manager = LanguageManager::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
@@ -112,10 +118,7 @@ impl SimpleComponent for State {
         let main_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
-        let side_bar_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Vertical)
-            .build();
-        let file_list_box = gtk::Box::builder()
+        let file_tree_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
             .build();
         let editor_box_vertical = gtk::Box::builder()
@@ -137,10 +140,9 @@ impl SimpleComponent for State {
         editor_scroll_window.set_child(Some(&editor));
         status_bar_box.append(&file_type_label);
         status_bar_box.append(&cursor_position_label);
-        file_list_box.append(&file_view_scroll);
-        side_bar_box.append(&file_list_box);
+        file_tree_box.append(&sidebar_header);
+        file_tree_box.append(&file_tree_scroll);
         toast_overlay.set_child(Some(&editor_box_vertical));
-        editor_box_horizontal.append(&side_bar_box);
         editor_box_horizontal.append(&editor_scroll_window);
         editor_box_horizontal.append(&mini_map);
         editor_box_vertical.append(&editor_box_horizontal);
@@ -148,12 +150,21 @@ impl SimpleComponent for State {
         main_box.append(&header);
         main_box.append(&toast_overlay);
 
+        // Setup split view
+        let sidebar = NavigationPage::new(&file_tree_box, "File Tree");
+        let content = NavigationPage::new(&main_box, "Editor");
+        let split_view = OverlaySplitView::builder()
+            .sidebar(&sidebar)
+            .content(&content)
+            .build();
+        split_view.set_show_sidebar(true);
+
         // Setup the window
-        root.set_content(Some(&main_box));
+        root.set_content(Some(&split_view));
         root.set_default_size(1000, 1000);
 
         // Set misc variables
-        let current_folder_path = "".into();
+        let current_folder_path = PathBuf::new();
         let view_hidden = true;
 
         // Apply user settings
@@ -164,6 +175,11 @@ impl SimpleComponent for State {
         ));
 
         // Setup events/gestures
+        sidebar_button.connect_clicked(clone!(
+            #[strong]
+            sender,
+            move |_| sender.input(Message::ToggleFileTree)
+        ));
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -228,7 +244,7 @@ impl SimpleComponent for State {
         view_action_group.add_action(RelmAction::<ToggleFileListAction>::new_stateless(clone!(
             #[strong]
             sender,
-            move |_| sender.input(Message::ToggleFileList)
+            move |_| sender.input(Message::ToggleFileTree)
         )));
         view_action_group.add_action(RelmAction::<ToggleHiddenFilesAction>::new_stateless(
             clone!(
@@ -282,9 +298,9 @@ impl SimpleComponent for State {
         let model = State {
             // Containers
             root,
-            side_bar_box,
+            nav_view: split_view,
             // Widgets
-            file_view,
+            file_view: file_tree,
             editor,
             buffer,
             language_manager,

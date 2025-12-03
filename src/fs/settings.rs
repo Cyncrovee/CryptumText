@@ -16,6 +16,7 @@ pub fn save_settings(state: &mut State) {
             editor_theme: state.buffer_style.as_ref().unwrap().to_string(),
             editor_use_spaces_for_tabs: state.editor.is_insert_spaces_instead_of_tabs(),
             editor_tab_width: state.editor.tab_width(),
+            view_sidebar: state.nav_view.shows_sidebar(),
             view_mini_map: state.mini_map.is_visible(),
             view_hidden_files: state.view_hidden,
         })
@@ -44,11 +45,12 @@ pub fn load_settings(state: &mut State) {
         }
         "Adwaita Dark" => {
             state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-            state.buffer.set_style_scheme(state.buffer_style.as_ref());
+
         }
         &_ => {}
     }
     state.editor.set_monospace(settings.editor_monospace);
+    state.nav_view.set_show_sidebar(settings.view_sidebar);
     state.mini_map.set_visible(settings.view_mini_map);
     state.view_hidden = settings.view_hidden_files;
     state
