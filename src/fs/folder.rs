@@ -9,7 +9,7 @@ use sourceview5::prelude::*;
 
 use crate::app::model::{Msg, State};
 
-pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>) {
+pub fn load_folder(state: &mut State, sender: relm4::ComponentSender<State>) {
     let dir_list = DirectoryList::new(
         Some("standard::*"),
         Some(&File::for_path(&state.current_folder_path)),

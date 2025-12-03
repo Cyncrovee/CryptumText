@@ -12,7 +12,7 @@ use crate::{
     app::model::{Msg, State},
     fs::{
         file::{load_file, save_file},
-        folder::load_folder_view,
+        folder::load_folder,
         settings::{load_settings, save_settings},
     },
     util::widget::{toggle_buffer_style, update_vis},
@@ -32,7 +32,7 @@ pub(crate) fn handle_messages(
         Msg::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
         Msg::FolderResponse(path) => {
             state.current_folder_path = path;
-            load_folder_view(state, sender);
+            load_folder(state, sender);
         }
         Msg::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
         Msg::OpenResponse(path) => {
