@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use gtk4::gio::FileInfo;
 use libadwaita::{OverlaySplitView, ToastOverlay, WindowTitle};
-use relm4::{prelude::*, Controller};
+use relm4::{Controller, prelude::*};
 use relm4_components::{open_dialog::OpenDialog, save_dialog::SaveDialog};
 use serde::{Deserialize, Serialize};
 use sourceview5::LanguageManager;
@@ -98,7 +98,6 @@ pub enum Msg {
 
 #[derive(Debug)]
 pub enum ItemVis {
-    SideBar,
     MiniMap,
     HiddenFiles,
 }
