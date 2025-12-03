@@ -1,7 +1,12 @@
 use std::path::PathBuf;
 
-use gtk4::glib::GString;
-use sourceview5::{Buffer, LanguageManager};
+use gtk4::{glib::GString, prelude::WidgetExt};
+use sourceview5::{Buffer, LanguageManager, prelude::BufferExt};
+
+use crate::{
+    app::model::{ItemVis, State},
+    fs::settings::save_settings,
+};
 
 pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
     sourceview5::View::builder()
@@ -14,6 +19,36 @@ pub fn setup_editor(buffer: &Buffer) -> sourceview5::View {
         .show_line_numbers(true)
         .auto_indent(true)
         .build()
+}
+
+pub(crate) fn toggle_buffer_style(state: &mut State) {
+    match state.buffer_style.as_ref().unwrap().to_string().as_str() {
+        "Adwaita Dark" => {
+            state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita");
+            state.buffer.set_style_scheme(state.buffer_style.as_ref());
+        }
+        "Adwaita" => {
+            state.buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
+            state.buffer.set_style_scheme(state.buffer_style.as_ref());
+        }
+        _ => {}
+    }
+    save_settings(state);
+}
+
+pub(crate) fn update_vis(item: ItemVis, vis: bool, state: &mut State) {
+    match item {
+        ItemVis::SideBar => {
+            state.side_bar_box.set_visible(vis);
+        }
+        ItemVis::MiniMap => {
+            state.mini_map.set_visible(vis);
+        }
+        ItemVis::HiddenFiles => {
+            state.view_hidden = vis;
+        }
+    }
+    save_settings(state);
 }
 
 pub fn update_syntax(
@@ -29,54 +64,57 @@ pub fn update_file_type(file: &str) -> Option<GString> {
         Some(e) => match e.to_str() {
             Some(ex) => match ex {
                 // Text/Config/Markup Files
-                "txt" => Some("Text File".into()),
-                "md" => Some("Markdown File".into()),
-                "html" => Some("HTML File".into()),
-                "css" => Some("CSS File".into()),
-                "hbs" => Some("Handlebars File".into()),
-                "hxml" => Some("Haxe Build File".into()),
-                "xml" => Some("XML File".into()),
-                "xaml" => Some("XAML File".into()),
-                "axaml" => Some("AXAML File".into()),
-                "org" => Some("Org Mode File".into()),
-                "norg" => Some("Neorg File".into()),
-                "ini" => Some("INI File".into()),
-                "toml" => Some("TOML File".into()),
-                "json" => Some("JSON File".into()),
-                "jsonc" => Some("JSONC File".into()),
+                "axaml" => Some("AXAML".into()),
                 "base" => Some("Obsidian Base File".into()),
+                "css" => Some("CSS".into()),
+                "hbs" => Some("Handlebars".into()),
+                "html" => Some("HTML".into()),
+                "hxml" => Some("Haxe Build File".into()),
+                "ini" => Some("INI".into()),
+                "json" => Some("JSON".into()),
+                "jsonc" => Some("JSONC".into()),
+                "md" => Some("Markdown".into()),
+                "norg" => Some("Neorg".into()),
+                "org" => Some("Org Mode File".into()),
+                "toml" => Some("TOML".into()),
+                "txt" => Some("Text File".into()),
+                "xaml" => Some("XAML".into()),
+                "xml" => Some("XML".into()),
                 // Shell Files
-                "sh" => Some("Shell Script".into()),
-                "ps1" => Some("PowerShell Script".into()),
                 "fish" => Some("Fish Script".into()),
+                "ps1" => Some("PowerShell Script".into()),
+                "sh" => Some("Shell Script".into()),
                 // Source Files
-                "rs" => Some("Rust Source File".into()),
-                "cr" => Some("Crystal Source File".into()),
-                "elm" => Some("Elm Source File".into()),
-                "ex" => Some("Elixir Source File".into()),
-                "exs" => Some("Elixir lource File".into()),
-                "gd" => Some("GDScript Source File".into()),
-                "rb" => Some("Ruby Source File".into()),
-                "py" => Some("Python Source File".into()),
-                "lua" => Some("Lua Source File".into()),
-                "c" => Some("C Source File".into()),
-                "ml" => Some("OCaml Source File".into()),
-                "cs" => Some("C# Source File".into()),
-                "php" => Some("PHP Source File".into()),
-                "ts" => Some("TypeScript Source File".into()),
-                "js" => Some("JavaScript Source File".into()),
-                "jl" => Some("Julia Source File".into()),
-                "lisp" => Some("Common Lisp Source File".into()),
-                "el" => Some("ELisp Source File".into()),
-                "erl" => Some("Erlang Source File".into()),
-                "hrl" => Some("Erlang Header File".into()),
+                "c" => Some("C".into()),
+                "cr" => Some("Crystal".into()),
+                "cs" => Some("C#".into()),
+                "el" => Some("ELisp".into()),
+                "elm" => Some("Elm".into()),
+                "erl" => Some("Erlang".into()),
+                "ex" => Some("Elixir".into()),
+                "exs" => Some("Elixir".into()),
+                "gd" => Some("GDScript".into()),
+                "gleam" => Some("Gleam".into()),
                 "h" => Some("Header File".into()),
-                "hx" => Some("Haxe Source File".into()),
-                "v" => Some("V Source File".into()),
-                "vim" => Some("Vimscript File".into()),
-                "vimrc" => Some("Vimscript File".into()),
-                "vala" => Some("Vala Source File".into()),
-                "zig" => Some("Zig Source File".into()),
+                "hrl" => Some("Erlang Header".into()),
+                "hx" => Some("Haxe".into()),
+                "java" => Some("Java".into()),
+                "jl" => Some("Julia".into()),
+                "js" => Some("JavaScript".into()),
+                "kt" => Some("Kotlin".into()),
+                "lisp" => Some("Common Lisp".into()),
+                "lua" => Some("Lua".into()),
+                "ml" => Some("OCaml".into()),
+                "php" => Some("PHP".into()),
+                "py" => Some("Python".into()),
+                "rb" => Some("Ruby".into()),
+                "rs" => Some("Rust".into()),
+                "ts" => Some("TypeScript".into()),
+                "v" => Some("V".into()),
+                "vala" => Some("Vala".into()),
+                "vim" => Some("Vimscript".into()),
+                "vimrc" => Some("Vimscript".into()),
+                "zig" => Some("Zig".into()),
                 &_ => None,
             },
             None => None,

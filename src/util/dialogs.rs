@@ -7,17 +7,14 @@ use libadwaita::{
 };
 use sourceview5::prelude::ViewExt;
 
-use crate::app::model::{ItemVis, MainStruct, Message};
+use crate::app::model::{ItemVis, Message, State};
 
-pub fn create_preferences_dialog(
-    main_struct: &mut MainStruct,
-    sender: relm4::ComponentSender<MainStruct>,
-) {
+pub fn create_preferences_dialog(state: &mut State, sender: relm4::ComponentSender<State>) {
     // Editor group setup
     let is_monospace_switch_row = SwitchRow::builder()
         .title("Monospace")
         .activatable(false)
-        .active(main_struct.editor.is_monospace())
+        .active(state.editor.is_monospace())
         .build();
     is_monospace_switch_row.connect_active_notify(clone!(
         #[strong]
@@ -38,7 +35,7 @@ pub fn create_preferences_dialog(
     let tab_type_switch_row = SwitchRow::builder()
         .title("Enable Using Spaces for Tabs")
         .activatable(false)
-        .active(main_struct.editor.is_insert_spaces_instead_of_tabs())
+        .active(state.editor.is_insert_spaces_instead_of_tabs())
         .build();
     tab_type_switch_row.connect_active_notify(clone!(
         #[strong]
@@ -51,7 +48,7 @@ pub fn create_preferences_dialog(
         .climb_rate(1.0)
         .digits(0)
         .adjustment(&gtk4::Adjustment::new(
-            main_struct.editor.tab_width() as f64,
+            state.editor.tab_width() as f64,
             1.0,
             32.0,
             1.0,
@@ -87,7 +84,7 @@ pub fn create_preferences_dialog(
         .title("Side Bar Visibility")
         .subtitle("Ctrl+Alt+F")
         .activatable(false)
-        .active(main_struct.side_bar_box.is_visible())
+        .active(state.side_bar_box.is_visible())
         .build();
     file_list_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
@@ -98,7 +95,7 @@ pub fn create_preferences_dialog(
         .title("Mini Map Visibility")
         .subtitle("Ctrl+Alt+M")
         .activatable(false)
-        .active(main_struct.mini_map.is_visible())
+        .active(state.mini_map.is_visible())
         .build();
     mini_map_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
@@ -109,7 +106,7 @@ pub fn create_preferences_dialog(
         .title("Hidden Files Visibility")
         .subtitle("Ctrl+H")
         .activatable(false)
-        .active(main_struct.view_hidden)
+        .active(state.view_hidden)
         .build();
     hidden_files_visibilty_spin_row.connect_active_notify(clone!(
         #[strong]
@@ -164,7 +161,7 @@ pub fn create_preferences_dialog(
         .can_close(true)
         .child(&toolbar)
         .build();
-    dialog.present(Some(&main_struct.root));
+    dialog.present(Some(&state.root));
 }
 
 pub fn create_keyboard_shortcut_dialog() {

@@ -1,4 +1,6 @@
-use gtk4::{Button, MenuButton, ScrolledWindow, gdk::ffi::GDK_BUTTON_SECONDARY};
+use std::path::PathBuf;
+
+use gtk4::{MenuButton, ScrolledWindow};
 use libadwaita::{HeaderBar, ToastOverlay, WindowTitle, prelude::*};
 use relm4::{
     actions::{AccelsPlus, RelmAction, RelmActionGroup},
@@ -13,17 +15,17 @@ use sourceview5::LanguageManager;
 
 mod app;
 use app::{
-    model::{MainStruct, Message, WidgetStruct},
+    model::{Message, State, WidgetStruct},
     update::handle_messages,
     view::handle_view,
 };
 
 mod util;
 use util::{menu::menu_bar, widget::setup_editor};
-mod files_dirs;
+mod fs;
 
-impl SimpleComponent for MainStruct {
-    type Init = String;
+impl SimpleComponent for State {
+    type Init = PathBuf;
     type Input = Message;
     type Output = ();
     type Root = libadwaita::ApplicationWindow;
@@ -80,36 +82,15 @@ impl SimpleComponent for MainStruct {
             .build();
         let header = HeaderBar::builder().title_widget(&title).build();
         header.pack_end(&hamburger);
-        let up_button = Button::builder()
-            .icon_name("go-up-symbolic")
-            .width_request(40)
-            .height_request(40)
-            .margin_start(5)
-            .margin_end(5)
-            .margin_top(5)
-            .margin_bottom(5)
-            .build();
-        let refesh_button = Button::builder()
-            .icon_name("view-refresh-symbolic")
-            .width_request(40)
-            .height_request(40)
-            .margin_start(5)
-            .margin_end(5)
-            .margin_top(5)
-            .margin_bottom(5)
-            .build();
-        let file_list = gtk::ListBox::builder()
+        let file_view = gtk::ListView::builder()
             .css_classes(vec!["navigation-sidebar"])
             .vexpand(true)
-            .activate_on_single_click(false)
+            .orientation(gtk4::Orientation::Vertical)
+            .height_request(500)
             .build();
-        let file_list_context_menu = gtk::PopoverMenu::builder()
-            .has_arrow(false)
-            .halign(gtk4::Align::Start)
-            .build();
-        let file_list_scroll = ScrolledWindow::builder()
+        let file_view_scroll = ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Never)
-            .child(&file_list)
+            .child(&file_view)
             .build();
         let language_manager = LanguageManager::builder().build();
         let buffer_style = sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
@@ -123,8 +104,8 @@ impl SimpleComponent for MainStruct {
             .overflow(gtk4::Overflow::Visible)
             .view(&editor)
             .build();
-        let file_type_label = gtk::Label::builder().build();
-        let cursor_position_label = gtk::Label::builder().build();
+        let file_type_label = gtk::Label::builder().halign(gtk4::Align::Start).build();
+        let cursor_position_label = gtk::Label::builder().halign(gtk4::Align::End).build();
         let toast_overlay = ToastOverlay::new();
 
         // Define containers
@@ -133,10 +114,6 @@ impl SimpleComponent for MainStruct {
             .build();
         let side_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
-            .build();
-        let file_list_button_box = gtk::Box::builder()
-            .orientation(gtk::Orientation::Horizontal)
-            .halign(gtk4::Align::Center)
             .build();
         let file_list_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Vertical)
@@ -149,6 +126,7 @@ impl SimpleComponent for MainStruct {
             .build();
         let status_bar_box = gtk::Box::builder()
             .orientation(gtk::Orientation::Horizontal)
+            .homogeneous(true)
             .build();
         let editor_scroll_window = gtk::ScrolledWindow::builder()
             .hscrollbar_policy(gtk4::PolicyType::Automatic)
@@ -157,22 +135,16 @@ impl SimpleComponent for MainStruct {
 
         // Add widgets to containers
         editor_scroll_window.set_child(Some(&editor));
-        status_bar_box.append(&gtk::Label::builder().label("   ").build());
         status_bar_box.append(&file_type_label);
-        status_bar_box.append(&gtk::Label::builder().label(" | ").build());
         status_bar_box.append(&cursor_position_label);
-        file_list_button_box.append(&up_button);
-        file_list_button_box.append(&refesh_button);
-        side_bar_box.append(&file_list_button_box);
-        file_list_box.append(&file_list_scroll);
-        file_list_box.append(&file_list_context_menu);
+        file_list_box.append(&file_view_scroll);
         side_bar_box.append(&file_list_box);
-        toast_overlay.set_child(Some(&editor_box_horizontal));
-        editor_box_vertical.append(&editor_scroll_window);
-        editor_box_vertical.append(&status_bar_box);
+        toast_overlay.set_child(Some(&editor_box_vertical));
         editor_box_horizontal.append(&side_bar_box);
-        editor_box_horizontal.append(&editor_box_vertical);
+        editor_box_horizontal.append(&editor_scroll_window);
         editor_box_horizontal.append(&mini_map);
+        editor_box_vertical.append(&editor_box_horizontal);
+        editor_box_vertical.append(&status_bar_box);
         main_box.append(&header);
         main_box.append(&toast_overlay);
 
@@ -183,7 +155,6 @@ impl SimpleComponent for MainStruct {
         // Set misc variables
         let current_folder_path = "".into();
         let view_hidden = true;
-        let git_info = ("".to_string(), false);
 
         // Apply user settings
         root.connect_show(clone!(
@@ -193,46 +164,6 @@ impl SimpleComponent for MainStruct {
         ));
 
         // Setup events/gestures
-        let file_list_context_gesture = gtk::GestureClick::builder()
-            .button(GDK_BUTTON_SECONDARY as u32)
-            .build();
-
-        up_button.connect_clicked(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::UpDir)
-        ));
-        refesh_button.connect_clicked(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::RefreshFileList)
-        ));
-        file_list.connect_row_activated(clone!(
-            #[strong]
-            sender,
-            move |_, row| {
-                if let Some(row_child) = row.child() {
-                    sender.input(Message::LoadFileFromList(
-                        row_child.widget_name().to_string(),
-                    ))
-                } else {
-                    sender.input(Message::QuickToast(
-                        "Failed to get child for file list row!".to_string(),
-                    ))
-                }
-            }
-        ));
-        file_list_context_gesture.connect_released(clone!(
-            #[strong]
-            sender,
-            move |g, _, x, y| {
-                let x32: i32 = x as i32;
-                let y32: i32 = y as i32;
-                g.set_state(gtk::EventSequenceState::Claimed);
-                sender.input(Message::FileListContext(x32, y32));
-            }
-        ));
-        file_list_scroll.add_controller(file_list_context_gesture);
         buffer.connect_cursor_position_notify(clone!(
             #[strong]
             sender,
@@ -261,7 +192,6 @@ impl SimpleComponent for MainStruct {
         let mut edit_action_group = RelmActionGroup::<EditActionGroup>::new();
         let mut view_action_group = RelmActionGroup::<ViewActionGroup>::new();
         let mut about_action_group = RelmActionGroup::<AboutActionGroup>::new();
-        let mut file_list_action_group = RelmActionGroup::<FileListActionGroup>::new();
         // File actions
         file_action_group.add_action(RelmAction::<NewFileAction>::new_stateless(clone!(
             #[strong]
@@ -342,34 +272,19 @@ impl SimpleComponent for MainStruct {
             sender,
             move |_| sender.input(Message::ShowAbout)
         )));
-        // File list actions
-        file_list_action_group.add_action(RelmAction::<DeleteItemAction>::new_stateless(clone!(
-            #[strong]
-            sender,
-            move |_| sender.input(Message::DeleteItem)
-        )));
-        file_list_action_group.add_action(RelmAction::<OpenFolderExternalAction>::new_stateless(
-            clone!(
-                #[strong]
-                sender,
-                move |_| sender.input(Message::OpenFolderExternal)
-            ),
-        ));
 
         // Register action groups
         file_action_group.register_for_widget(&root);
         edit_action_group.register_for_widget(&root);
         view_action_group.register_for_widget(&root);
         about_action_group.register_for_widget(&root);
-        file_list_action_group.register_for_widget(&root);
 
-        let model = MainStruct {
+        let model = State {
             // Containers
             root,
             side_bar_box,
             // Widgets
-            file_list,
-            file_list_context_menu,
+            file_view,
             editor,
             buffer,
             language_manager,
@@ -386,7 +301,6 @@ impl SimpleComponent for MainStruct {
             current_folder_path,
             buffer_style,
             view_hidden,
-            git_info,
         };
         let widgets = WidgetStruct {};
         ComponentParts { model, widgets }
@@ -405,7 +319,6 @@ relm4::new_action_group!(FileActionGroup, "file");
 relm4::new_action_group!(EditActionGroup, "edit");
 relm4::new_action_group!(ViewActionGroup, "view");
 relm4::new_action_group!(AboutActionGroup, "about");
-relm4::new_action_group!(FileListActionGroup, "list");
 // File
 relm4::new_stateless_action!(NewFileAction, FileActionGroup, "new_file");
 relm4::new_stateless_action!(SaveAsAction, FileActionGroup, "save_as");
@@ -436,15 +349,8 @@ relm4::new_stateless_action!(
 );
 relm4::new_stateless_action!(ShowPreferencesAction, AboutActionGroup, "show_preferences");
 relm4::new_stateless_action!(ShowAboutAction, AboutActionGroup, "show_about");
-// File list context menu
-relm4::new_stateless_action!(DeleteItemAction, FileListActionGroup, "delete_item");
-relm4::new_stateless_action!(
-    OpenFolderExternalAction,
-    FileListActionGroup,
-    "open_folder_external"
-);
 
 fn main() {
     let program = RelmApp::new("io.github.Cyncrovee.CryptumText");
-    program.run::<MainStruct>("".to_string());
+    program.run::<State>(PathBuf::new());
 }

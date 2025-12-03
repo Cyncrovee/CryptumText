@@ -2,19 +2,20 @@
 name = "cryptum-text"
 version = "0.1.0"
 edition = "2024"
-license = "GPL-3.0"
+license = "GPL-3.0-only"
 
 [dependencies]
 dirs = "6.0.0"
+gio = { version = "0.21.2", features = ["v2_74", "v2_78"] }
 git2 = "0.20.2"
-gtk4 = "0.9.6"
-libadwaita = { version = "0.7.2", features = ["v1_4", "v1_5", "v1_7"] }
+gtk4 = "0.10.0"
+libadwaita = { version = "0.8.0", features = ["v1_4", "v1_5", "v1_7"] }
 open = "5.3.2"
-relm4 = "0.9.1"
-relm4-components = "0.9.1"
+relm4 = "0.10.0"
+relm4-components = "0.10.0"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
-sourceview5 = "0.9.1"
+sourceview5 = "0.10.0"
 trash = "5.2.2"
 
 [profile.release]

@@ -1,147 +1,87 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::path::PathBuf;
 
-use gtk4::{gdk::Rectangle, prelude::*};
-use libadwaita::Toast;
+use gtk4::{
+    gio::{File, FileType},
+    prelude::*,
+};
 use relm4::ComponentController;
 use relm4_components::{open_dialog::OpenDialogMsg, save_dialog::SaveDialogMsg};
-use sourceview5::prelude::{BufferExt, ViewExt};
+use sourceview5::prelude::ViewExt;
 
 use crate::{
-    app::model::{MainStruct, Message},
-    files_dirs::{
+    app::model::{Message, State},
+    fs::{
         file::{load_file, save_file},
-        file_list::load_folder,
+        folder::load_folder_view,
         settings::{load_settings, save_settings},
     },
-    util::menu::{file_list_context_menu_model, file_list_context_menu_model_item},
+    util::widget::{toggle_buffer_style, update_vis},
 };
 
-use super::model::ItemVis;
-
 pub(crate) fn handle_messages(
-    main_struct: &mut MainStruct,
+    state: &mut State,
     message: Message,
-    sender: relm4::ComponentSender<MainStruct>,
+    sender: relm4::ComponentSender<State>,
 ) {
     match message {
         // File
         Message::NewFile => {
-            main_struct.buffer.set_text("");
-            main_struct.current_file_path = "".to_string();
-            main_struct.file_list.unselect_all();
+            state.buffer.set_text("");
+            state.current_file_path = PathBuf::new();
         }
-        Message::ExpandLocalList(label_vec) => {
-            for label in label_vec {
-                if let Some(label_parent) = label.parent() {
-                    label_parent.set_visible(!label_parent.is_visible());
-                } else {
-                    sender.input(Message::QuickToast(
-                        "Failed to get parent for label!".to_string(),
-                    ))
-                }
-            }
-        }
-        Message::LoadFileFromList(val) => {
-            if Path::new(&val).exists() {
-                main_struct.current_file_path = val;
-                load_file(main_struct);
-            } else {
-                print!("Failed to load file: ");
-                println!("{}", val);
-            }
-        }
-        Message::FolderRequest => main_struct.folder_dialog.emit(OpenDialogMsg::Open),
+        Message::FolderRequest => state.folder_dialog.emit(OpenDialogMsg::Open),
         Message::FolderResponse(path) => {
-            if let Ok(path_string) = path.into_os_string().into_string() {
-                main_struct.current_folder_path = path_string;
-                load_folder(main_struct, sender);
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to convert OsString to String".to_string(),
-                ))
-            }
+            state.current_folder_path = path;
+            load_folder_view(state, sender);
         }
-        Message::OpenRequest => main_struct.open_dialog.emit(OpenDialogMsg::Open),
+        Message::OpenRequest => state.open_dialog.emit(OpenDialogMsg::Open),
         Message::OpenResponse(path) => {
-            main_struct.current_file_path = path.into_os_string().into_string().unwrap();
-            load_file(main_struct);
+            state.current_file_path = path;
+            load_file(state);
         }
-        Message::SaveAsRequest => main_struct
+        Message::SaveAsRequest => state
             .save_as_dialog
             .emit(SaveDialogMsg::SaveAs("".to_string())),
         Message::SaveAsResponse(path) => {
-            if std::fs::write(
+            _ = std::fs::write(
                 &path,
-                main_struct.buffer.text(
-                    &main_struct.buffer.start_iter(),
-                    &main_struct.buffer.end_iter(),
-                    false,
-                ),
+                state
+                    .buffer
+                    .text(&state.buffer.start_iter(), &state.buffer.end_iter(), false),
             )
-            .is_ok()
-            {}
         }
         Message::SaveFile => {
-            save_file(main_struct, sender);
+            save_file(state, sender);
         }
         // Edit
         Message::ClearEditor => {
-            main_struct.buffer.set_text("");
-            main_struct.buffer.undo();
+            state.buffer.set_text("");
+            state.buffer.undo();
         }
         // View
         Message::ToggleFileList => {
-            main_struct
+            state
                 .side_bar_box
-                .set_visible(!main_struct.side_bar_box.is_visible());
-            save_settings(main_struct);
+                .set_visible(!state.side_bar_box.is_visible());
+            save_settings(state);
         }
         Message::ToggleHiddenFiles => {
-            main_struct.view_hidden = !main_struct.view_hidden;
-            load_folder(main_struct, sender);
-            save_settings(main_struct);
+            state.view_hidden = !state.view_hidden;
+            save_settings(state);
         }
         Message::ToggleMiniMap => {
-            main_struct
-                .mini_map
-                .set_visible(!main_struct.mini_map.is_visible());
-            save_settings(main_struct);
+            state.mini_map.set_visible(!state.mini_map.is_visible());
+            save_settings(state);
         }
         Message::ToggleBufferStyleScheme => {
-            match main_struct
-                .buffer_style
-                .as_ref()
-                .unwrap()
-                .to_string()
-                .as_str()
-            {
-                "Adwaita Dark" => {
-                    main_struct.buffer_style =
-                        sourceview5::StyleSchemeManager::new().scheme("Adwaita");
-                    main_struct
-                        .buffer
-                        .set_style_scheme(main_struct.buffer_style.as_ref());
-                }
-                "Adwaita" => {
-                    main_struct.buffer_style =
-                        sourceview5::StyleSchemeManager::new().scheme("Adwaita-dark");
-                    main_struct
-                        .buffer
-                        .set_style_scheme(main_struct.buffer_style.as_ref());
-                }
-                _ => {}
-            }
-            save_settings(main_struct);
+            toggle_buffer_style(state);
         }
-        Message::ToggleFullscreen => match main_struct.root.is_fullscreen() {
+        Message::ToggleFullscreen => match state.root.is_fullscreen() {
             true => {
-                main_struct.root.set_fullscreened(false);
+                state.root.set_fullscreened(false);
             }
             false => {
-                main_struct.root.set_fullscreened(true);
+                state.root.set_fullscreened(true);
             }
         },
         // About
@@ -149,114 +89,44 @@ pub(crate) fn handle_messages(
             crate::util::dialogs::create_keyboard_shortcut_dialog();
         }
         Message::ShowPreferences => {
-            crate::util::dialogs::create_preferences_dialog(main_struct, sender);
+            crate::util::dialogs::create_preferences_dialog(state, sender);
         }
         Message::ShowAbout => {
             crate::util::dialogs::create_about_dialog();
         }
         // File list
-        Message::FileListContext(x, y) => {
-            let rect = Rectangle::new(x, y, 1, 1);
-            main_struct
-                .file_list_context_menu
-                .set_pointing_to(Some(&rect));
-            match main_struct.file_list.selected_row() {
-                Some(_) => {
-                    main_struct
-                        .file_list_context_menu
-                        .set_menu_model(Some(&file_list_context_menu_model_item()));
-                    main_struct.file_list_context_menu.popup();
-                }
-                None => {
-                    main_struct
-                        .file_list_context_menu
-                        .set_menu_model(Some(&file_list_context_menu_model()));
-                    main_struct.file_list_context_menu.popup();
-                }
-            }
-        }
-        Message::DeleteItem => {
-            if let Some(row) = main_struct.file_list.selected_row()
-                && let Some(row_child) = row.child()
+        Message::LoadFileFromTree(file_info) => {
+            if file_info.file_type() == FileType::Regular
+                && let Some(file) = file_info
+                    .attribute_object("standard::file")
+                    .and_downcast_ref::<File>()
+                && let Some(path) = file.path()
             {
-                let mut file_list_pathbuf = PathBuf::from(&main_struct.current_folder_path);
-                let file_list_name = &row_child.widget_name();
-                let file_list_path = Path::new(file_list_name);
-                file_list_pathbuf.push(file_list_path);
-                if trash::delete(file_list_pathbuf).is_err() {
-                    sender.input(Message::QuickToast(
-                        "Error when moving item to trash!".to_string(),
-                    ))
-                }
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to get selected row or child of selected row!".to_string(),
-                ))
+                state.current_file_path = path;
+                load_file(state);
             }
-            load_folder(main_struct, sender);
-        }
-        Message::OpenFolderExternal => {
-            if fs::exists(&main_struct.current_folder_path).is_ok()
-                && open::that(&main_struct.current_folder_path).is_ok()
-            {}
         }
         // Other
         Message::LoadSettings => {
             println!("Loading Settings...");
-            load_settings(main_struct);
+            load_settings(state);
         }
         Message::UpdateMonospace(value) => {
-            main_struct.editor.set_monospace(value);
-            save_settings(main_struct);
+            state.editor.set_monospace(value);
+            save_settings(state);
         }
         Message::UpdateTabType(use_spaces) => {
-            main_struct
-                .editor
-                .set_insert_spaces_instead_of_tabs(use_spaces);
-            save_settings(main_struct);
+            state.editor.set_insert_spaces_instead_of_tabs(use_spaces);
+            save_settings(state);
         }
         Message::UpdateTabWidth(tab_width) => {
-            main_struct.editor.set_tab_width(tab_width);
-            save_settings(main_struct);
+            state.editor.set_tab_width(tab_width);
+            save_settings(state);
         }
-        Message::UpdateVisibility(item, visibilty) => {
-            match item {
-                ItemVis::SideBar => {
-                    main_struct.side_bar_box.set_visible(visibilty);
-                }
-                ItemVis::MiniMap => {
-                    main_struct.mini_map.set_visible(visibilty);
-                }
-                ItemVis::HiddenFiles => {
-                    main_struct.view_hidden = visibilty;
-                }
-            }
-            save_settings(main_struct);
+        Message::UpdateVisibility(item, vis) => {
+            update_vis(item, vis, state);
         }
-        Message::UpDir => {
-            if let Some(path) = PathBuf::from(&main_struct.current_folder_path).parent()
-                && let Some(path_str) = path.to_str()
-            {
-                let up_dir = path_str.to_string();
-                main_struct.current_folder_path = up_dir;
-                load_folder(main_struct, sender);
-            } else {
-                sender.input(Message::QuickToast(
-                    "Failed to convert to PathBuf or failed to convert to &str!".to_string(),
-                ))
-            }
-        }
-        Message::RefreshFileList => {
-            load_folder(main_struct, sender);
-        }
-        Message::CursorPositionChanged => {
-            if main_struct.file_list.selected_row().is_some() {
-                main_struct.file_list.unselect_all();
-            }
-        }
-        Message::QuickToast(toast_text) => {
-            main_struct.toast_overlay.add_toast(Toast::new(&toast_text))
-        }
+        Message::CursorPositionChanged => {}
         Message::Ignore => {}
     }
 }
