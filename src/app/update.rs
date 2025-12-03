@@ -74,14 +74,7 @@ pub(crate) fn handle_messages(
         Message::ToggleBufferStyleScheme => {
             toggle_buffer_style(state);
         }
-        Message::ToggleFullscreen => match state.root.is_fullscreen() {
-            true => {
-                state.root.set_fullscreened(false);
-            }
-            false => {
-                state.root.set_fullscreened(true);
-            }
-        },
+        Message::ToggleFullscreen => state.root.set_fullscreened(!state.root.is_fullscreen()),
         // About
         Message::ShowKeyboardShortcuts => {
             crate::util::dialogs::create_keyboard_shortcut_dialog();
