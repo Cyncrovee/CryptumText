@@ -46,16 +46,18 @@ pub fn load_folder_view(state: &mut State, sender: relm4::ComponentSender<State>
         ));
     });
     factory.connect_bind(move |_, list_item| {
-        let row = list_item.item().and_downcast::<TreeListRow>().unwrap();
-        let file_info = row.item().and_downcast::<FileInfo>().unwrap();
-        let tree = list_item.child().and_downcast::<TreeExpander>().unwrap();
-        let label = tree.child().and_downcast::<Label>().unwrap();
-        if file_info.file_type() == FileType::Directory {
-            label.set_text(&format!("{}/", &file_info.display_name()));
-        } else {
-            label.set_text(&file_info.display_name());
+        if let Some(row) = list_item.item().and_downcast::<TreeListRow>()
+            && let Some(file_info) = row.item().and_downcast::<FileInfo>()
+            && let Some(tree) = list_item.child().and_downcast::<TreeExpander>()
+            && let Some(label) = tree.child().and_downcast::<Label>()
+        {
+            if file_info.file_type() == FileType::Directory {
+                label.set_text(&format!("{}/", &file_info.display_name()));
+            } else {
+                label.set_text(&file_info.display_name());
+            }
+            tree.set_list_row(Some(&row));
         }
-        tree.set_list_row(Some(&row));
     });
     state.file_view.set_model(Some(&selection));
     state.file_view.set_factory(Some(&factory));
